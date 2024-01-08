@@ -5,17 +5,16 @@ import org.fhm.ioc.ability.ILoggerHandler;
 import org.fhm.ioc.annotation.Configuration;
 import org.fhm.ioc.annotation.Value;
 import org.fhm.ioc.constant.Common;
+import org.fhm.ioc.constant.DataTypeMark;
 import org.fhm.ioc.manager.Bootstrap;
 import org.fhm.ioc.service.LoggerHandler;
 import org.fhm.ioc.util.IOCExceptionUtil;
 
 import java.io.*;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
@@ -30,11 +29,11 @@ public abstract class AbstractConfiguration implements IActuator {
     /**
      * Default configuration container
      */
-    public static Map<String, Object> defaultConfigContainer = new HashMap<>();
+    public static Map<String, String> defaultConfigContainer = new HashMap<>();
     /**
      * Configuration container
      */
-    public static Map<String, Object> configContainer = new HashMap<>();
+    public static Map<String, String> configContainer = new HashMap<>();
     public static Map<String, InputStream> resource = new HashMap<>();
     public static Map<String, Object> configObj = new HashMap<>();
     /**
@@ -89,7 +88,7 @@ public abstract class AbstractConfiguration implements IActuator {
         recordConfig.add(CONFIG_FILE_NAME);
     }
 
-    private boolean getResourceOfCp(Map<String, Object> configContainer) {
+    private boolean getResourceOfCp(Map<String, String> configContainer) {
         try (InputStream is = Files.newInputStream(Paths.get("." + File.separator + CONFIG_FILE_NAME))) {
             getConfigBr(is, configContainer);
             return true;
@@ -98,7 +97,7 @@ public abstract class AbstractConfiguration implements IActuator {
         }
     }
 
-    private void getConfigBr(InputStream is, Map<String, Object> configContainer) {
+    private void getConfigBr(InputStream is, Map<String, String> configContainer) {
         try (
                 Reader r = new InputStreamReader(is, Bootstrap.charset);
                 BufferedReader br = new BufferedReader(r)
@@ -148,50 +147,23 @@ public abstract class AbstractConfiguration implements IActuator {
                         .anyMatch(annotation -> annotation instanceof Value)
         ).forEach(
                 field -> {
-                    String fieldName = field.getName();
                     String configFieldName = getConfigFieldName(field);
-                    String setMethodName = "set" +
-                            fieldName.substring(0, 1).toUpperCase(Locale.ROOT) +
-                            fieldName.substring(1);
-                    Object result;
-                    if ((result = configContainer.get(name + "." + configFieldName)) == null || result.toString().isEmpty()) {
+                    String result;
+                    if ((result = configContainer.get(name + "." + configFieldName)) == null || result.isEmpty()) {
                         result = defaultConfigContainer.get(name + "." + configFieldName);
                     }
                     if (result == null) {
                         logger.warn("the field {} of {} is not config", configFieldName, clazz);
                         return;
                     }
-                    final Object finalResult = result;
-                    AtomicBoolean isFind = new AtomicBoolean(false);
-                    Stream.of(clazz.getMethods()).forEach(method -> {
-                        if (setMethodName.equals(method.getName()) && method.getParameterCount() == 1) {
-                            isFind.set(true);
-                            Class<?> parameterType = method.getParameterTypes()[0];
-                            Object value;
-                            if (Integer.class.isAssignableFrom(parameterType)
-                                    || "int".equals(parameterType.getName())) {
-                                try {
-                                    value = Integer.parseInt(finalResult.toString());
-                                } catch (Exception e) {
-                                    logger.error("class {} type cast {} fail", clazz, parameterType);
-                                    throw IOCExceptionUtil
-                                            .generateConfigurationException(e.getMessage(), e);
-                                }
-                            } else {
-                                value = finalResult;
-                            }
-                            try {
-                                method.invoke(config, value);
-                            } catch (IllegalAccessException | InvocationTargetException e) {
-                                throw IOCExceptionUtil
-                                        .generateConfigurationException(fieldName + " do not hava " + setMethodName + " method");
-                            }
-                        }
-                    });
-                    if (!isFind.get()) {
-                        logger.warn("configuration class {} does not have a setter method for property {}", clazz, fieldName);
+                    field.setAccessible(true);
+                    try {
+                        field.set(config, DataTypeMark.obtainData(result));
+                    } catch (IllegalAccessException e) {
+                        logger.error("class {} value {} cast fail", clazz, result);
+                        throw IOCExceptionUtil
+                                .generateConfigurationException(e.getMessage(), e);
                     }
-
                 });
     }
 
@@ -206,7 +178,6 @@ public abstract class AbstractConfiguration implements IActuator {
         );
         return configFieldName.get();
     }
-
 
     @Override
     public void action(Object object) {

@@ -39,8 +39,15 @@ public class ResourceScanner {
 
     private final Set<String> classLoaderRecord = new HashSet<>();
     public Set<String> urls = new HashSet<>();
+
+    public Set<String> scanPackage = new HashSet<>();
+
     public Set<Class<? extends Annotation>> annotationClazzContainer = new HashSet<>(2);
     public Set<String> jarNames = new HashSet<>(2);
+
+    {
+        scanPackage.add(Common.PROJECT_PACKAGE_NAME.getName());
+    }
 
     public static ResourceScanner getInstance() {
         return Instance.instance;
@@ -57,6 +64,13 @@ public class ResourceScanner {
     }
 
     public void scanRequiredFileAndSetupObj(Map<String, Object> objContainer) {
+        logger.info("start to obtain the class files of CP");
+        scanCPClassResource(objContainer);
+        logger.info("start to obtain the class files in nested packages");
+        scanJarResource(objContainer);
+    }
+
+    private void scanCPClassResource(Map<String, Object> objContainer) {
         urls.forEach(url -> {
             File file = new File(url);
             if (file.isFile() && isRequiredJar(file.getName())) {
@@ -92,21 +106,21 @@ public class ResourceScanner {
                 }
             }
         });
-        logger.info("start to obtain the class files in nested packages");
-        scanJarResource(objContainer);
     }
 
     private void scanJarResource(Map<String, Object> objContainer) {
-        Enumeration<URL> systemResources;
-        try {
-            systemResources = ClassLoader.getSystemResources(Common.PROJECT_PACKAGE_NAME.getName());
-        } catch (IOException e) {
-            throw IOCExceptionUtil.generateResourceScannerException(e);
-        }
-        while (systemResources.hasMoreElements()) {
-            URL url = systemResources.nextElement();
-            findClassJar(url, objContainer);
-        }
+        scanPackage.forEach(packageName -> {
+            Enumeration<URL> systemResources;
+            try {
+                systemResources = ClassLoader.getSystemResources(packageName);
+            } catch (IOException e) {
+                throw IOCExceptionUtil.generateResourceScannerException(e);
+            }
+            while (systemResources.hasMoreElements()) {
+                URL url = systemResources.nextElement();
+                findClassJar(url, objContainer);
+            }
+        });
     }
 
     private void findClassJar(URL url, Map<String, Object> objContainer) {

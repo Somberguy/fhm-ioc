@@ -5,15 +5,18 @@ import org.fhm.ioc.ability.ILoggerHandler;
 import org.fhm.ioc.ability.IStarter;
 import org.fhm.ioc.annotation.Component;
 import org.fhm.ioc.annotation.Configuration;
+import org.fhm.ioc.annotation.ScanPackageConfig;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;
 import org.fhm.ioc.service.*;
+import org.fhm.ioc.util.IOCExceptionUtil;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -45,20 +48,23 @@ public class Bootstrap {
     }
 
 
-    private static void initialClazzAndResourceContainer(Class<? extends IStarter> starterClazz) {
+    private static void initialClazzAndResourceContainer(
+            Class<? extends IStarter> starterClazz
+    ) {
         ResourceScanner scanner = ResourceScanner.getInstance();
-        Class<?> mainClazz;
-        if (Objects.nonNull((mainClazz = getMainClazz()))) {
-            String jarNameByClazz;
-            if (!(jarNameByClazz = getJarNameByClazz(mainClazz)).isEmpty())
-                scanner.jarNames.add(jarNameByClazz);
-        }
+        Class<?> mainClazz = getMainClazz();
+        String jarNameByClazz;
+        if (!(jarNameByClazz = getJarNameByClazz(mainClazz)).isEmpty())
+            scanner.jarNames.add(jarNameByClazz);
         logger.info("start configure resource scanner");
         newManageAnnotations = obtainManageAnnotation(starterClazz);
         if (Objects.nonNull(newManageAnnotations))
             scanner.annotationClazzContainer.addAll(newManageAnnotations);
         scanner.annotationClazzContainer.add(Component.class);
         scanner.annotationClazzContainer.add(Configuration.class);
+        ScanPackageConfig config;
+        if (Objects.nonNull((config = mainClazz.getAnnotation(ScanPackageConfig.class))))
+            scanner.scanPackage.addAll(Arrays.asList(config.value()));
         logger.info("start filter out the required resource path");
         scanner.filterRequiredPath();
         logger.info("scan the path to obtain the required resources and class files");
@@ -133,9 +139,10 @@ public class Bootstrap {
                     return Class.forName(element.getClassName());
                 }
             }
-        } catch (ClassNotFoundException ignore) {
+            throw IOCExceptionUtil.generateNormalException("main class not found");
+        } catch (ClassNotFoundException e) {
+            throw IOCExceptionUtil.generateNormalException(e);
         }
-        return null;
     }
 
 

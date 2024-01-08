@@ -1,16 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="75c2c3ae-1b24-4f09-af82-aef2b74b5716" name="更改" comment="1. complete fhm-ioc 1.0.0">
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/annotation/LoggerConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/annotation/ScanPackageConfig.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/constant/DataTypeMark.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/constant/LoggerLevel.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/readme.md" beforeDir="false" afterPath="$PROJECT_DIR$/readme.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/config/AbstractConfiguration.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/config/AbstractConfiguration.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/manager/Bootstrap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/manager/Bootstrap.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/service/LoggerHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/service/LoggerHandler.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/service/ResourceScanner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/service/ResourceScanner.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
   <component name="MavenImportPreferences">
     <option name="generalSettings">
       <MavenGeneralSettings>
-        <option name="mavenHome" value="$USER_HOME$/CompanyFile/maven/apache-maven-3.9.1" />
-        <option name="userSettingsFile" value="$USER_HOME$/CompanyFile/maven/apache-maven-3.9.1/conf/settings.xml" />
+        <option name="mavenHome" value="$PROJECT_DIR$/../../maven/apache-maven-3.9.1" />
+        <option name="userSettingsFile" value="$PROJECT_DIR$/../../maven/apache-maven-3.9.1/conf/settings.xml" />
       </MavenGeneralSettings>
     </option>
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;settings.editor.selected.configurable&quot;: &quot;MavenSettings&quot;
-  }
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 5
 }</component>
+  <component name="ProjectId" id="2aebLHSzzxIabfmg0bknHzluTnX" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Maven.fhm-ioc [clean].executor": "Run",
+    "Maven.fhm-ioc [install].executor": "Run",
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "deletionFromPopupRequiresConfirmation": "false",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/some/CompanyFile/git-repository/fhm-ioc",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "MavenSettings",
+    "vue.rearranger.settings.migration": "true",
+    "应用程序.DataTypeMark.executor": "Run"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
+    </key>
+  </component>
+  <component name="RunManager">
+    <configuration name="DataTypeMark" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="org.fhm.ioc.constant.DataTypeMark" />
+      <module name="fhm-ioc" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="org.fhm.ioc.constant.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="应用程序.DataTypeMark" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="jdk-1.8.0_392-corretto-1.8.0_392-3183f394aec4-22f8fbaa" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="应用程序级" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="默认任务">
+      <changelist id="75c2c3ae-1b24-4f09-af82-aef2b74b5716" name="更改" comment="" />
+      <created>1704681936518</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1704681936518</updated>
+      <workItem from="1704681940656" duration="1233000" />
+      <workItem from="1704683298172" duration="8821000" />
+    </task>
+    <task id="LOCAL-00001" summary="1. complete fhm-ioc 1.0.0">
+      <option name="closed" value="true" />
+      <created>1704683188189</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1704683188189</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="1. complete fhm-ioc 1.0.0" />
+    <option name="LAST_COMMIT_MESSAGE" value="1. complete fhm-ioc 1.0.0" />
+  </component>
 </project>

@@ -16,11 +16,10 @@ import java.util.Objects;
  */
 public class LoggerHandler {
 
-    private static final Map<String, Handler> loggerContainer = new HashMap<>();
-
+    private static final Map<String, ILoggerHandler> loggerContainer = new HashMap<>();
 
     public static synchronized ILoggerHandler getLogger(Class<?> clazz) {
-        Handler handler = loggerContainer.get(clazz.getName());
+        ILoggerHandler handler = loggerContainer.get(clazz.getName());
         if (!Objects.nonNull(handler)) {
             handler = new Handler(clazz);
             loggerContainer.put(clazz.getName(), handler);
