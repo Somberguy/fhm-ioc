@@ -52,9 +52,12 @@ public class Bootstrap {
             Class<? extends IStarter> starterClazz
     ) {
         ResourceScanner scanner = ResourceScanner.getInstance();
-        Class<?> mainClazz = getMainClazz();
+        Class<?> mainClazz;
         String jarNameByClazz;
-        if (!(jarNameByClazz = getJarNameByClazz(mainClazz)).isEmpty())
+        if (
+            Objects.nonNull((mainClazz = getMainClazz()))
+            && !(jarNameByClazz = getJarNameByClazz(mainClazz)).isEmpty()
+        )
             scanner.jarNames.add(jarNameByClazz);
         logger.info("start configure resource scanner");
         newManageAnnotations = obtainManageAnnotation(starterClazz);
@@ -63,7 +66,7 @@ public class Bootstrap {
         scanner.annotationClazzContainer.add(Component.class);
         scanner.annotationClazzContainer.add(Configuration.class);
         ScanPackageConfig config;
-        if (Objects.nonNull((config = mainClazz.getAnnotation(ScanPackageConfig.class))))
+        if (Objects.nonNull(mainClazz) && Objects.nonNull((config = mainClazz.getAnnotation(ScanPackageConfig.class))))
             scanner.scanPackage.addAll(Arrays.asList(config.value()));
         logger.info("start filter out the required resource path");
         scanner.filterRequiredPath();
@@ -140,10 +143,10 @@ public class Bootstrap {
                     return Class.forName(element.getClassName());
                 }
             }
-            throw IOCExceptionUtil.generateNormalException("main class not found");
         } catch (ClassNotFoundException e) {
             throw IOCExceptionUtil.generateNormalException(e);
         }
+        return null;
     }
 
 
