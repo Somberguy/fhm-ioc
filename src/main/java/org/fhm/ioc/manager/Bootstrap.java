@@ -75,6 +75,7 @@ public class Bootstrap {
         try {
             return starterClazz.newInstance().newManageMembers();
         } catch (InstantiationException | IllegalAccessException e) {
+            logger.warn(e);
             return null;
         }
     }

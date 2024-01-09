@@ -43,11 +43,8 @@ public class ResourceScanner {
     public Set<String> scanPackage = new HashSet<>();
 
     public Set<Class<? extends Annotation>> annotationClazzContainer = new HashSet<>(2);
-    public Set<String> jarNames = new HashSet<>(2);
 
-    {
-        scanPackage.add(Common.PROJECT_PACKAGE_NAME.getName());
-    }
+    public Set<String> jarNames = new HashSet<>(1);
 
     public static ResourceScanner getInstance() {
         return Instance.instance;
@@ -109,6 +106,8 @@ public class ResourceScanner {
     }
 
     private void scanJarResource(Map<String, Object> objContainer) {
+        if (scanPackage.isEmpty())
+            scanPackage.add(Common.PROJECT_PACKAGE_NAME.getName());
         scanPackage.forEach(packageName -> {
             Enumeration<URL> systemResources;
             try {
