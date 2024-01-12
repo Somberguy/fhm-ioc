@@ -4,10 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="75c2c3ae-1b24-4f09-af82-aef2b74b5716" name="更改" comment="1. complete fhm-ioc 1.0.0">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/manager/Bootstrap.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/org/fhm/ioc/manager/Bootstrap.java" afterDir="false" />
-    </list>
+    <list default="true" id="75c2c3ae-1b24-4f09-af82-aef2b74b5716" name="更改" comment="1. complete fhm-ioc 1.0.0" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -93,6 +90,7 @@
       <workItem from="1704704079939" duration="1463000" />
       <workItem from="1704763290100" duration="1127000" />
       <workItem from="1704769598517" duration="300000" />
+      <workItem from="1704784542653" duration="71000" />
     </task>
     <task id="LOCAL-00001" summary="1. complete fhm-ioc 1.0.0">
       <option name="closed" value="true" />
@@ -134,7 +132,15 @@
       <option name="project" value="LOCAL" />
       <updated>1704764346916</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="1. complete fhm-ioc 1.0.0">
+      <option name="closed" value="true" />
+      <created>1704784560669</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1704784560669</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

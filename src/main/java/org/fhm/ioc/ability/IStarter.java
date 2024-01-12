@@ -33,6 +33,6 @@ public interface IStarter {
      */
     void start(String[] args) throws Exception;
 
-    void close();
+    void close() throws Exception;
 
 }
