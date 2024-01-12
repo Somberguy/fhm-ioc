@@ -163,7 +163,11 @@ public class BeanOptimizer {
                 start.start(args);
             } catch (Exception e) {
                 logger.error(e.getMessage(), e);
-                start.close();
+                try {
+                    start.close();
+                } catch (Exception ex) {
+                    logger.warn("starter close error", ex);
+                }
             }
         } else {
             throw IOCExceptionUtil.generateNormalException(name + " starter is not managed");
