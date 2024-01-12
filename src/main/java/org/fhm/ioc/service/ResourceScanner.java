@@ -1,6 +1,6 @@
 package org.fhm.ioc.service;
 
-import org.fhm.ioc.ability.ILoggerHandler;
+import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.asm.OptimizeASMTransformer;
 import org.fhm.ioc.asm.TransformerNode;
 import org.fhm.ioc.config.AbstractConfiguration;

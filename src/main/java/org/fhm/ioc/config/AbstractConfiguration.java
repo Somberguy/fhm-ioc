@@ -1,7 +1,7 @@
 package org.fhm.ioc.config;
 
 import org.fhm.ioc.ability.IActuator;
-import org.fhm.ioc.ability.ILoggerHandler;
+import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.annotation.Configuration;
 import org.fhm.ioc.annotation.Value;
 import org.fhm.ioc.constant.Common;

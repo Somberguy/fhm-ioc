@@ -1,7 +1,7 @@
 package org.fhm.ioc.service;
 
-import org.fhm.ioc.ability.ILoggerHandler;
-import org.fhm.ioc.ability.IStarter;
+import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.IStarter;
 import org.fhm.ioc.annotation.BeanEnable;
 import org.fhm.ioc.annotation.BeanInitial;
 import org.fhm.ioc.annotation.Component;

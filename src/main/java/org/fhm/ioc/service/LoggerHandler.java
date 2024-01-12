@@ -1,6 +1,6 @@
 package org.fhm.ioc.service;
 
-import org.fhm.ioc.ability.ILoggerHandler;
+import org.fhm.ioc.standard.ILoggerHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,4 +1,4 @@
-package org.fhm.ioc.ability;
+package org.fhm.ioc.standard;
 
 import org.objectweb.asm.tree.ClassNode;
 

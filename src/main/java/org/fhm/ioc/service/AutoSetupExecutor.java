@@ -1,6 +1,6 @@
 package org.fhm.ioc.service;
 
-import org.fhm.ioc.ability.ILoggerHandler;
+import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.annotation.Component;
 import org.fhm.ioc.annotation.Configuration;
 import org.fhm.ioc.annotation.Setup;

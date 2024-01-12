@@ -1,4 +1,4 @@
-package org.fhm.ioc.ability;
+package org.fhm.ioc.standard;
 
 /**
  * @Classname LoggerHandler

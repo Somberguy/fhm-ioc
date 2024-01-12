@@ -1,6 +1,6 @@
 package org.fhm.ioc.util;
 
-import org.fhm.ioc.ability.ILoggerHandler;
+import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.service.LoggerHandler;
 
 import java.lang.reflect.Field;

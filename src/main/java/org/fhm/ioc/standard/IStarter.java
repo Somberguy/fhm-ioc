@@ -1,4 +1,4 @@
-package org.fhm.ioc.ability;
+package org.fhm.ioc.standard;
 
 import java.lang.annotation.Annotation;
 import java.util.List;

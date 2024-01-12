@@ -1,6 +1,6 @@
 package org.fhm.ioc.asm;
 
-import org.fhm.ioc.ability.IASMTransformer;
+import org.fhm.ioc.standard.IASMTransformer;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.tree.ClassNode;
 

@@ -1,8 +1,8 @@
 package org.fhm.ioc.manager;
 
 import org.fhm.ioc.ability.IActuator;
-import org.fhm.ioc.ability.ILoggerHandler;
-import org.fhm.ioc.ability.IStarter;
+import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.IStarter;
 import org.fhm.ioc.annotation.Component;
 import org.fhm.ioc.annotation.Configuration;
 import org.fhm.ioc.annotation.ScanPackageConfig;
