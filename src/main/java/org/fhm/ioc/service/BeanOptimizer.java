@@ -166,7 +166,7 @@ public class BeanOptimizer {
                 try {
                     start.close();
                 } catch (Exception ex) {
-                    logger.warn(ex);
+                    logger.warn("starter close error", ex);
                 }
             }
         } else {
