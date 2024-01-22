@@ -70,7 +70,7 @@ public abstract class AbstractConfiguration implements IActuator {
                 InputStream is = this.getClass().getResourceAsStream("/" + CONFIG_FILE_NAME)
         ) {
             if (Objects.isNull(is)) {
-                if (!getResourceOfCp(configContainer)) {
+                if (!getResourceOfEnv(configContainer)) {
                     logger.warn("the user configuration file {} was not scanned", CONFIG_FILE_NAME);
                 }
             } else {
@@ -88,11 +88,12 @@ public abstract class AbstractConfiguration implements IActuator {
         recordConfig.add(CONFIG_FILE_NAME);
     }
 
-    private boolean getResourceOfCp(Map<String, String> configContainer) {
-        try (InputStream is = Files.newInputStream(Paths.get("." + File.separator + CONFIG_FILE_NAME))) {
+    private boolean getResourceOfEnv(Map<String, String> configContainer) {
+        try (InputStream is = Files.newInputStream(Paths.get(System.getProperty(Common.CONFIG_PATH_SYSTEM.getName()) + CONFIG_FILE_NAME))) {
             getConfigBr(is, configContainer);
             return true;
         } catch (IOException e) {
+            logger.warn(e);
             return false;
         }
     }

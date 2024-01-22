@@ -50,7 +50,7 @@ public class ResourceScanner {
         return Instance.instance;
     }
 
-    public void filterRequiredPath() {
+    public void filterCPPath() {
         for (String url : System.getProperty("java.class.path").split(File.pathSeparator)) {
             if (
                     url.contains(Common.PROJECT_FILE_FLAG.getName())
@@ -60,49 +60,61 @@ public class ResourceScanner {
         }
     }
 
+    public void scanRequiredSystem(Map<String, Object> objContainer) {
+        String jarPath = System.getProperty(Common.JAR_PATH_SYSTEM.getName());
+        File jarfile;
+        if (Objects.nonNull(jarPath) &&
+                (jarfile = new File(jarPath)).exists()
+                && jarfile.isFile()){
+            logger.info("start obtain the class file {} of VM system", jarPath);
+            dealJarFile(jarfile, objContainer);
+        }
+    }
+
     public void scanRequiredFileAndSetupObj(Map<String, Object> objContainer) {
         logger.info("start to obtain the class files of CP");
-        scanCPClassResource(objContainer);
+        scanRequiredClassResource(objContainer);
         logger.info("start to obtain the class files in nested packages");
         scanJarResource(objContainer);
     }
 
-    private void scanCPClassResource(Map<String, Object> objContainer) {
+    private void scanRequiredClassResource(Map<String, Object> objContainer) {
         urls.forEach(url -> {
             File file = new File(url);
-            if (file.isFile() && isRequiredJar(file.getName())) {
+            if (file.isFile() && isRequiredJar(file.getName()))
                 dealJarFile(file, objContainer);
-            }
-            if (file.isDirectory()) {
-                try {
-                    Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
-                        @Override
-                        public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-                            File pathFile = path.toFile();
-                            String fileName = pathFile.getName();
-                            if (pathFile.exists() && pathFile.isFile()) {
-                                dealClassFile(pathFile, objContainer);
-                                if (isRequiredFile(fileName)) {
-                                    AbstractConfiguration.resource.put(
-                                            fileName,
-                                            Files.newInputStream(
-                                                    Paths.get(pathFile.getAbsolutePath())
-                                            )
-                                    );
-                                }
-                                if (isRequiredJar(fileName)) {
-                                    dealJarFile(pathFile, objContainer);
-                                }
-                            }
-                            return super.visitFile(path, attrs);
-                        }
-                    });
-                } catch (IOException e) {
-                    logger.error("failed to obtain file stream {}", url);
-                    throw IOCExceptionUtil.generateResourceScannerException(e);
-                }
-            }
+            if (file.isDirectory())
+                dealDirectory(objContainer, file);
         });
+    }
+
+    private void dealDirectory(Map<String, Object> objContainer, File file) {
+        try {
+            Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
+                    File pathFile = path.toFile();
+                    String fileName = pathFile.getName();
+                    if (pathFile.exists() && pathFile.isFile()) {
+                        dealClassFile(pathFile, objContainer);
+                        if (isRequiredFile(fileName)) {
+                            AbstractConfiguration.resource.put(
+                                    fileName,
+                                    Files.newInputStream(
+                                            Paths.get(pathFile.getAbsolutePath())
+                                    )
+                            );
+                        }
+                        if (isRequiredJar(fileName))
+                            dealJarFile(pathFile, objContainer);
+                    }
+                    return super.visitFile(path, attrs);
+                }
+            });
+        } catch (IOException e) {
+            logger.error("failed to obtain file stream {}", file.getAbsoluteFile());
+            throw IOCExceptionUtil.generateResourceScannerException(e);
+        }
     }
 
     private void scanJarResource(Map<String, Object> objContainer) {
@@ -216,7 +228,7 @@ public class ResourceScanner {
     private boolean isRequiredJar(@NotNull String fileName) {
         return fileName.endsWith(Common.JAR_FILE_SUFFIX.getName())
                 &&
-                jarNames.stream().anyMatch(fileName::contains);
+                jarNames.contains(fileName);
     }
 
     private boolean isRequiredFile(@NotNull String fileName) {
@@ -233,6 +245,9 @@ public class ResourceScanner {
                         ASM9,
                         null,
                         cn -> {
+                            String className = Type.getObjectType(cn.name).getClassName();
+                            if (objContainer.containsKey(className))
+                                return;
                             int access = cn.access;
                             if ((access & ACC_INTERFACE) != 0 && (access & ACC_ABSTRACT) != 0) {
                                 return;
@@ -262,7 +277,7 @@ public class ResourceScanner {
                                 logger.warn("class {} has no unmanaged parameterless constructor", cn.name);
                                 return;
                             }
-                            clazzName.set(Type.getObjectType(cn.name).getClassName());
+                            clazzName.set(className);
                         }
                 )
         );
@@ -294,6 +309,8 @@ public class ResourceScanner {
                  NoSuchMethodException | ClassNotFoundException ignore) {
         }
     }
+
+
 
     private static final class Instance {
         private static final ResourceScanner instance = new ResourceScanner();

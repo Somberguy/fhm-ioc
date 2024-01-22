@@ -18,6 +18,7 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -69,9 +70,11 @@ public class Bootstrap {
         if (Objects.nonNull(mainClazz) && Objects.nonNull((config = mainClazz.getAnnotation(ScanPackageConfig.class))))
             scanner.scanPackage.addAll(Arrays.asList(config.value()));
         logger.info("start filter out the required resource path");
-        scanner.filterRequiredPath();
+        scanner.filterCPPath();
         logger.info("scan the path to obtain the required resources and class files");
-        scanner.scanRequiredFileAndSetupObj(AutoSetupExecutor.getInstance().getObjContainer());
+        Map<String, Object> objContainer = AutoSetupExecutor.getInstance().getObjContainer();
+        scanner.scanRequiredSystem(objContainer);
+        scanner.scanRequiredFileAndSetupObj(objContainer);
     }
 
     private static List<Class<? extends Annotation>> obtainManageAnnotation(Class<? extends IStarter> starterClazz) {
