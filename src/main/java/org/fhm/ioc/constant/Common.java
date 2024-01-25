@@ -16,8 +16,8 @@ public enum Common {
     PROJECT_FILE_FLAG("target" + File.separator + "classes"),
     DEFAULT_KEYWORD("default-"),
     UNKNOWN_PARADIGM_SIGNS("<[^>]*>"),
-    CONFIG_PATH_SYSTEM("fhm-ioc-config-path"),
-    JAR_PATH_SYSTEM("fhm-ioc-jar-path");
+    CONFIG_PATH_SYSTEM("fhm.ioc.config.path"),
+    JAR_PATH_SYSTEM("fhm.ioc.jar.path");
 
     final String name;
 
