@@ -1,10 +1,12 @@
 package org.fhm.ioc.service;
 
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.annotation.Component;
+import org.fhm.ioc.annotation.Configuration;
 import org.fhm.ioc.asm.OptimizeASMTransformer;
 import org.fhm.ioc.asm.TransformerNode;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;
+import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.util.IOCExceptionUtil;
 import org.fhm.ioc.util.IOUtil;
 import org.jetbrains.annotations.NotNull;
@@ -37,14 +39,19 @@ public class ResourceScanner {
 
     private final ILoggerHandler logger = LoggerHandler.getLogger(ResourceScanner.class);
 
-    private final Set<String> classLoaderRecord = new HashSet<>();
-    public Set<String> urls = new HashSet<>();
+    private Set<String> classLoaderRecord = new HashSet<>();
+    private Set<String> urls = new HashSet<>();
 
-    public Set<String> scanPackage = new HashSet<>();
+    private Set<String> scanPackage = new HashSet<>();
 
-    public Set<Class<? extends Annotation>> annotationClazzContainer = new HashSet<>(2);
+    private Set<Class<? extends Annotation>> annotationClazzContainer = new HashSet<>(2);
 
-    public Set<String> jarNames = new HashSet<>(1);
+    private Set<String> jarNames = new HashSet<>(1);
+
+    {
+        this.annotationClazzContainer.add(Component.class);
+        this.annotationClazzContainer.add(Configuration.class);
+    }
 
     public static ResourceScanner getInstance() {
         return Instance.instance;
@@ -53,7 +60,7 @@ public class ResourceScanner {
     public void filterCPPath() {
         for (String url : System.getProperty("java.class.path").split(File.pathSeparator)) {
             if (
-                    url.contains(Common.PROJECT_FILE_FLAG.getName())
+                    url.contains(Common.PROJECT_FILE_FLAG.getName()) || url.endsWith(Common.JAR_FILE_SUFFIX.getName())
             ) {
                 urls.add(url);
             }
@@ -65,7 +72,7 @@ public class ResourceScanner {
         File jarfile;
         if (Objects.nonNull(jarPath) &&
                 (jarfile = new File(jarPath)).exists()
-                && jarfile.isFile()){
+                && jarfile.isFile()) {
             logger.info("start obtain the class file {} of VM system", jarPath);
             dealJarFile(jarfile, objContainer);
         }
@@ -81,10 +88,17 @@ public class ResourceScanner {
     private void scanRequiredClassResource(Map<String, Object> objContainer) {
         urls.forEach(url -> {
             File file = new File(url);
-            if (file.isFile() && isRequiredJar(file.getName()))
-                dealJarFile(file, objContainer);
-            if (file.isDirectory())
-                dealDirectory(objContainer, file);
+            if (file.exists()) {
+                if (file.isDirectory())
+                    dealDirectory(objContainer, file);
+                if (file.isFile()) {
+                    if (isRequiredClazzFile(file))
+                        dealClassFile(file, objContainer);
+                    if (isRequiredJar(file.getName()))
+                        dealJarFile(file, objContainer);
+                }
+            }
+
         });
     }
 
@@ -96,8 +110,9 @@ public class ResourceScanner {
                     File pathFile = path.toFile();
                     String fileName = pathFile.getName();
                     if (pathFile.exists() && pathFile.isFile()) {
-                        dealClassFile(pathFile, objContainer);
-                        if (isRequiredFile(fileName)) {
+                        if (isRequiredClazzFile(pathFile))
+                            dealClassFile(pathFile, objContainer);
+                        if (isRequiredResourceFile(fileName)) {
                             AbstractConfiguration.resource.put(
                                     fileName,
                                     Files.newInputStream(
@@ -157,7 +172,7 @@ public class ResourceScanner {
                 if (jarEntryName.endsWith(Common.CLASS_FILE_SUFFIX.getName())) {
                     dealInnerJarClassFile(objContainer, jarEntry, jarFile);
                 }
-                if (isRequiredFile(jarEntryName) && AbstractConfiguration.resource.get(jarEntryName) == null) {
+                if (isRequiredResourceFile(jarEntryName) && AbstractConfiguration.resource.get(jarEntryName) == null) {
                     try {
                         AbstractConfiguration.resource.put(
                                 jarEntryName,
@@ -179,7 +194,7 @@ public class ResourceScanner {
                 JarEntry jarEntry = entries.nextElement();
                 String jarEntryName = jarEntry.getName();
                 dealInnerJarClassFile(objContainer, jarEntry, jarFile);
-                if (isRequiredFile(jarEntryName)) {
+                if (isRequiredResourceFile(jarEntryName)) {
                     AbstractConfiguration.resource.put(
                             pathFile.getName(),
                             jarFile.getInputStream(jarEntry)
@@ -207,21 +222,15 @@ public class ResourceScanner {
     }
 
     private void dealClassFile(@NotNull File pathFile, Map<String, Object> objContainer) {
-        if (
-                pathFile.isFile() &&
-                        pathFile.getName()
-                                .endsWith(Common.CLASS_FILE_SUFFIX.getName())
-        ) {
-            try {
-                collectManagementObjects(
-                        IOUtil.file2Bytes(pathFile.getAbsolutePath()),
-                        annotationClazzContainer,
-                        objContainer
-                );
-            } catch (Exception e) {
-                logger.error("failed to obtain current resource {} stream", pathFile, e);
-                throw IOCExceptionUtil.generateResourceScannerException(e);
-            }
+        try {
+            collectManagementObjects(
+                    IOUtil.file2Bytes(pathFile.getAbsolutePath()),
+                    annotationClazzContainer,
+                    objContainer
+            );
+        } catch (Exception e) {
+            logger.error("failed to obtain current resource {} stream", pathFile, e);
+            throw IOCExceptionUtil.generateResourceScannerException(e);
         }
     }
 
@@ -231,8 +240,18 @@ public class ResourceScanner {
                 jarNames.contains(fileName);
     }
 
-    private boolean isRequiredFile(@NotNull String fileName) {
+    private boolean isRequiredResourceFile(@NotNull String fileName) {
         return fileName.endsWith(".properties") && !fileName.contains("pom.properties");
+    }
+
+    private Boolean isRequiredClazzFile(File clazzFile) {
+        String path;
+        String projectFileFlagName = Common.PROJECT_FILE_FLAG.getName();
+        return (path = clazzFile.getAbsolutePath()).endsWith(Common.CLASS_FILE_SUFFIX.getName())
+                &&
+                scanPackage.stream().anyMatch(path.substring(
+                        path.indexOf(projectFileFlagName) + projectFileFlagName.length() + 1
+                )::contains);
     }
 
     public void collectManagementObjects(
@@ -310,7 +329,25 @@ public class ResourceScanner {
         }
     }
 
+    public void addScanAnnotationClazz(Collection<Class<? extends Annotation>> anno) {
+        this.annotationClazzContainer.addAll(anno);
+    }
 
+    public void addScanJar(String jarName) {
+        this.jarNames.add(jarName);
+    }
+
+    public void addScanPackage(Collection<String> packageName) {
+        this.scanPackage.addAll(packageName);
+    }
+
+    public void clearCache() {
+        this.scanPackage = null;
+        this.annotationClazzContainer = null;
+        this.classLoaderRecord = null;
+        this.jarNames = null;
+        this.urls = null;
+    }
 
     private static final class Instance {
         private static final ResourceScanner instance = new ResourceScanner();

@@ -1,14 +1,12 @@
 package org.fhm.ioc.manager;
 
 import org.fhm.ioc.ability.IActuator;
-import org.fhm.ioc.standard.ILoggerHandler;
-import org.fhm.ioc.standard.IStarter;
-import org.fhm.ioc.annotation.Component;
-import org.fhm.ioc.annotation.Configuration;
 import org.fhm.ioc.annotation.ScanPackageConfig;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;
 import org.fhm.ioc.service.*;
+import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.IStarter;
 import org.fhm.ioc.util.IOCExceptionUtil;
 
 import java.io.File;
@@ -56,25 +54,24 @@ public class Bootstrap {
         Class<?> mainClazz;
         String jarNameByClazz;
         if (
-            Objects.nonNull((mainClazz = getMainClazz()))
-            && !(jarNameByClazz = getJarNameByClazz(mainClazz)).isEmpty()
+                Objects.nonNull((mainClazz = getMainClazz()))
+                        && !(jarNameByClazz = getJarNameByClazz(mainClazz)).isEmpty()
         )
-            scanner.jarNames.add(jarNameByClazz);
+            scanner.addScanJar(jarNameByClazz);
         logger.info("start configure resource scanner");
         newManageAnnotations = obtainManageAnnotation(starterClazz);
         if (Objects.nonNull(newManageAnnotations))
-            scanner.annotationClazzContainer.addAll(newManageAnnotations);
-        scanner.annotationClazzContainer.add(Component.class);
-        scanner.annotationClazzContainer.add(Configuration.class);
+            scanner.addScanAnnotationClazz(newManageAnnotations);
         ScanPackageConfig config;
         if (Objects.nonNull(mainClazz) && Objects.nonNull((config = mainClazz.getAnnotation(ScanPackageConfig.class))))
-            scanner.scanPackage.addAll(Arrays.asList(config.value()));
+            scanner.addScanPackage(Arrays.asList(config.value()));
         logger.info("start filter out the required resource path");
         scanner.filterCPPath();
         logger.info("scan the path to obtain the required resources and class files");
         Map<String, Object> objContainer = AutoSetupExecutor.getInstance().getObjContainer();
         scanner.scanRequiredSystem(objContainer);
         scanner.scanRequiredFileAndSetupObj(objContainer);
+        scanner.clearCache();
     }
 
     private static List<Class<? extends Annotation>> obtainManageAnnotation(Class<? extends IStarter> starterClazz) {
