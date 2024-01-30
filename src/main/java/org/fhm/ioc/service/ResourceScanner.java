@@ -6,6 +6,7 @@ import org.fhm.ioc.asm.OptimizeASMTransformer;
 import org.fhm.ioc.asm.TransformerNode;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;
+import org.fhm.ioc.constant.VMParameters;
 import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.util.IOCExceptionUtil;
 import org.fhm.ioc.util.IOUtil;
@@ -68,14 +69,18 @@ public class ResourceScanner {
     }
 
     public void scanRequiredSystem(Map<String, Object> objContainer) {
-        String jarPath = System.getProperty(Common.JAR_PATH_SYSTEM.getName());
-        File jarfile;
-        if (Objects.nonNull(jarPath) &&
-                (jarfile = new File(jarPath)).exists()
-                && jarfile.isFile()) {
-            logger.info("start obtain the class file {} of VM system", jarPath);
-            dealJarFile(jarfile, objContainer);
-        }
+        VMParameters.REGISTRY_BEAN_DIR_PATH.use((name, dirPath) -> {
+            File file = new File(dirPath);
+            if (file.exists() && file.isDirectory()) {
+                logger.info("start obtain the class file {} of VM system", dirPath);
+                File[] files = file.listFiles();
+                if (Objects.nonNull(files))
+                    for (File jarFile : files) {
+                        if (jarFile.getAbsolutePath().endsWith(Common.JAR_FILE_SUFFIX.getName()))
+                            dealJarFile(jarFile, objContainer, VMParameters.REGISTRY_PACKAGE_NAME.getValue());
+                    }
+            }
+        });
     }
 
     public void scanRequiredFileAndSetupObj(Map<String, Object> objContainer) {
@@ -95,7 +100,7 @@ public class ResourceScanner {
                     if (isRequiredClazzFile(file))
                         dealClassFile(file, objContainer);
                     if (isRequiredJar(file.getName()))
-                        dealJarFile(file, objContainer);
+                        dealJarFile(file, objContainer, "");
                 }
             }
 
@@ -121,7 +126,7 @@ public class ResourceScanner {
                             );
                         }
                         if (isRequiredJar(fileName))
-                            dealJarFile(pathFile, objContainer);
+                            dealJarFile(pathFile, objContainer, "");
                     }
                     return super.visitFile(path, attrs);
                 }
@@ -169,9 +174,7 @@ public class ResourceScanner {
             while (jarEntries.hasMoreElements()) {
                 JarEntry jarEntry = jarEntries.nextElement();
                 String jarEntryName = jarEntry.getName();
-                if (jarEntryName.endsWith(Common.CLASS_FILE_SUFFIX.getName())) {
-                    dealInnerJarClassFile(objContainer, jarEntry, jarFile);
-                }
+                dealInnerJarClassFile(objContainer, jarEntry, jarFile);
                 if (isRequiredResourceFile(jarEntryName) && AbstractConfiguration.resource.get(jarEntryName) == null) {
                     try {
                         AbstractConfiguration.resource.put(
@@ -187,13 +190,19 @@ public class ResourceScanner {
         }
     }
 
-    private void dealJarFile(File pathFile, Map<String, Object> objContainer) {
+    private void dealJarFile(File pathFile, Map<String, Object> objContainer, String requirePackageName) {
         try (JarFile jarFile = new JarFile(pathFile)) {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry jarEntry = entries.nextElement();
                 String jarEntryName = jarEntry.getName();
-                dealInnerJarClassFile(objContainer, jarEntry, jarFile);
+                if (!requirePackageName.isEmpty()) {
+                    if (jarEntryName.contains(requirePackageName)) {
+                        dealInnerJarClassFile(objContainer, jarEntry, jarFile);
+                    }
+                } else {
+                    dealInnerJarClassFile(objContainer, jarEntry, jarFile);
+                }
                 if (isRequiredResourceFile(jarEntryName)) {
                     AbstractConfiguration.resource.put(
                             pathFile.getName(),

@@ -5,6 +5,7 @@ import org.fhm.ioc.annotation.Configuration;
 import org.fhm.ioc.annotation.Value;
 import org.fhm.ioc.constant.Common;
 import org.fhm.ioc.constant.DataTypeMark;
+import org.fhm.ioc.constant.VMParameters;
 import org.fhm.ioc.manager.Bootstrap;
 import org.fhm.ioc.service.LoggerHandler;
 import org.fhm.ioc.standard.ILoggerHandler;
@@ -89,13 +90,15 @@ public abstract class AbstractConfiguration implements IActuator {
     }
 
     private boolean getResourceOfEnv(Map<String, String> configContainer) {
-        try (InputStream is = Files.newInputStream(Paths.get(System.getProperty(Common.CONFIG_PATH_SYSTEM.getName()) + CONFIG_FILE_NAME))) {
-            getConfigBr(is, configContainer);
-            return true;
-        } catch (IOException e) {
-            logger.warn(e);
-            return false;
-        }
+        return VMParameters.CONFIG_FILE_PATH.use((name, v) -> {
+            try (InputStream is = Files.newInputStream(Paths.get(v + CONFIG_FILE_NAME))) {
+                getConfigBr(is, configContainer);
+                return true;
+            } catch (IOException e) {
+                logger.warn(e);
+                return false;
+            }
+        });
     }
 
     private void getConfigBr(InputStream is, Map<String, String> configContainer) {
