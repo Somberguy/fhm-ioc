@@ -37,7 +37,7 @@ public class Bootstrap {
     public static void open(String[] args, Class<? extends IStarter> starterClazz) {
         IOCCostTimer.getInstance().start();
         logger.info("read VM parameter");
-        VMParametersManage.getInstance().readVMOptionsFileParameters();
+        VMParametersManage.getInstance().readVMOptionsFileParameters(starterClazz);
         logger.info("start initial class and resource container");
         initialClazzAndResourceContainer(starterClazz);
         logger.info("start auto setup bean");

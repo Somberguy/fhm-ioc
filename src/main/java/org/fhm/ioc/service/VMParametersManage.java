@@ -2,11 +2,13 @@ package org.fhm.ioc.service;
 
 import org.fhm.ioc.constant.VMParameters;
 import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.IStarter;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.security.CodeSource;
 import java.util.Objects;
 
 /**
@@ -25,24 +27,42 @@ public class VMParametersManage {
         return Instance.instance;
     }
 
-    public void readVMOptionsFileParameters() {
+    public void readVMOptionsFileParameters(Class<? extends IStarter> starterClazz) {
         VMParameters.VM_OPTIONS_FILE_PATH.use((name, v) -> {
-            if (!v.endsWith(VM_OPTIONS_FILE_SUFFIX))
-                return;
-            File file = new File(v);
-            if (file.exists() && file.isFile()) {
-                try (BufferedReader br = Files.newBufferedReader(file.toPath())) {
-                    String content;
-                    while (Objects.nonNull((content = br.readLine()))) {
-                        parseLineContent(content);
+            if (v.equals(".")) {
+                CodeSource codeSource = starterClazz.getProtectionDomain().getCodeSource();
+                if (Objects.nonNull(codeSource)) {
+                    String fileName = codeSource.getLocation().getFile();
+                    File file = new File(fileName.substring(0, fileName.lastIndexOf(File.separator) + 1));
+                    File[] files;
+                    if (file.exists() && Objects.nonNull((files = file.listFiles()))) {
+                        for (File f : files) {
+                            collectVMParameters(f.getAbsolutePath());
+                        }
                     }
-                } catch (IOException e) {
-                    logger.info("VM options file error, {}, {}", e.getMessage(), e);
                 }
             } else {
-                logger.info("VM options file {} not exist", v);
+                collectVMParameters(v);
             }
         });
+    }
+
+    private void collectVMParameters(String v) {
+        if (!v.endsWith(VM_OPTIONS_FILE_SUFFIX))
+            return;
+        File file = new File(v);
+        if (file.exists() && file.isFile()) {
+            try (BufferedReader br = Files.newBufferedReader(file.toPath())) {
+                String content;
+                while (Objects.nonNull((content = br.readLine()))) {
+                    parseLineContent(content);
+                }
+            } catch (IOException e) {
+                logger.info("VM options file error, {}, {}", e.getMessage(), e);
+            }
+        } else {
+            logger.info("VM options file {} not exist", v);
+        }
     }
 
     private void parseLineContent(String content) {
