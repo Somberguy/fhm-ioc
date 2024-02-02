@@ -84,6 +84,8 @@ public class ResourceScanner {
     }
 
     public void scanRequiredFileAndSetupObj(Map<String, Object> objContainer) {
+        if (scanPackage.isEmpty())
+            scanPackage.add(Common.PROJECT_PACKAGE_NAME.getName());
         logger.info("start to obtain the class files of CP");
         scanRequiredClassResource(objContainer);
         logger.info("start to obtain the class files in nested packages");
@@ -138,8 +140,6 @@ public class ResourceScanner {
     }
 
     private void scanJarResource(Map<String, Object> objContainer) {
-        if (scanPackage.isEmpty())
-            scanPackage.add(Common.PROJECT_PACKAGE_NAME.getName());
         scanPackage.forEach(packageName -> {
             Enumeration<URL> systemResources;
             try {
