@@ -6,12 +6,12 @@ import org.fhm.ioc.annotation.Value;
 import org.fhm.ioc.constant.Common;
 import org.fhm.ioc.constant.DataTypeMark;
 import org.fhm.ioc.constant.VMParameters;
-import org.fhm.ioc.manager.Bootstrap;
 import org.fhm.ioc.service.LoggerHandler;
 import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.util.IOCExceptionUtil;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -43,7 +43,7 @@ public abstract class AbstractConfiguration implements IActuator {
     private static Set<String> recordConfig = new HashSet<>();
     private final ILoggerHandler logger = LoggerHandler.getLogger(AbstractConfiguration.class);
     /*
-     * Configuration name
+     * Configuration file name
      */
     private final String CONFIG_FILE_NAME;
 
@@ -75,7 +75,7 @@ public abstract class AbstractConfiguration implements IActuator {
                     logger.warn("the user configuration file {} was not scanned", CONFIG_FILE_NAME);
                 }
             } else {
-                getConfigBr(is, configContainer);
+                paddingConfigurationMember(is, configContainer);
             }
         } catch (IOException e) {
             throw IOCExceptionUtil.generateConfigurationException(e);
@@ -84,7 +84,7 @@ public abstract class AbstractConfiguration implements IActuator {
         if (is == null) {
             logger.warn("the default configuration file {} was not scanned", CONFIG_FILE_NAME);
         } else {
-            getConfigBr(is, defaultConfigContainer);
+            paddingConfigurationMember(is, defaultConfigContainer);
         }
         recordConfig.add(CONFIG_FILE_NAME);
     }
@@ -92,7 +92,7 @@ public abstract class AbstractConfiguration implements IActuator {
     private boolean getResourceOfEnv(Map<String, String> configContainer) {
         return VMParameters.CONFIG_FILE_PATH.use((name, v) -> {
             try (InputStream is = Files.newInputStream(Paths.get(v + CONFIG_FILE_NAME))) {
-                getConfigBr(is, configContainer);
+                paddingConfigurationMember(is, configContainer);
                 return true;
             } catch (IOException e) {
                 logger.warn(e);
@@ -101,34 +101,14 @@ public abstract class AbstractConfiguration implements IActuator {
         });
     }
 
-    private void getConfigBr(InputStream is, Map<String, String> configContainer) {
-        try (
-                Reader r = new InputStreamReader(is, Bootstrap.charset);
-                BufferedReader br = new BufferedReader(r)
-        ) {
-            String str;
-            while (Objects.nonNull((str = br.readLine()))) {
-                if (str.isEmpty()) {
-                    continue;
-                }
-                if (str.toCharArray()[0] == 35) {
-                    continue;
-                }
-                if (!str.contains("=")) {
-                    logger.error("file:" + CONFIG_FILE_NAME + " value " + str + " is error");
-                    continue;
-                }
-                String[] split = str.split("=");
-                String key = split[0];
-                if (split.length == 1) {
-                    logger.error("{} is not config", key);
-                    continue;
-                }
-                if (split.length != 2) {
-                    logger.error("file:" + CONFIG_FILE_NAME + " value " + str + " is error");
-                    continue;
-                }
-                configContainer.putIfAbsent(key, split[1]);
+    private void paddingConfigurationMember(InputStream is, Map<String, String> configContainer) {
+        try {
+            Properties properties = new Properties();
+            properties.load(is);
+            Enumeration<?> iter = properties.propertyNames();
+            while (iter.hasMoreElements()) {
+                String key = iter.nextElement().toString();
+                configContainer.putIfAbsent(key, properties.getProperty(key));
             }
         } catch (IOException e) {
             throw IOCExceptionUtil.generateConfigurationException("read config file :" + CONFIG_FILE_NAME + " fail", e);
@@ -153,12 +133,11 @@ public abstract class AbstractConfiguration implements IActuator {
                 field -> {
                     String configFieldName = getConfigFieldName(field);
                     String result;
-                    if ((result = configContainer.get(name + "." + configFieldName)) == null || result.isEmpty()) {
-                        result = defaultConfigContainer.get(name + "." + configFieldName);
-                    }
-                    if (result == null) {
+                    if (
+                            (result = configContainer.get(name + "." + configFieldName)) == null || result.isEmpty() &&
+                                    (result = defaultConfigContainer.get(name + "." + configFieldName)) == null || result.isEmpty()
+                    ) {
                         logger.warn("the field {} of {} is not config", configFieldName, clazz);
-                        return;
                     }
                     field.setAccessible(true);
                     try {
