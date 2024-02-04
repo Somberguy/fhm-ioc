@@ -137,7 +137,7 @@ public abstract class AbstractConfiguration implements IActuator {
                             (result = configContainer.get(name + "." + configFieldName)) == null || result.isEmpty() &&
                                     (result = defaultConfigContainer.get(name + "." + configFieldName)) == null || result.isEmpty()
                     ) {
-                        logger.warn("the field {} of {} is not config", configFieldName, clazz);
+                        logger.warn("the field [ {} ] of {} is not config", configFieldName, clazz);
                     }
                     field.setAccessible(true);
                     try {
