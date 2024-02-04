@@ -134,18 +134,19 @@ public abstract class AbstractConfiguration implements IActuator {
                     String configFieldName = getConfigFieldName(field);
                     String result;
                     if (
-                            (result = configContainer.get(name + "." + configFieldName)) == null || result.isEmpty() &&
-                                    (result = defaultConfigContainer.get(name + "." + configFieldName)) == null || result.isEmpty()
+                            ((result = configContainer.get(name + "." + configFieldName)) == null || result.isEmpty()) &&
+                            ((result = defaultConfigContainer.get(name + "." + configFieldName)) == null || result.isEmpty())
                     ) {
-                        logger.warn("the field [ {} ] of {} is not config", configFieldName, clazz);
-                    }
-                    field.setAccessible(true);
-                    try {
-                        field.set(config, DataTypeMark.obtainData(result));
-                    } catch (IllegalAccessException e) {
-                        logger.error("class {} value {} cast fail", clazz, result);
-                        throw IOCExceptionUtil
-                                .generateConfigurationException(e.getMessage(), e);
+                        logger.warn("the field [ {}.{} ] of {} is not configured", name, configFieldName, clazz);
+                    } else {
+                        field.setAccessible(true);
+                        try {
+                            field.set(config, DataTypeMark.obtainData(result));
+                        } catch (IllegalAccessException e) {
+                            logger.error("class {} value {} cast fail", clazz, result);
+                            throw IOCExceptionUtil
+                                    .generateConfigurationException(e.getMessage(), e);
+                        }
                     }
                 });
     }
