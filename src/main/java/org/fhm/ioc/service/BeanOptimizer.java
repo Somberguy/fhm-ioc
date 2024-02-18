@@ -170,7 +170,9 @@ public class BeanOptimizer {
                 }
             }
         } else {
-            throw IOCExceptionUtil.generateNormalException(name + " starter is not managed");
+            String tip = name + " starter is not managed";
+            logger.error(IOCExceptionUtil.generateNormalException(tip), tip);
+            System.exit(0);
         }
     }
 

@@ -61,7 +61,9 @@ public class ResourceScanner {
     public void filterCPPath() {
         for (String url : System.getProperty("java.class.path").split(File.pathSeparator)) {
             if (
-                    url.contains(Common.PROJECT_FILE_FLAG.getName()) || url.endsWith(Common.JAR_FILE_SUFFIX.getName())
+                    url.contains(Common.FILTER_CLASS_FILE_SEPARATOR.getName())
+                            || url.contains(Common.FILTER_TEST_CLASS_FILE_SEPARATOR.getName())
+                            || url.endsWith(Common.JAR_FILE_SUFFIX.getName())
             ) {
                 urls.add(url);
             }
@@ -84,6 +86,8 @@ public class ResourceScanner {
     }
 
     public void scanRequiredFileAndSetupObj(Map<String, Object> objContainer) {
+        if (scanPackage.isEmpty())
+            scanPackage.add(Common.PROJECT_PACKAGE_NAME.getName());
         logger.info("start to obtain the class files of CP");
         scanRequiredClassResource(objContainer);
         logger.info("start to obtain the class files in nested packages");
@@ -138,8 +142,6 @@ public class ResourceScanner {
     }
 
     private void scanJarResource(Map<String, Object> objContainer) {
-        if (scanPackage.isEmpty())
-            scanPackage.add(Common.PROJECT_PACKAGE_NAME.getName());
         scanPackage.forEach(packageName -> {
             Enumeration<URL> systemResources;
             try {
@@ -255,13 +257,19 @@ public class ResourceScanner {
 
     private Boolean isRequiredClazzFile(File clazzFile) {
         String path;
-        String projectFileFlagName = Common.PROJECT_FILE_FLAG.getName();
         return (path = clazzFile.getAbsolutePath()).endsWith(Common.CLASS_FILE_SUFFIX.getName())
                 &&
-                scanPackage.stream().anyMatch(path.substring(
-                        path.indexOf(projectFileFlagName) + projectFileFlagName.length() + 1
-                )::contains);
+                scanPackage.stream().anyMatch(interceptPackageName(path)::contains);
     }
+
+    private String interceptPackageName(String path) {
+        String filterSeparator;
+        if (!path.contains((filterSeparator = Common.FILTER_CLASS_FILE_SEPARATOR.getName()))) {
+            filterSeparator = Common.FILTER_TEST_CLASS_FILE_SEPARATOR.getName();
+        }
+        return path.substring(path.indexOf(filterSeparator) + filterSeparator.length() + 1);
+    }
+
 
     public void collectManagementObjects(
             byte[] bytes,

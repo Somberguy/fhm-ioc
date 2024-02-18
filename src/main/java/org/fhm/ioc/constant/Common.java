@@ -13,7 +13,8 @@ public enum Common {
     JAR_FILE_SUFFIX(".jar"),
     PROJECT_PACKAGE_NAME("org/fhm"),
     CONFIG_IDENTIFIED("->"),
-    PROJECT_FILE_FLAG("target" + File.separator + "classes"),
+    FILTER_CLASS_FILE_SEPARATOR("target" + File.separator + "classes"),
+    FILTER_TEST_CLASS_FILE_SEPARATOR("target" + File.separator + "test-classes"),
     DEFAULT_KEYWORD("default-"),
     UNKNOWN_PARADIGM_SIGNS("<[^>]*>"),
     JAR_PATH_SYSTEM("fhm.ioc.jar.path");
