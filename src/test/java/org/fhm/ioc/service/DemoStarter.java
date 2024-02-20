@@ -1,12 +1,12 @@
-package org.fhm.ioc;
+package org.fhm.ioc.service;
 
-import org.fhm.ioc.annotation.BeanEnable;
-import org.fhm.ioc.annotation.BeanInitial;
-import org.fhm.ioc.annotation.Component;
-import org.fhm.ioc.annotation.Setup;
+import org.fhm.ioc.annotation.DemoComponent;
+import org.fhm.ioc.annotation.*;
+import org.fhm.ioc.bean.IDemoTest;
 import org.fhm.ioc.standard.IStarter;
 
 import java.lang.annotation.Annotation;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -20,11 +20,17 @@ import java.util.List;
 public class DemoStarter implements IStarter {
 
     @Setup("Demo") // Load from the IOC
-    private Demo demo;
+    private IDemoTest demo;
+
+    @Setup("DemoAttach")
+    private IDemoTest demoAttach;
 
     @Override
     public List<Class<? extends Annotation>> newManageMembers() {
-        return Collections.singletonList(DemoComponent.class); // Returns a collection of annotations for custom injection containers
+        ArrayList<Class<? extends Annotation>> classes = new ArrayList<>();
+        classes.add(DemoComponent.class);
+        classes.add(DemoTestComponent.class);
+        return classes; // Returns a collection of annotations for custom injection containers
     }
 
     @Override
@@ -36,7 +42,8 @@ public class DemoStarter implements IStarter {
 
     @Override
     public void start(String[] args) throws Exception {
-        demo.test(); // Runs test method of the demo
+        demo.test(); // Runs test method of the Demo
+        demoAttach.test(); // Runs test method of the DemoAttach
     }
 
     @Override

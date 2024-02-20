@@ -57,5 +57,10 @@ public class IOCExceptionUtil {
         return new AutoSetupException(e.getMessage(), e);
     }
 
+    @Contract("_ -> new")
+    public static @NotNull AutoSetupException generateAutoSetupException(String message) {
+        return new AutoSetupException(message);
+    }
+
 
 }

@@ -18,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
 
+
 /**
  * @Classname AbstractFactory
  * @Description TODO
@@ -61,12 +62,10 @@ public class BeanOptimizer {
                                 "injection objects, please specify the target");
             }
             String configIdentified;
-            boolean isConfig = false;
+            boolean isPadding = false;
             if (setupName.contains((configIdentified = Common.CONFIG_IDENTIFIED.getName()))) {
-                isConfig = true;
-                setupName
-                        = setupName
-                        .replace(configIdentified, "");
+                isPadding = true;
+                setupName = setupName.replace(configIdentified, "");
                 Object temp;
                 Object o
                         = (temp = AbstractConfiguration.configContainer.get(setupName))
@@ -83,8 +82,30 @@ public class BeanOptimizer {
             }
             List<String> targetObj = new ArrayList<>();
             for (Class<?> c : collect) {
-                if (c.getAnnotation(Component.class).value().equals(setupName)) {
-                    targetObj.add(c.getName());
+                Component annotation = c.getAnnotation(Component.class);
+                if (Objects.nonNull(annotation)){
+                    if (annotation.value().equals(setupName))
+                        targetObj.add(c.getName());
+                }else {
+                    List<Annotation> annotations = Arrays
+                            .stream(c.getAnnotations())
+                            .filter(
+                                    anno -> anno.annotationType()
+                                    .isAnnotationPresent(Component.class))
+                            .collect(Collectors.toList());
+                    if (annotations.size() > 1)
+                        throw IOCExceptionUtil.generateAutoSetupException("duplicate custom injection annotations");
+                    Annotation requireAnnotation = annotations.get(0);
+                    try {
+                        Method value = requireAnnotation.getClass().getMethod("value");
+                        Object invoke = value.invoke(requireAnnotation);
+                        if (!(invoke instanceof String))
+                            throw IOCExceptionUtil.generateAutoSetupException("the custom injection note value type is set incorrectly");
+                        if (setupName.equals(invoke))
+                            targetObj.add(c.getName());
+                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                        throw new RuntimeException(e);
+                    }
                 }
             }
             if (targetObj.size() != 1) {
@@ -95,7 +116,7 @@ public class BeanOptimizer {
             } else {
                 String targetClazzName = targetObj.get(0);
                 ClazzUtil.setClazzValue(bean, beans.get(targetClazzName), field);
-                if (isConfig) {
+                if (isPadding) {
                     List<String> list
                             = collect.stream()
                             .map(Class::getName)

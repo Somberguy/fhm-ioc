@@ -13,4 +13,9 @@ public class AutoSetupException extends NormalException {
     public AutoSetupException(String msg, Exception e) {
         super(msg, e);
     }
+
+    public AutoSetupException(String msg) {
+        super(msg);
+    }
+
 }
