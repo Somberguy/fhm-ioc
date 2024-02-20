@@ -9,7 +9,7 @@ import org.fhm.ioc.manager.Bootstrap;
  * @Date 2024/2/16 21:56
  * @Created by 月光叶
  */
-@ScanPackageConfig("your/package/name")
+@ScanPackageConfig("org/fhm/ioc") // scan package name
 public class DemoApplication {
     public static void main(String[] args) {
         Bootstrap.open(args, DemoStarter.class);
