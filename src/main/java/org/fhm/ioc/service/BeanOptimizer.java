@@ -58,7 +58,7 @@ public class BeanOptimizer {
                     && !requireBeanName.equals(setupName)
             )
                 throw IOCExceptionUtil
-                        .generateAutoSetupException("The load name " + setupName + " of the bean is inconsistent with " +
+                        .generateAutoSetupException("the load name " + setupName + " of the bean is inconsistent with " +
                                 "the injection name " + requireBeanName);
             ClazzUtil.setClazzValue(bean, beans.get(requireBeanClazz.getName()), field);
             return;
@@ -66,7 +66,7 @@ public class BeanOptimizer {
         if (collect.size() > 1) {
             if (setupName.isEmpty())
                 throw IOCExceptionUtil
-                        .generateNormalException("There are multiple implementations " +
+                        .generateNormalException("there are multiple implementations " +
                                 "of interfaces or abstract " +
                                 "injection objects, please specify the target");
             String configIdentified;
@@ -82,7 +82,7 @@ public class BeanOptimizer {
                         : temp;
                 if (o == null || (setupName = o.toString()).isEmpty()) {
                     throw IOCExceptionUtil
-                            .generateNormalException("There are multiple implementations " +
+                            .generateNormalException("there are multiple implementations " +
                                     "of interfaces or abstract " +
                                     "injection objects, please specify " +
                                     "correct configuration attributes");
@@ -99,7 +99,7 @@ public class BeanOptimizer {
                         field.getName() + " of the object " + bean.getClass().getName());
             if (targetObj.size() > 1)
                 throw IOCExceptionUtil
-                        .generateNormalException("There are multiple implementations of " +
+                        .generateNormalException("there are multiple implementations of " +
                                 "interfaces or abstract injection objects, " +
                                 "indicating multiple targets. Please check and try again");
             String targetClazzName = targetObj.get(0);
@@ -152,20 +152,24 @@ public class BeanOptimizer {
     }
 
     private void invokeOptimizeMethod(Class<?> clazz, Object bean, Class<? extends Annotation> annotation) {
-        for (Method method : clazz.getDeclaredMethods()) {
-            if (method.isAnnotationPresent(annotation)) {
-                if (method.getParameterCount() != 0) {
-                    logger.warn("the bean optimizer method is forbidden to have parameters");
-                    continue;
-                }
-                method.setAccessible(true);
-                try {
-                    method.invoke(bean);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    logger.error("An error is reported for the {} method of class {}", method.getName(), clazz.getName());
-                    throw new RuntimeException(e);
-                }
-            }
+        List<Method> requireMethods = Arrays.stream(clazz.getDeclaredMethods())
+                .filter(method -> method.isAnnotationPresent(annotation))
+                .collect(Collectors.toList());
+        if (requireMethods.isEmpty())
+            return;
+        if (requireMethods.size() > 1)
+            throw IOCExceptionUtil.generateAutoSetupException("beans prohibit repetition of lifecycle methods");
+        Method method = requireMethods.get(0);
+        if (method.getParameterCount() != 0)
+            throw IOCExceptionUtil.generateAutoSetupException("lifecycle methods are forbidden to have parameters");
+        if (!void.class.isAssignableFrom(method.getReturnType()))
+            throw IOCExceptionUtil.generateAutoSetupException("lifecycle methods are forbidden to have returns");
+        method.setAccessible(true);
+        try {
+            method.invoke(bean);
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            logger.error("An error is reported for the {} method of class {}", method.getName(), clazz.getName());
+            throw new RuntimeException(e);
         }
         Class<?> superclass = clazz.getSuperclass();
         if (Objects.nonNull(superclass)) {
