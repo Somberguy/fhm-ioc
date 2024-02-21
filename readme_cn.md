@@ -21,7 +21,7 @@ FHM-`IOC`是轻量级的对象容器，他不但兼顾了`Spring-Framework`中`I
 
 ## 功能特性
 
-_请阅读[quick-start_cn.md](quick-start_cn.md)_
+_请阅览_[quick-start_cn.md](quick-start_cn.md)
 
 ## 开发团队
 
