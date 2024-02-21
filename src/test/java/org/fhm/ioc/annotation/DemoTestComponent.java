@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * @Date 2024/2/20-5:13 PM
  * @Author tanbo
  */
-@Component
+@Component // Specify a custom annotation
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DemoTestComponent {

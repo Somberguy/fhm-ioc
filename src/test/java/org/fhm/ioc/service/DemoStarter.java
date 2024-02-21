@@ -1,13 +1,14 @@
 package org.fhm.ioc.service;
 
+import org.fhm.ioc.annotation.Component;
 import org.fhm.ioc.annotation.DemoComponent;
-import org.fhm.ioc.annotation.*;
+import org.fhm.ioc.annotation.DemoTestComponent;
+import org.fhm.ioc.annotation.Setup;
 import org.fhm.ioc.bean.IDemoTest;
 import org.fhm.ioc.standard.IStarter;
 
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class DemoStarter implements IStarter {
 
     @Override
     public void manageNotify(List<?> beans, Class<? extends Annotation> clazz) {
-        if (DemoComponent.class.isAssignableFrom(clazz)){ // Determines whether the bean is marked by the DemoComponent annotation
+        if (DemoComponent.class.isAssignableFrom(clazz)) { // Determines whether the bean is marked by the DemoComponent annotation
             // Beans marked with DemoComponent annotations are treated independently
         }
     }

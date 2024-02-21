@@ -1,7 +1,6 @@
 package org.fhm.ioc.manager;
 
 import org.fhm.ioc.ability.IActuator;
-import org.fhm.ioc.annotation.Component;
 import org.fhm.ioc.annotation.ScanPackageConfig;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;

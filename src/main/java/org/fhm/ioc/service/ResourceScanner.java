@@ -58,6 +58,22 @@ public class ResourceScanner {
         return Instance.instance;
     }
 
+    @NotNull
+    private static List<AnnotationNode> getAnnotationNodes(TransformerNode cn) {
+        List<AnnotationNode> nodes = new ArrayList<>();
+        List<AnnotationNode> visibleAnnotations;
+        List<AnnotationNode> invisibleAnnotations;
+        if (Objects.nonNull((visibleAnnotations = cn.visibleAnnotations))) {
+            nodes.addAll(visibleAnnotations);
+        }
+        if (
+                Objects.nonNull((invisibleAnnotations = cn.invisibleAnnotations))
+        ) {
+            nodes.addAll(invisibleAnnotations);
+        }
+        return nodes;
+    }
+
     public void filterCPPath() {
         for (String url : System.getProperty("java.class.path").split(File.pathSeparator)) {
             if (
@@ -270,7 +286,6 @@ public class ResourceScanner {
         return path.substring(path.indexOf(filterSeparator) + filterSeparator.length() + 1);
     }
 
-
     public void collectManagementObjects(
             byte[] bytes,
             Set<Class<? extends Annotation>> annotations,
@@ -290,16 +305,16 @@ public class ResourceScanner {
                             }
                             if (Objects.nonNull(annotations) && !annotations.isEmpty()) {
                                 if (
-                                    annotations.stream()
-                                        .map(Class::getName)
-                                        .allMatch(
-                                            name ->
-                                                getAnnotationNodes(cn)
-                                                    .stream()
-                                                    .map(an -> an.desc.replace("/", "."))
-                                                    .map(an -> an.substring(1, an.length() - 1))
-                                                    .noneMatch(name::equals)
-                                        )
+                                        annotations.stream()
+                                                .map(Class::getName)
+                                                .allMatch(
+                                                        name ->
+                                                                getAnnotationNodes(cn)
+                                                                        .stream()
+                                                                        .map(an -> an.desc.replace("/", "."))
+                                                                        .map(an -> an.substring(1, an.length() - 1))
+                                                                        .noneMatch(name::equals)
+                                                )
                                 ) {
                                     return;
                                 }
@@ -340,22 +355,6 @@ public class ResourceScanner {
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException | ClassNotFoundException ignore) {
         }
-    }
-
-    @NotNull
-    private static List<AnnotationNode> getAnnotationNodes(TransformerNode cn) {
-        List<AnnotationNode> nodes = new ArrayList<>();
-        List<AnnotationNode> visibleAnnotations;
-        List<AnnotationNode> invisibleAnnotations;
-        if (Objects.nonNull((visibleAnnotations = cn.visibleAnnotations))){
-            nodes.addAll(visibleAnnotations);
-        }
-        if (
-            Objects.nonNull((invisibleAnnotations = cn.invisibleAnnotations))
-        ) {
-            nodes.addAll(invisibleAnnotations);
-        }
-        return nodes;
     }
 
     public void addScanAnnotationClazz(Collection<Class<? extends Annotation>> anno) {

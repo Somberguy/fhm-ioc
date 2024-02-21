@@ -1,7 +1,5 @@
 package org.fhm.ioc.bean;
 
-import org.fhm.ioc.annotation.Component;
-import org.fhm.ioc.annotation.DemoComponent;
 import org.fhm.ioc.annotation.DemoTestComponent;
 import org.fhm.ioc.service.LoggerHandler;
 import org.fhm.ioc.standard.ILoggerHandler;
@@ -12,9 +10,8 @@ import org.fhm.ioc.standard.ILoggerHandler;
  * @Date 2024/2/20-4:22 PM
  * @Author tanbo
  */
-@DemoComponent("DemoAttach")
 @DemoTestComponent("DemoAttach")
-public class DemoAttach implements IDemoTest{
+public class DemoAttach implements IDemoTest {
 
     private final ILoggerHandler logger = LoggerHandler.getLogger(DemoAttach.class);
 

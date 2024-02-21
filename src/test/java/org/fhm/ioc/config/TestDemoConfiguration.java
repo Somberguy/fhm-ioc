@@ -10,7 +10,7 @@ import org.fhm.ioc.annotation.Value;
  * @Author tanbo
  */
 @Configuration("test.demo")
-public class TestDemoConfiguration extends AbstractDemoConfiguration{
+public class TestDemoConfiguration extends AbstractDemoConfiguration {
 
 
     @Value("desc")

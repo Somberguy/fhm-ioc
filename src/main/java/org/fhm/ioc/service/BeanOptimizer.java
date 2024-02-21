@@ -49,18 +49,26 @@ public class BeanOptimizer {
                 .map(Object::getClass)
                 .filter(fieldTypeClass::isAssignableFrom)
                 .collect(Collectors.toList());
+        String setupName = field.getAnnotation(Setup.class).value();
         if (collect.size() == 1) {
-            ClazzUtil.setClazzValue(bean, beans.get(collect.get(0).getName()), field);
+            String requireBeanName;
+            Class<?> requireBeanClazz = collect.get(0);
+            if (!setupName.isEmpty()
+                    && !(requireBeanName = getBeanInjectName(requireBeanClazz)).isEmpty()
+                    && !requireBeanName.equals(setupName)
+            )
+                throw IOCExceptionUtil
+                        .generateAutoSetupException("The load name " + setupName + " of the bean is inconsistent with " +
+                                "the injection name " + requireBeanName);
+            ClazzUtil.setClazzValue(bean, beans.get(requireBeanClazz.getName()), field);
             return;
         }
         if (collect.size() > 1) {
-            String setupName = field.getAnnotation(Setup.class).value();
-            if (setupName.isEmpty()) {
+            if (setupName.isEmpty())
                 throw IOCExceptionUtil
                         .generateNormalException("There are multiple implementations " +
                                 "of interfaces or abstract " +
                                 "injection objects, please specify the target");
-            }
             String configIdentified;
             boolean isPadding = false;
             if (setupName.contains((configIdentified = Common.CONFIG_IDENTIFIED.getName()))) {
@@ -82,48 +90,55 @@ public class BeanOptimizer {
             }
             List<String> targetObj = new ArrayList<>();
             for (Class<?> c : collect) {
-                Component annotation = c.getAnnotation(Component.class);
-                if (Objects.nonNull(annotation)){
-                    if (annotation.value().equals(setupName))
-                        targetObj.add(c.getName());
-                }else {
-                    List<Annotation> annotations = Arrays
-                            .stream(c.getAnnotations())
-                            .filter(
-                                    anno -> anno.annotationType()
-                                    .isAnnotationPresent(Component.class))
-                            .collect(Collectors.toList());
-                    if (annotations.size() > 1)
-                        throw IOCExceptionUtil.generateAutoSetupException("duplicate custom injection annotations");
-                    Annotation requireAnnotation = annotations.get(0);
-                    try {
-                        Method value = requireAnnotation.getClass().getMethod("value");
-                        Object invoke = value.invoke(requireAnnotation);
-                        if (!(invoke instanceof String))
-                            throw IOCExceptionUtil.generateAutoSetupException("the custom injection note value type is set incorrectly");
-                        if (setupName.equals(invoke))
-                            targetObj.add(c.getName());
-                    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                        throw new RuntimeException(e);
-                    }
-                }
+                String beanName = getBeanInjectName(c);
+                if (setupName.equals(beanName))
+                    targetObj.add(c.getName());
             }
-            if (targetObj.size() != 1) {
+            if (targetObj.isEmpty())
+                throw IOCExceptionUtil.generateAutoSetupException("fail to setup who the field " +
+                        field.getName() + " of the object " + bean.getClass().getName());
+            if (targetObj.size() > 1)
                 throw IOCExceptionUtil
                         .generateNormalException("There are multiple implementations of " +
                                 "interfaces or abstract injection objects, " +
                                 "indicating multiple targets. Please check and try again");
-            } else {
-                String targetClazzName = targetObj.get(0);
-                ClazzUtil.setClazzValue(bean, beans.get(targetClazzName), field);
-                if (isPadding) {
-                    List<String> list
-                            = collect.stream()
-                            .map(Class::getName)
-                            .collect(Collectors.toList());
-                    list.remove(targetClazzName);
-                    list.forEach(beans::remove);
-                }
+            String targetClazzName = targetObj.get(0);
+            ClazzUtil.setClazzValue(bean, beans.get(targetClazzName), field);
+            if (isPadding) {
+                List<String> list
+                        = collect.stream()
+                        .map(Class::getName)
+                        .collect(Collectors.toList());
+                list.remove(targetClazzName);
+                list.forEach(beans::remove);
+            }
+        }
+    }
+
+    private String getBeanInjectName(Class<?> c) {
+        Component annotation = c.getAnnotation(Component.class);
+        if (Objects.nonNull(annotation)) {
+            return annotation.value();
+        } else {
+            List<Annotation> annotations = Arrays
+                    .stream(c.getAnnotations())
+                    .filter(
+                            anno -> anno.annotationType()
+                                    .isAnnotationPresent(Component.class))
+                    .collect(Collectors.toList());
+            if (annotations.size() > 1)
+                throw IOCExceptionUtil.generateAutoSetupException(c.getName() + " duplicate custom injection annotations");
+            Annotation requireAnnotation = annotations.get(0);
+            try {
+                Method value = requireAnnotation.getClass().getMethod("value");
+                Object invoke = value.invoke(requireAnnotation);
+                if (Objects.isNull(invoke))
+                    return "";
+                if (!(invoke instanceof String))
+                    throw IOCExceptionUtil.generateAutoSetupException("the custom injection note value type is set incorrectly");
+                return invoke.toString();
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
             }
         }
     }
