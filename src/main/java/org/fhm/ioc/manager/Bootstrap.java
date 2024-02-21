@@ -9,11 +9,11 @@ import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.standard.IStarter;
 import org.fhm.ioc.util.IOCExceptionUtil;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +29,8 @@ public class Bootstrap {
 
     public static final Charset charset = StandardCharsets.UTF_8;
 
+    private static final String BANNER_FILE_NAME = "banner.txt";
+
     private static final ILoggerHandler logger = LoggerHandler.getLogger(Bootstrap.class);
 
     private static List<Class<? extends Annotation>> newManageAnnotations;
@@ -36,6 +38,7 @@ public class Bootstrap {
     @SuppressWarnings("unused")
     public static void open(String[] args, Class<? extends IStarter> starterClazz) {
         IOCCostTimer.getInstance().start();
+        printBanner();
         logger.info("read VM parameter");
         VMParametersManage.getInstance().readVMOptionsFileParameters(starterClazz);
         logger.info("start initial class and resource container");
@@ -46,6 +49,30 @@ public class Bootstrap {
         initialConfiguration();
         logger.info("start optimize bean");
         executeBeanOptimizer(args, starterClazz);
+    }
+
+    private static void printBanner() {
+        InputStream stream = ClassLoader.getSystemResourceAsStream(BANNER_FILE_NAME);
+        if (Objects.isNull(stream)){
+            logger.warn("the banner file is missing");
+            return;
+        }
+        try (
+             InputStreamReader inputStreamReader = new InputStreamReader(stream);
+             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)
+        ) {
+            String text;
+            while (Objects.nonNull((text = bufferedReader.readLine()))){
+                System.out.println(text);
+            }
+        } catch (IOException e) {
+            logger.error("fail to print banner", e);
+        } finally {
+            try {
+                stream.close();
+            } catch (IOException ignore) {
+            }
+        }
     }
 
 
