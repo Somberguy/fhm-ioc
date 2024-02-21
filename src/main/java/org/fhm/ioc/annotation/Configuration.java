@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @Classname Configuration
  * @Description TODO Configuration class sign
  * @Date 2023/10/14 23:03
- * @Created by 月光叶
+ * @Author by 月光叶
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

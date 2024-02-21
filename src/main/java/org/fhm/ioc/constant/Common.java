@@ -6,7 +6,7 @@ import java.io.File;
  * @Classname Common
  * @Description TODO Public enumeration class
  * @Date 2023/10/14 10:24
- * @Created by 月光叶
+ * @Author by 月光叶
  */
 public enum Common {
     CLASS_FILE_SUFFIX(".class"),

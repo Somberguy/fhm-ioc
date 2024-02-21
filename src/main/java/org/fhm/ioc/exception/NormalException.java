@@ -7,7 +7,7 @@ import org.fhm.ioc.standard.ILoggerHandler;
  * @Classname FHMException
  * @Description TODO FOR HUMAN Exception
  * @Date 2023/10/14 10:24
- * @Created by 月光叶
+ * @Author by 月光叶
  */
 public class NormalException extends RuntimeException {
 

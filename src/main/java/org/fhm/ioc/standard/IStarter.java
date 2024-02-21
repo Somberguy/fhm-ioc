@@ -7,7 +7,7 @@ import java.util.List;
  * @Classname IStarter
  * @Description TODO
  * @Date 2023/10/25 18:11
- * @Created by 月光叶
+ * @Author by 月光叶
  */
 public interface IStarter {
 

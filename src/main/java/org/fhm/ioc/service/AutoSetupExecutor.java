@@ -21,7 +21,7 @@ import java.util.stream.Stream;
  * @Classname AutoSetupExecutor
  * @Description TODO
  * @Date 2023/10/26 22:33
- * @Created by 月光叶
+ * @Author by 月光叶
  */
 public class AutoSetupExecutor {
 

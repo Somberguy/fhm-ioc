@@ -4,6 +4,12 @@ import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
+/**
+ * @Classname VMParameters
+ * @Description TODO
+ * @Date 2024/1/8-11:12 AM
+ * @Author tanbo
+ */
 public enum VMParameters {
 
     VM_OPTIONS_FILE_PATH("fhm.ioc.vm.options.file.path"),

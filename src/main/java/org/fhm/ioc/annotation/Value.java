@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
  * @Classname Value
  * @Description TODO Configuration annotation
  * @Date 2023/10/14 11:11
- * @Created by 月光叶
+ * @Author by 月光叶
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

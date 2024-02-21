@@ -23,7 +23,7 @@ import java.util.stream.Stream;
  * @Classname AbstractConfiguration
  * @Description TODO Unified planning abstract configuration class
  * @Date 2023/10/14 10:24
- * @Created by 月光叶
+ * @Author by 月光叶
  */
 public abstract class AbstractConfiguration implements IActuator {
 

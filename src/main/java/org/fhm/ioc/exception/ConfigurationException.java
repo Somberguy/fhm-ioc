@@ -4,7 +4,7 @@ package org.fhm.ioc.exception;
  * @Classname ConfigurationException
  * @Description TODO
  * @Date 2023/10/28 11:40
- * @Created by 月光叶
+ * @Author by 月光叶
  */
 public class ConfigurationException extends NormalException {
 

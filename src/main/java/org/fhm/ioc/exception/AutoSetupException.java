@@ -4,7 +4,7 @@ package org.fhm.ioc.exception;
  * @Classname AutoSetupException
  * @Description TODO
  * @Date 2023/10/28 12:23
- * @Created by 月光叶
+ * @Author by 月光叶
  */
 public class AutoSetupException extends NormalException {
 
