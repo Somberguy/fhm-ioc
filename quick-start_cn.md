@@ -104,7 +104,7 @@
 
 |                                  方法                                   |                 参数                 |   返回值   |    异常    |                说明                |
 |:---------------------------------------------------------------------:|:----------------------------------:|:-------:|:--------:|:--------------------------------:|
-|               `Bootstrap.open(args, DemoStarter.class)`               |  1. 程序入口参数；2. 自定义接口`IStarter`实现类   |    无    |    无     |             IOC启动方法              |
+|               `Bootstrap.open(args, DemoStarter.class)`               |  1. 程序入口参数；2. 自定义接口`IStarter`实现类   |    无    |    无     |            `IOC`启动方法             |
 |        `List<Class<? extends Annotation>> newManageMembers()`         |                 无                  | 自定义注解集合 |  自定义处理   |          添加自定义注入`IOC`注解          |
 | `void manageNotify(List<?> beans, Class<? extends Annotation> clazz)` | 1. 被参数2自定义注入注解管理bean集合； 2. 自定义注入注解 |    无    | 自定义处理或抛出 |       对参数2标记的对象集合做用户自定义处理        |
 |             `void start(String[] args) throws Exception`              |             1. 程序入口参数              |    无    | 自定义处理或抛出 |             开始执行用户程序             |
@@ -153,4 +153,5 @@ not scanned
 16:15:52.646 [main] INFO org.fhm.ioc.manager.Bootstrap - enable project complete  
 16:15:52.652 [main] INFO org.fhm.ioc.bean.Demo - `demo test successful`  // 调用bean测试方法  
 16:15:52.652 [main] INFO org.fhm.ioc.bean.Demo - `desc: hello,reality, lucky number: 66`  // 配置文件信息  
-    
+
+## 配置管理
