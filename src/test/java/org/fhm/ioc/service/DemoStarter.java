@@ -23,7 +23,7 @@ public class DemoStarter implements IStarter {
     @Setup("Demo") // Load from the IOC
     private IDemoTest demo;
 
-    @Setup("DemoAttach")
+    @Setup("->test.demo.bean.name")
     private IDemoTest demoAttach;
 
     @Override

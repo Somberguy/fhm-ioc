@@ -44,12 +44,50 @@ public class BeanOptimizer {
     }
 
     private void findFieldAndSetValue(Field field, Class<?> fieldTypeClass, Object bean) {
-        List<? extends Class<?>> collect = beans.values()
+        List<? extends Class<?>> requireClasses = filterRequireBeanClazz(fieldTypeClass);
+        if (requireClasses.isEmpty()){
+            logger.warn("the field {} of the bean {} does not have a suitable object mounted to the IOC", field.getName(), bean);
+            return;
+        }
+        setupMember(field, bean, requireClasses, getSetupName(field, requireClasses.size()));
+    }
+
+    private List<? extends Class<?>> filterRequireBeanClazz(Class<?> fieldTypeClass) {
+        return beans.values()
                 .stream()
                 .map(Object::getClass)
                 .filter(fieldTypeClass::isAssignableFrom)
                 .collect(Collectors.toList());
+    }
+
+    private String getSetupName(Field field, int size) {
         String setupName = field.getAnnotation(Setup.class).value();
+        if ((Objects.isNull(setupName) || setupName.isEmpty()) && size > 1)
+            throw IOCExceptionUtil
+                    .generateNormalException("there are multiple implementations " +
+                            "of interfaces or abstract " +
+                            "injection objects, please specify the target");
+        String configIdentified;
+        if (setupName.contains((configIdentified = Common.CONFIG_IDENTIFIED.getName()))) {
+            setupName = setupName.replace(configIdentified, "");
+            Object temp;
+            Object o
+                    = (temp = AbstractConfiguration.configContainer.get(setupName))
+                    == null ?
+                    AbstractConfiguration.defaultConfigContainer.get(setupName)
+                    : temp;
+            if (o == null || (setupName = o.toString()).isEmpty()) {
+                throw IOCExceptionUtil
+                        .generateNormalException("there are multiple implementations " +
+                                "of interfaces or abstract " +
+                                "injection objects, please specify " +
+                                "correct configuration attributes");
+            }
+        }
+        return setupName;
+    }
+
+    private void setupMember(Field field, Object bean, List<? extends Class<?>> collect, String setupName) {
         if (collect.size() == 1) {
             String requireBeanName;
             Class<?> requireBeanClazz = collect.get(0);
@@ -61,33 +99,7 @@ public class BeanOptimizer {
                         .generateAutoSetupException("the load name " + setupName + " of the bean is inconsistent with " +
                                 "the injection name " + requireBeanName);
             ClazzUtil.setClazzValue(bean, beans.get(requireBeanClazz.getName()), field);
-            return;
-        }
-        if (collect.size() > 1) {
-            if (setupName.isEmpty())
-                throw IOCExceptionUtil
-                        .generateNormalException("there are multiple implementations " +
-                                "of interfaces or abstract " +
-                                "injection objects, please specify the target");
-            String configIdentified;
-            boolean isPadding = false;
-            if (setupName.contains((configIdentified = Common.CONFIG_IDENTIFIED.getName()))) {
-                isPadding = true;
-                setupName = setupName.replace(configIdentified, "");
-                Object temp;
-                Object o
-                        = (temp = AbstractConfiguration.configContainer.get(setupName))
-                        == null ?
-                        AbstractConfiguration.defaultConfigContainer.get(setupName)
-                        : temp;
-                if (o == null || (setupName = o.toString()).isEmpty()) {
-                    throw IOCExceptionUtil
-                            .generateNormalException("there are multiple implementations " +
-                                    "of interfaces or abstract " +
-                                    "injection objects, please specify " +
-                                    "correct configuration attributes");
-                }
-            }
+        } else {
             List<String> targetObj = new ArrayList<>();
             for (Class<?> c : collect) {
                 String beanName = getBeanInjectName(c);
@@ -104,16 +116,9 @@ public class BeanOptimizer {
                                 "indicating multiple targets. Please check and try again");
             String targetClazzName = targetObj.get(0);
             ClazzUtil.setClazzValue(bean, beans.get(targetClazzName), field);
-            if (isPadding) {
-                List<String> list
-                        = collect.stream()
-                        .map(Class::getName)
-                        .collect(Collectors.toList());
-                list.remove(targetClazzName);
-                list.forEach(beans::remove);
-            }
         }
     }
+
 
     private String getBeanInjectName(Class<?> c) {
         Component annotation = c.getAnnotation(Component.class);

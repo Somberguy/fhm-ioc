@@ -19,6 +19,9 @@ public class TestDemoConfiguration extends AbstractDemoConfiguration {
     @Value("lucky.number")
     private Integer luckyNumber;
 
+    @Value("bean.name")
+    private String beanName;
+
 
     public String getDesc() {
         return desc;
@@ -26,5 +29,9 @@ public class TestDemoConfiguration extends AbstractDemoConfiguration {
 
     public Integer getLuckyNumber() {
         return luckyNumber;
+    }
+
+    public String getBeanName() {
+        return beanName;
     }
 }
