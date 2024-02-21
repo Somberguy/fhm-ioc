@@ -8,7 +8,7 @@ import org.fhm.ioc.service.DemoStarter;
  * @Classname DemoApplication
  * @Description TODO VM parameter : -Dfhm.ioc.config.file.path=./src/test/java/resource/
  * @Date 2024/2/16 21:56
- * @Created by 月光叶
+ * @Author by 月光叶
  */
 @ScanPackageConfig("org/fhm/ioc") // scan package name
 public class DemoApplication {
