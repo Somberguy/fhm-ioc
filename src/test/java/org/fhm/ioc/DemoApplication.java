@@ -6,7 +6,7 @@ import org.fhm.ioc.service.DemoStarter;
 
 /**
  * @Classname DemoApplication
- * @Description TODO VM parameter : -Dfhm.ioc.config.file.path=./src/test/java/resource/
+ * @Description TODO
  * @Date 2024/2/16 21:56
  * @Author by 月光叶
  */
