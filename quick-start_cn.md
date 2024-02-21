@@ -122,7 +122,13 @@
 
 ### 运行结果日记：
 
-16:15:51.968 [main] INFO org.fhm.ioc.manager.Bootstrap - read VM parameter  
+        ███████ ██   ██ ███    ███       ██  ██████   ██████
+        ██      ██   ██ ████  ████       ██ ██    ██ ██
+        █████   ███████ ██ ████ ██ █████ ██ ██    ██ ██
+        ██      ██   ██ ██  ██  ██       ██ ██    ██ ██
+        ██      ██   ██ ██      ██       ██  ██████   ██████
+        ============================version 1.0.0 release===
+15:13:45.494 [main] INFO org.fhm.ioc.manager.Bootstrap - read VM parameter
 16:15:52.158 [main] INFO org.fhm.ioc.manager.Bootstrap - start initial class and resource container  
 16:15:52.173 [main] INFO org.fhm.ioc.manager.Bootstrap - start configure resource scanner  
 16:15:52.213 [main] INFO org.fhm.ioc.manager.Bootstrap - start filter out the required resource path  
