@@ -21,36 +21,35 @@
 **`IStarter`接口实现**
 
 ```java
-
-@Component // Inject into the IOC
-public class DemoStarter implements IStarter {
-
-    @Setup("Demo") // Load from the IOC
-    private Demo demo;
-
-    @Override
-    public List<Class<? extends Annotation>> newManageMembers() {
-        return Collections.singletonList(DemoComponent.class); // Returns a collection of annotations for custom injection containers
-    }
-
-    @Override
-    public void manageNotify(List<?> beans, Class<? extends Annotation> clazz) {
-        if (DemoComponent.class.isAssignableFrom(clazz)) { // Determines whether the bean is marked by the DemoComponent annotation
-            // Beans marked with DemoComponent annotations are treated independently
+    @Component // Inject into the IOC
+    public class DemoStarter implements IStarter {
+    
+        @Setup("Demo") // Load from the IOC
+        private Demo demo;
+    
+        @Override
+        public List<Class<? extends Annotation>> newManageMembers() {
+            return Collections.singletonList(DemoComponent.class); // Returns a collection of annotations for custom injection containers
         }
+    
+        @Override
+        public void manageNotify(List<?> beans, Class<? extends Annotation> clazz) {
+            if (DemoComponent.class.isAssignableFrom(clazz)) { // Determines whether the bean is marked by the DemoComponent annotation
+                // Beans marked with DemoComponent annotations are treated independently
+            }
+        }
+    
+        @Override
+        public void start(String[] args) throws Exception {
+            demo.test(); // Runs test method of the demo
+        }
+    
+        @Override
+        public void close() throws Exception {
+            // Runs before the IOC ends
+        }
+    
     }
-
-    @Override
-    public void start(String[] args) throws Exception {
-        demo.test(); // Runs test method of the demo
-    }
-
-    @Override
-    public void close() throws Exception {
-        // Runs before the IOC ends
-    }
-
-}
 ```  
 
 **自定义注入IOC注解标记**
