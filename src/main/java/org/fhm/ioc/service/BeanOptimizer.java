@@ -45,7 +45,7 @@ public class BeanOptimizer {
 
     private void findFieldAndSetValue(Field field, Class<?> fieldTypeClass, Object bean) {
         List<? extends Class<?>> requireClasses = filterRequireBeanClazz(fieldTypeClass);
-        if (requireClasses.isEmpty()){
+        if (requireClasses.isEmpty()) {
             logger.warn("the field {} of the bean {} does not have a suitable object mounted to the IOC", field.getName(), bean);
             return;
         }

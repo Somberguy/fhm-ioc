@@ -2,17 +2,16 @@ package org.fhm.ioc.service;
 
 import org.fhm.ioc.annotation.Component;
 import org.fhm.ioc.annotation.Configuration;
-import org.fhm.ioc.asm.OptimizeASMTransformer;
-import org.fhm.ioc.asm.TransformerNode;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;
 import org.fhm.ioc.constant.VMParameters;
 import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.util.IOCExceptionUtil;
 import org.fhm.ioc.util.IOUtil;
-import org.jetbrains.annotations.NotNull;
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,7 +23,6 @@ import java.net.URLConnection;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -40,7 +38,6 @@ public class ResourceScanner {
 
     private final ILoggerHandler logger = LoggerHandler.getLogger(ResourceScanner.class);
 
-    private Set<String> classLoaderRecord = new HashSet<>();
     private Set<String> urls = new HashSet<>();
 
     private Set<String> scanPackage = new HashSet<>();
@@ -58,8 +55,7 @@ public class ResourceScanner {
         return Instance.instance;
     }
 
-    @NotNull
-    private static List<AnnotationNode> getAnnotationNodes(TransformerNode cn) {
+    private static List<AnnotationNode> getAnnotationNodes(ClassNode cn) {
         List<AnnotationNode> nodes = new ArrayList<>();
         List<AnnotationNode> visibleAnnotations;
         List<AnnotationNode> invisibleAnnotations;
@@ -234,7 +230,7 @@ public class ResourceScanner {
         }
     }
 
-    private void dealInnerJarClassFile(Map<String, Object> objContainer, @NotNull JarEntry jarEntry, JarFile jarFile) {
+    private void dealInnerJarClassFile(Map<String, Object> objContainer, JarEntry jarEntry, JarFile jarFile) {
         if (jarEntry.getName().endsWith(Common.CLASS_FILE_SUFFIX.getName())) {
             try {
                 collectManagementObjects(
@@ -248,7 +244,7 @@ public class ResourceScanner {
         }
     }
 
-    private void dealClassFile(@NotNull File pathFile, Map<String, Object> objContainer) {
+    private void dealClassFile(File pathFile, Map<String, Object> objContainer) {
         try {
             collectManagementObjects(
                     IOUtil.file2Bytes(pathFile.getAbsolutePath()),
@@ -261,13 +257,13 @@ public class ResourceScanner {
         }
     }
 
-    private boolean isRequiredJar(@NotNull String fileName) {
+    private boolean isRequiredJar(String fileName) {
         return fileName.endsWith(Common.JAR_FILE_SUFFIX.getName())
                 &&
                 jarNames.contains(fileName);
     }
 
-    private boolean isRequiredResourceFile(@NotNull String fileName) {
+    private boolean isRequiredResourceFile(String fileName) {
         return fileName.endsWith(".properties") && !fileName.contains("pom.properties");
     }
 
@@ -290,71 +286,63 @@ public class ResourceScanner {
             byte[] bytes,
             Set<Class<? extends Annotation>> annotations,
             Map<String, Object> objContainer) {
-        AtomicReference<String> clazzName = new AtomicReference<>("");
-        OptimizeASMTransformer.getInstance().init(bytes).create(
-                new TransformerNode(
-                        ASM9,
-                        null,
-                        cn -> {
-                            String className = Type.getObjectType(cn.name).getClassName();
-                            if (objContainer.containsKey(className))
-                                return;
-                            int access = cn.access;
-                            if ((access & ACC_INTERFACE) != 0 && (access & ACC_ABSTRACT) != 0) {
-                                return;
-                            }
-                            if (Objects.nonNull(annotations) && !annotations.isEmpty()) {
-                                if (
-                                        annotations.stream()
-                                                .map(Class::getName)
-                                                .allMatch(
-                                                        name ->
-                                                                getAnnotationNodes(cn)
-                                                                        .stream()
-                                                                        .map(an -> an.desc.replace("/", "."))
-                                                                        .map(an -> an.substring(1, an.length() - 1))
-                                                                        .noneMatch(name::equals)
-                                                )
-                                ) {
-                                    return;
-                                }
-                            }
-                            if (cn.methods.stream().noneMatch(m -> m.name.equals("<init>")
-                                    && m.desc.equals("()V") && m.access == ACC_PUBLIC)) {
-                                logger.warn("class {} has no unmanaged parameterless constructor", cn.name);
-                                return;
-                            }
-                            clazzName.set(className);
-                        }
-                )
-        );
-        String clazz;
-        if ((clazz = clazzName.get()).isEmpty() || classLoaderRecord.contains(clazz)) {
+
+        String clazzName = obtainRequireClazzName(annotations, objContainer, bytes);
+        if (clazzName.isEmpty()) {
             return;
         }
         try {
-            Class<?> srcClass = Class.forName(clazz);
+            Class<?> srcClass = Class.forName(clazzName);
             Class<?> aClass = IOCClassLoader
                     .getInstance()
-                    .loadByteArr(
-                            clazz,
-                            bytes,
-                            srcClass.getProtectionDomain()
-                    );
+                    .loadByteArr(clazzName, bytes, srcClass.getProtectionDomain());
             if (Objects.nonNull(aClass)) {
                 objContainer
                         .put(
-                                clazz,
-                                aClass
-                                        .getConstructor().newInstance()
+                                clazzName,
+                                aClass.getConstructor().newInstance()
                         );
-                classLoaderRecord.add(clazz);
             } else {
-                logger.warn(clazz + " has been loaded");
+                logger.warn(clazzName + " has been loaded");
             }
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
                  NoSuchMethodException | ClassNotFoundException ignore) {
         }
+    }
+
+    private String obtainRequireClazzName(Set<Class<? extends Annotation>> annotations, Map<String, Object> objContainer, byte[] bytes) {
+        ClassReader cr = new ClassReader(bytes);
+        ClassNode cn = new ClassNode();
+        cr.accept(cn, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+        String className = Type.getObjectType(cn.name).getClassName();
+        if (objContainer.containsKey(className))
+            return className;
+        int access = cn.access;
+        if ((access & ACC_INTERFACE) != 0 && (access & ACC_ABSTRACT) != 0) {
+            return className;
+        }
+        if (Objects.nonNull(annotations) && !annotations.isEmpty()) {
+            if (
+                    annotations.stream()
+                            .map(Class::getName)
+                            .allMatch(
+                                    name ->
+                                            getAnnotationNodes(cn)
+                                                    .stream()
+                                                    .map(an -> an.desc.replace("/", "."))
+                                                    .map(an -> an.substring(1, an.length() - 1))
+                                                    .noneMatch(name::equals)
+                            )
+            ) {
+                return className;
+            }
+        }
+        if (cn.methods.stream().noneMatch(m -> m.name.equals("<init>")
+                && m.desc.equals("()V") && m.access == ACC_PUBLIC)) {
+            logger.warn("class {} has no unmanaged parameterless constructor", cn.name);
+            return className;
+        }
+        return className;
     }
 
     public void addScanAnnotationClazz(Collection<Class<? extends Annotation>> anno) {
@@ -372,7 +360,6 @@ public class ResourceScanner {
     public void clearCache() {
         this.scanPackage = null;
         this.annotationClazzContainer = null;
-        this.classLoaderRecord = null;
         this.jarNames = null;
         this.urls = null;
     }

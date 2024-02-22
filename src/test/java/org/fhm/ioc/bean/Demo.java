@@ -30,14 +30,14 @@ public class Demo implements IDemoTest {
 
 
     @BeanInitial
-    private void beanInitial() throws Exception{
+    private void beanInitial() throws Exception {
         // The bean to do initial
         logger.info("demo start initialize");
         logger.info("desc: {}, lucky number: {}", testDemoConfiguration.getDesc(), testDemoConfiguration.getLuckyNumber());
     }
 
     @BeanEnable
-    private void beanEnable() throws Exception{
+    private void beanEnable() throws Exception {
         // The bean to do enable
         logger.info("demo start enable");
         logger.info("desc: {}, lucky number: {}", testDemoConfiguration.getDesc(), testDemoConfiguration.getLuckyNumber());

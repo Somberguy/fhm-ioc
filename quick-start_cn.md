@@ -128,6 +128,7 @@ _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDe
         ██      ██   ██ ██  ██  ██       ██ ██    ██ ██
         ██      ██   ██ ██      ██       ██  ██████   ██████
         ============================version 1.0.0 release===
+
 15:13:45.494 [main] INFO org.fhm.ioc.manager.Bootstrap - read VM parameter
 16:15:52.158 [main] INFO org.fhm.ioc.manager.Bootstrap - start initial class and resource container  
 16:15:52.173 [main] INFO org.fhm.ioc.manager.Bootstrap - start configure resource scanner  
@@ -151,13 +152,13 @@ not scanned
 16:15:52.622 [main] INFO org.fhm.ioc.bean.Demo - `desc: hello,reality, lucky number: 66`  // 配置文件信息  
 16:15:52.624 [main] INFO org.fhm.ioc.manager.Bootstrap - start bean enable  
 16:15:52.626 [main] INFO org.fhm.ioc.bean.Demo - `demo start enable`  // bean启动打印  
-16:15:52.626 [main] INFO org.fhm.ioc.bean.Demo - `desc: hello,reality, lucky number: 66` //  配置文件信息  
+16:15:52.626 [main] INFO org.fhm.ioc.bean.Demo - `desc: hello,reality, lucky number: 66` // 配置文件信息  
 16:15:52.626 [main] INFO org.fhm.ioc.manager.Bootstrap - clear cache data  
 16:15:52.645 [main] INFO org.fhm.ioc.manager.Bootstrap - current maximum heap memory: 1820MB  
 16:15:52.646 [main] INFO org.fhm.ioc.manager.Bootstrap - current cost memory: 2MB 534KB  
 16:15:52.646 [main] INFO org.fhm.ioc.service.IOCCostTimer - enable project cost: 0s 689ms  
 16:15:52.646 [main] INFO org.fhm.ioc.manager.Bootstrap - enable project complete  
 16:15:52.652 [main] INFO org.fhm.ioc.bean.Demo - `demo test successful`  // 调用bean测试方法  
-16:15:52.652 [main] INFO org.fhm.ioc.bean.Demo - `desc: hello,reality, lucky number: 66`  // 配置文件信息  
+16:15:52.652 [main] INFO org.fhm.ioc.bean.Demo - `desc: hello,reality, lucky number: 66`  // 配置文件信息
 
 ## 配置管理

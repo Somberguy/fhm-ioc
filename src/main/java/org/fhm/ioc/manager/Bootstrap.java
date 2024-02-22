@@ -52,16 +52,16 @@ public class Bootstrap {
 
     private static void printBanner() {
         InputStream stream = ClassLoader.getSystemResourceAsStream(BANNER_FILE_NAME);
-        if (Objects.isNull(stream)){
+        if (Objects.isNull(stream)) {
             logger.warn("the banner file is missing");
             return;
         }
         try (
-             InputStreamReader inputStreamReader = new InputStreamReader(stream);
-             BufferedReader bufferedReader = new BufferedReader(inputStreamReader)
+                InputStreamReader inputStreamReader = new InputStreamReader(stream);
+                BufferedReader bufferedReader = new BufferedReader(inputStreamReader)
         ) {
             String text;
-            while (Objects.nonNull((text = bufferedReader.readLine()))){
+            while (Objects.nonNull((text = bufferedReader.readLine()))) {
                 System.out.println(text);
             }
         } catch (IOException e) {
