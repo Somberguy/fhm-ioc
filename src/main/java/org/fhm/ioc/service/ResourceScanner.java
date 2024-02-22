@@ -107,7 +107,7 @@ public class ResourceScanner {
     }
 
     private void scanRequiredClassResource(Map<String, Object> objContainer) {
-        urls.forEach(url -> {
+        for (String url : urls) {
             File file = new File(url);
             if (file.exists()) {
                 if (file.isDirectory())
@@ -119,8 +119,7 @@ public class ResourceScanner {
                         dealJarFile(file, objContainer, "");
                 }
             }
-
-        });
+        }
     }
 
     private void dealDirectory(Map<String, Object> objContainer, File file) {
@@ -131,8 +130,10 @@ public class ResourceScanner {
                     File pathFile = path.toFile();
                     String fileName = pathFile.getName();
                     if (pathFile.exists() && pathFile.isFile()) {
-                        if (isRequiredClazzFile(pathFile))
+                        if (isRequiredClazzFile(pathFile)) {
                             dealClassFile(pathFile, objContainer);
+                            return super.visitFile(path, attrs);
+                        }
                         if (isRequiredResourceFile(fileName)) {
                             AbstractConfiguration.resource.put(
                                     fileName,
@@ -140,9 +141,12 @@ public class ResourceScanner {
                                             Paths.get(pathFile.getAbsolutePath())
                                     )
                             );
+                            return super.visitFile(path, attrs);
                         }
-                        if (isRequiredJar(fileName))
+                        if (isRequiredJar(fileName)){
                             dealJarFile(pathFile, objContainer, "");
+                            return super.visitFile(path, attrs);
+                        }
                     }
                     return super.visitFile(path, attrs);
                 }
@@ -271,7 +275,9 @@ public class ResourceScanner {
         String path;
         return (path = clazzFile.getAbsolutePath()).endsWith(Common.CLASS_FILE_SUFFIX.getName())
                 &&
-                scanPackage.stream().anyMatch(interceptPackageName(path)::contains);
+                scanPackage.stream()
+                        .map(packageName -> packageName.replace(".", File.separator))
+                        .anyMatch(interceptPackageName(path)::contains);
     }
 
     private String interceptPackageName(String path) {
@@ -286,7 +292,6 @@ public class ResourceScanner {
             byte[] bytes,
             Set<Class<? extends Annotation>> annotations,
             Map<String, Object> objContainer) {
-
         String clazzName = obtainRequireClazzName(annotations, objContainer, bytes);
         if (clazzName.isEmpty()) {
             return;

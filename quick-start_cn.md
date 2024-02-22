@@ -9,7 +9,7 @@ _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDe
 **程序启动类**
 
 ```java
-    @ScanPackageConfig("scan/package/name")
+    @ScanPackageConfig("scan.package.name")
     public class DemoApplication {
         public static void main(String[] args) {
             Bootstrap.open(args, DemoStarter.class);
@@ -114,7 +114,7 @@ _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDe
 
 |                    注解                     |                                   描述                                   |      值说明      |
 |:-----------------------------------------:|:----------------------------------------------------------------------:|:-------------:|
-| `@ScanPackageConfig("scan/package/name")` | 配置注入对象包扫描范围，默认"org/fhm"，表示扫描org/fhm下的所有子包，如org/fhm、org/fhm/a、org/fhm/b |     包扫描路径     |
+| `@ScanPackageConfig("scan.package.name")` | 配置注入对象包扫描范围，默认"org.fhm"，表示扫描org.fhm下的所有子包，如org.fhm、org.fhm.a、org.fhm.b |     包扫描路径     |
 |               `@Component`                |                              `IOC`默认注入注解                               |   bean注入名称    |
 |             `@Setup("Demo")`              |                                bean装载注解                                | 需要装载的bean注入名称 |
 |              `@BeanInitial`               |                              标记bean初始化方法                               |       无       |

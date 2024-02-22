@@ -11,7 +11,7 @@ import java.io.File;
 public enum Common {
     CLASS_FILE_SUFFIX(".class"),
     JAR_FILE_SUFFIX(".jar"),
-    PROJECT_PACKAGE_NAME("org/fhm"),
+    PROJECT_PACKAGE_NAME("org.fhm"),
     CONFIG_IDENTIFIED("->"),
     FILTER_CLASS_FILE_SEPARATOR("target" + File.separator + "classes"),
     FILTER_TEST_CLASS_FILE_SEPARATOR("target" + File.separator + "test-classes"),
