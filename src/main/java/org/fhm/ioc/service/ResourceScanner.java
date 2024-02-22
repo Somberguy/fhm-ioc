@@ -55,7 +55,7 @@ public class ResourceScanner {
         return Instance.instance;
     }
 
-    private static List<AnnotationNode> getAnnotationNodes(ClassNode cn) {
+    private List<AnnotationNode> getAnnotationNodes(ClassNode cn) {
         List<AnnotationNode> nodes = new ArrayList<>();
         List<AnnotationNode> visibleAnnotations;
         List<AnnotationNode> invisibleAnnotations;
@@ -158,18 +158,21 @@ public class ResourceScanner {
     }
 
     private void scanJarResource(Map<String, Object> objContainer) {
-        scanPackage.forEach(packageName -> {
-            Enumeration<URL> systemResources;
-            try {
-                systemResources = ClassLoader.getSystemResources(packageName);
-            } catch (IOException e) {
-                throw IOCExceptionUtil.generateResourceScannerException(e);
-            }
-            while (systemResources.hasMoreElements()) {
-                URL url = systemResources.nextElement();
-                findClassJar(url, objContainer);
-            }
-        });
+        scanPackage.stream()
+                .map(oldPackageName -> oldPackageName.replace(".", "/"))
+                .forEach(packageName -> {
+                    Enumeration<URL> systemResources;
+                    try {
+                        systemResources = ClassLoader.getSystemResources(packageName);
+                    } catch (IOException e) {
+                        throw IOCExceptionUtil.generateResourceScannerException(e);
+                    }
+                    while (systemResources.hasMoreElements()) {
+                        URL url = systemResources.nextElement();
+                        findClassJar(url, objContainer);
+                    }
+                }
+        );
     }
 
     private void findClassJar(URL url, Map<String, Object> objContainer) {
@@ -321,10 +324,10 @@ public class ResourceScanner {
         cr.accept(cn, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         String className = Type.getObjectType(cn.name).getClassName();
         if (objContainer.containsKey(className))
-            return className;
+            return "";
         int access = cn.access;
         if ((access & ACC_INTERFACE) != 0 && (access & ACC_ABSTRACT) != 0) {
-            return className;
+            return "";
         }
         if (Objects.nonNull(annotations) && !annotations.isEmpty()) {
             if (
@@ -339,13 +342,13 @@ public class ResourceScanner {
                                                     .noneMatch(name::equals)
                             )
             ) {
-                return className;
+                return "";
             }
         }
         if (cn.methods.stream().noneMatch(m -> m.name.equals("<init>")
                 && m.desc.equals("()V") && m.access == ACC_PUBLIC)) {
             logger.warn("class {} has no unmanaged parameterless constructor", cn.name);
-            return className;
+            return "";
         }
         return className;
     }
