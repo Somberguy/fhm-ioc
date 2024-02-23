@@ -42,11 +42,13 @@ public class ResourceScanner {
 
     private Set<String> urls = new HashSet<>();
 
-    private Set<String> scanPackage = new HashSet<>();
+    private Set<String> requirePackageNames = new HashSet<>();
+
+    private Set<String> rangePackageNames = new HashSet<>();
 
     private Set<Class<? extends Annotation>> annotationClazzContainer = new HashSet<>(2);
 
-    private Set<String> jarNames = new HashSet<>(1);
+    private String ownerJarName;
 
     {
         this.annotationClazzContainer.add(Component.class);
@@ -70,39 +72,49 @@ public class ResourceScanner {
         return null;
     }
 
-    private static String getJarNameByClazz(Class<?> clazz) {
+    private void getJarNameByClazz(Class<?> clazz) {
         String clazzPath = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
         if (clazzPath.endsWith(Common.JAR_FILE_SUFFIX.getName())) {
-            return clazzPath.substring(clazzPath.lastIndexOf(File.separator) + 1);
-        } else {
-            return "";
+            ownerJarName = clazzPath.substring(clazzPath.lastIndexOf(File.separator) + 1);
         }
     }
 
     public List<Class<? extends Annotation>> initialize(Class<? extends IStarter> starterClazz) {
         Class<?> mainClazz;
-        String jarNameByClazz;
         if (
-                Objects.nonNull((mainClazz = getMainClazz()))
-                        && !(jarNameByClazz = getJarNameByClazz(mainClazz)).isEmpty()
+            Objects.nonNull((mainClazz = getMainClazz()))
         )
-            jarNames.add(jarNameByClazz);
+            getJarNameByClazz(mainClazz);
         logger.info("start configure resource scanner");
         List<Class<? extends Annotation>> newManageAnnotations = obtainManageAnnotation(starterClazz);
         if (Objects.nonNull(newManageAnnotations))
             this.annotationClazzContainer.addAll(newManageAnnotations);
         ScanPackageConfig config;
-        if (Objects.nonNull(mainClazz) && Objects.nonNull((config = mainClazz.getAnnotation(ScanPackageConfig.class))))
-            this.scanPackage.addAll(Arrays.asList(config.value()));
+        if (Objects.nonNull(mainClazz) && Objects.nonNull((config = mainClazz.getAnnotation(ScanPackageConfig.class)))){
+            String[] packageNames;
+            if ((packageNames = config.value()).length == 0){
+                String defaultPackageName;
+                this.rangePackageNames.add((defaultPackageName = Common.PROJECT_PACKAGE_NAME.getName())
+                        .replace(".", "/"));
+                this.requirePackageNames.add(defaultPackageName.replace(".", File.separator));
+            } else {
+
+            }
+        }
         return newManageAnnotations;
     }
 
     public void filterClassPath() {
         for (String url : System.getProperty("java.class.path").split(File.pathSeparator)) {
             if (
-                    url.contains(Common.FILTER_CLASS_FILE_SEPARATOR.getName())
-                            || url.contains(Common.FILTER_TEST_CLASS_FILE_SEPARATOR.getName())
-                            || url.endsWith(Common.JAR_FILE_SUFFIX.getName())
+                url.contains(Common.FILTER_CLASS_FILE_SEPARATOR.getName())
+                    || url.contains(Common.FILTER_TEST_CLASS_FILE_SEPARATOR.getName())
+                    || (
+                        url.endsWith(Common.JAR_FILE_SUFFIX.getName())
+                            && Objects.nonNull(ownerJarName)
+                            && !ownerJarName.isEmpty()
+                            && url.contains(ownerJarName)
+                    )
             ) {
                 urls.add(url);
             }
@@ -125,8 +137,6 @@ public class ResourceScanner {
     }
 
     public void scanRequiredFileAndSetupObj() {
-        if (scanPackage.isEmpty())
-            scanPackage.add(Common.PROJECT_PACKAGE_NAME.getName());
         collectResourceByClassPath();
         collectResourceByURL();
     }
@@ -159,9 +169,7 @@ public class ResourceScanner {
     }
 
     private void collectResourceByURL() {
-        scanPackage.stream()
-                .map(oldPackageName -> oldPackageName.replace(".", "/"))
-                .forEach(packageName -> {
+        rangePackageNames.forEach(packageName -> {
                             Enumeration<URL> systemResources;
                             try {
                                 systemResources = ClassLoader.getSystemResources(packageName);
@@ -306,9 +314,7 @@ public class ResourceScanner {
     }
 
     private boolean isRequiredJar(String fileName) {
-        return fileName.endsWith(Common.JAR_FILE_SUFFIX.getName())
-                &&
-                jarNames.contains(fileName);
+        return fileName.endsWith(Common.JAR_FILE_SUFFIX.getName());
     }
 
     private boolean isRequiredResourceFile(String fileName) {
@@ -319,7 +325,7 @@ public class ResourceScanner {
         String path;
         return (path = file.getAbsolutePath()).endsWith(Common.CLASS_FILE_SUFFIX.getName())
                 &&
-                scanPackage.stream()
+                requirePackageNames.stream()
                         .map(oldPackageName -> oldPackageName.replace(".", File.separator))
                         .anyMatch(packageName -> {
                             String filterSeparator;
@@ -389,9 +395,9 @@ public class ResourceScanner {
     }
 
     public void clearCacheAndCreateBeans() {
-        this.scanPackage = null;
+        this.requirePackageNames = null;
+        this.rangePackageNames = null;
         this.annotationClazzContainer = null;
-        this.jarNames = null;
         this.urls = null;
         IOCClassLoader.getInstance().loadClass(AutoSetupExecutor.getInstance().getObjContainer());
     }
