@@ -24,6 +24,7 @@ import java.util.Objects;
  */
 public class Bootstrap {
 
+    @SuppressWarnings("unused")
     public static final Charset charset = StandardCharsets.UTF_8;
 
     private static final String BANNER_FILE_NAME = "banner.txt";
