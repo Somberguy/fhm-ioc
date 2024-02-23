@@ -2,10 +2,12 @@ package org.fhm.ioc.service;
 
 import org.fhm.ioc.annotation.Component;
 import org.fhm.ioc.annotation.Configuration;
+import org.fhm.ioc.annotation.ScanPackageConfig;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;
 import org.fhm.ioc.constant.VMParameters;
 import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.IStarter;
 import org.fhm.ioc.util.IOCExceptionUtil;
 import org.fhm.ioc.util.IOUtil;
 import org.objectweb.asm.ClassReader;
@@ -17,7 +19,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.net.*;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -53,7 +57,47 @@ public class ResourceScanner {
         return Instance.instance;
     }
 
-    public void filterCPPath() {
+    private static Class<?> getMainClazz() {
+        try {
+            for (StackTraceElement element : new RuntimeException().getStackTrace()) {
+                if ("main".equals(element.getMethodName())) {
+                    return Class.forName(element.getClassName());
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            throw IOCExceptionUtil.generateNormalException(e);
+        }
+        return null;
+    }
+
+    private static String getJarNameByClazz(Class<?> clazz) {
+        String clazzPath = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
+        if (clazzPath.endsWith(Common.JAR_FILE_SUFFIX.getName())) {
+            return clazzPath.substring(clazzPath.lastIndexOf(File.separator) + 1);
+        } else {
+            return "";
+        }
+    }
+
+    public List<Class<? extends Annotation>> initialize(Class<? extends IStarter> starterClazz) {
+        Class<?> mainClazz;
+        String jarNameByClazz;
+        if (
+                Objects.nonNull((mainClazz = getMainClazz()))
+                        && !(jarNameByClazz = getJarNameByClazz(mainClazz)).isEmpty()
+        )
+            jarNames.add(jarNameByClazz);
+        logger.info("start configure resource scanner");
+        List<Class<? extends Annotation>> newManageAnnotations = obtainManageAnnotation(starterClazz);
+        if (Objects.nonNull(newManageAnnotations))
+            this.annotationClazzContainer.addAll(newManageAnnotations);
+        ScanPackageConfig config;
+        if (Objects.nonNull(mainClazz) && Objects.nonNull((config = mainClazz.getAnnotation(ScanPackageConfig.class))))
+            this.scanPackage.addAll(Arrays.asList(config.value()));
+        return newManageAnnotations;
+    }
+
+    public void filterClassPath() {
         for (String url : System.getProperty("java.class.path").split(File.pathSeparator)) {
             if (
                     url.contains(Common.FILTER_CLASS_FILE_SEPARATOR.getName())
@@ -65,7 +109,7 @@ public class ResourceScanner {
         }
     }
 
-    public void scanRequiredSystem(Map<String, Object> objContainer) {
+    public void scanRequiredSystem() {
         VMParameters.REGISTRY_BEAN_DIR_PATH.use((name, dirPath) -> {
             File file = new File(dirPath);
             if (file.exists() && file.isDirectory()) {
@@ -74,119 +118,127 @@ public class ResourceScanner {
                 if (Objects.nonNull(files))
                     for (File jarFile : files) {
                         if (jarFile.getAbsolutePath().endsWith(Common.JAR_FILE_SUFFIX.getName()))
-                            dealJarFile(jarFile, objContainer, VMParameters.REGISTRY_PACKAGE_NAME.getValue());
+                            dealJarFile(jarFile, VMParameters.REGISTRY_PACKAGE_NAME.getValue());
                     }
             }
         });
     }
 
-    public void scanRequiredFileAndSetupObj(Map<String, Object> objContainer) {
+    public void scanRequiredFileAndSetupObj() {
         if (scanPackage.isEmpty())
             scanPackage.add(Common.PROJECT_PACKAGE_NAME.getName());
-        logger.info("start to obtain the class files of CP");
-        scanRequiredClassResource(objContainer);
-        logger.info("start to obtain the class files in nested packages");
-        scanJarResource(objContainer);
+        collectResourceByClassPath();
+        collectResourceByURL();
     }
 
-    private void scanRequiredClassResource(Map<String, Object> objContainer) {
-        for (String url : urls) {
-            File file = new File(url);
-            if (file.exists()) {
-                if (file.isDirectory())
-                    dealDirectory(objContainer, file);
-                if (file.isFile()) {
-                    if (isRequiredClazzFile(file))
-                        dealClassFile(file, objContainer);
-                    if (isRequiredJar(file.getName()))
-                        dealJarFile(file, objContainer, "");
-                }
-            }
-        }
-    }
-
-    private void scanJarResource(Map<String, Object> objContainer) {
-        scanPackage.stream()
-                .map(oldPackageName -> oldPackageName.replace(".", "/"))
-                .forEach(packageName -> {
-                    Enumeration<URL> systemResources;
-                    try {
-                        systemResources = ClassLoader.getSystemResources(packageName);
-                    } catch (IOException e) {
-                        throw IOCExceptionUtil.generateResourceScannerException(e);
-                    }
-                    while (systemResources.hasMoreElements()) {
-                        URL url = systemResources.nextElement();
-                        JarFile jarFile = null;
-                        URLConnection urlConnection = null;
-                        try {
-                            if (Objects.nonNull(url)) {
-                                urlConnection = url.openConnection();
-                            }
-                            if (urlConnection instanceof JarURLConnection) {
-                                JarURLConnection jarURLConnection = (JarURLConnection) urlConnection;
-                                jarFile = jarURLConnection.getJarFile();
-                            }
-                        } catch (IOException e) {
-                            logger.error("failed to obtain package {} .jar resource", url, e);
-                            throw IOCExceptionUtil.generateResourceScannerException(e);
-                        }
-                        if (Objects.nonNull(jarFile)) {
-                            Enumeration<JarEntry> jarEntries = jarFile.entries();
-                            while (jarEntries.hasMoreElements()) {
-                                JarEntry jarEntry = jarEntries.nextElement();
-                                String jarEntryName = jarEntry.getName();
-                                InputStream jarInputStream;
-                                try {
-                                    jarInputStream = jarFile.getInputStream(jarEntry);
-                                } catch (IOException e) {
-                                    logger.error("failed to obtain current resource {} stream", jarEntry.getName(), e);
-                                    throw IOCExceptionUtil.generateResourceScannerException(e);
-                                }
-                                if (jarEntry.getName().endsWith(Common.CLASS_FILE_SUFFIX.getName())) {
-                                    collectManagementObjects(
-                                            url,
-                                            IOUtil.inStreamToByte(jarInputStream),
-                                            annotationClazzContainer,
-                                            objContainer
-                                    );
-                                }
-                                if (isRequiredResourceFile(jarEntryName) && Objects.isNull(AbstractConfiguration.resource.get(jarEntryName))) {
-                                    AbstractConfiguration.resource.put(
-                                            jarEntryName,
-                                            jarInputStream
-                                    );
-                                }
-                            }
+    private void collectResourceByClassPath() {
+        urls.forEach(
+                url -> {
+                    File file = new File(url);
+                    if (file.exists()) {
+                        if (file.isDirectory())
+                            dealDirectory(file);
+                        if (file.isFile()) {
+                            if (isRequiredClazzFile(file))
+                                dealClassFile(file);
+                            if (isRequiredJar(file.getName()))
+                                dealJarFile(file, "");
                         }
                     }
                 }
         );
     }
 
-    private void dealDirectory(Map<String, Object> objContainer, File file) {
+    private List<Class<? extends Annotation>> obtainManageAnnotation(Class<? extends IStarter> starterClazz) {
+        try {
+            return starterClazz.newInstance().newManageMembers();
+        } catch (InstantiationException | IllegalAccessException e) {
+            logger.warn(e);
+            return null;
+        }
+    }
+
+    private void collectResourceByURL() {
+        scanPackage.stream()
+                .map(oldPackageName -> oldPackageName.replace(".", "/"))
+                .forEach(packageName -> {
+                            Enumeration<URL> systemResources;
+                            try {
+                                systemResources = ClassLoader.getSystemResources(packageName);
+                            } catch (IOException e) {
+                                throw IOCExceptionUtil.generateResourceScannerException(e);
+                            }
+                            while (systemResources.hasMoreElements()) {
+                                URL url = systemResources.nextElement();
+                                JarFile jarFile = null;
+                                URLConnection urlConnection = null;
+                                try {
+                                    if (Objects.nonNull(url)) {
+                                        urlConnection = url.openConnection();
+                                    }
+                                    if (urlConnection instanceof JarURLConnection) {
+                                        JarURLConnection jarURLConnection = (JarURLConnection) urlConnection;
+                                        jarFile = jarURLConnection.getJarFile();
+                                    }
+                                } catch (IOException e) {
+                                    logger.error("failed to obtain package {} .jar resource", url, e);
+                                    throw IOCExceptionUtil.generateResourceScannerException(e);
+                                }
+                                if (Objects.nonNull(jarFile)) {
+                                    Enumeration<JarEntry> jarEntries = jarFile.entries();
+                                    while (jarEntries.hasMoreElements()) {
+                                        JarEntry jarEntry = jarEntries.nextElement();
+                                        String jarEntryName = jarEntry.getName();
+                                        InputStream jarInputStream;
+                                        try {
+                                            jarInputStream = jarFile.getInputStream(jarEntry);
+                                        } catch (IOException e) {
+                                            logger.error("failed to obtain current resource {} stream", jarEntry.getName(), e);
+                                            throw IOCExceptionUtil.generateResourceScannerException(e);
+                                        }
+                                        if (jarEntry.getName().endsWith(Common.CLASS_FILE_SUFFIX.getName())) {
+                                            collectManagementObjects(
+                                                    url,
+                                                    IOUtil.inStreamToByte(jarInputStream),
+                                                    annotationClazzContainer
+                                            );
+                                        }
+                                        if (isRequiredResourceFile(jarEntryName) && Objects.isNull(AbstractConfiguration.resource.get(jarEntryName))) {
+                                            AbstractConfiguration.resource.put(
+                                                    jarEntryName,
+                                                    jarInputStream
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                );
+    }
+
+    private void dealDirectory(File file) {
         try {
             Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
-                    File pathFile = path.toFile();
-                    String fileName = pathFile.getName();
-                    if (pathFile.exists() && pathFile.isFile()) {
-                        if (isRequiredClazzFile(pathFile)) {
-                            dealClassFile(pathFile, objContainer);
+                    File subFile = path.toFile();
+                    String fileName = subFile.getName();
+                    if (subFile.exists() && subFile.isFile()) {
+                        if (isRequiredClazzFile(subFile)) {
+                            dealClassFile(subFile);
                             return super.visitFile(path, attrs);
                         }
                         if (isRequiredResourceFile(fileName)) {
                             AbstractConfiguration.resource.put(
                                     fileName,
                                     Files.newInputStream(
-                                            Paths.get(pathFile.getAbsolutePath())
+                                            Paths.get(subFile.getAbsolutePath())
                                     )
                             );
                             return super.visitFile(path, attrs);
                         }
-                        if (isRequiredJar(fileName)){
-                            dealJarFile(pathFile, objContainer, "");
+                        if (isRequiredJar(fileName)) {
+                            dealJarFile(subFile, "");
                             return super.visitFile(path, attrs);
                         }
                     }
@@ -200,7 +252,7 @@ public class ResourceScanner {
     }
 
 
-    private void dealJarFile(File pathFile, Map<String, Object> objContainer, String requirePackageName) {
+    private void dealJarFile(File pathFile, String requirePackageName) {
         try (JarFile jarFile = new JarFile(pathFile)) {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
@@ -217,16 +269,14 @@ public class ResourceScanner {
                         collectManagementObjects(
                                 pathFile.toURI().toURL(),
                                 IOUtil.inStreamToByte(jarInputStream),
-                                annotationClazzContainer,
-                                objContainer
+                                annotationClazzContainer
                         );
                     }
                 } else {
                     collectManagementObjects(
                             pathFile.toURI().toURL(),
                             IOUtil.inStreamToByte(jarInputStream),
-                            annotationClazzContainer,
-                            objContainer
+                            annotationClazzContainer
                     );
                 }
                 if (isRequiredResourceFile(jarEntryName)) {
@@ -242,13 +292,12 @@ public class ResourceScanner {
         }
     }
 
-    private void dealClassFile(File pathFile, Map<String, Object> objContainer) {
+    private void dealClassFile(File pathFile) {
         try {
             collectManagementObjects(
                     pathFile.toURI().toURL(),
                     IOUtil.file2Bytes(pathFile.getAbsolutePath()),
-                    annotationClazzContainer,
-                    objContainer
+                    annotationClazzContainer
             );
         } catch (Exception e) {
             logger.error("failed to obtain current resource {} stream", pathFile, e);
@@ -266,51 +315,37 @@ public class ResourceScanner {
         return fileName.endsWith(".properties") && !fileName.contains("pom.properties");
     }
 
-    private Boolean isRequiredClazzFile(File clazzFile) {
+    private Boolean isRequiredClazzFile(File file) {
         String path;
-        return (path = clazzFile.getAbsolutePath()).endsWith(Common.CLASS_FILE_SUFFIX.getName())
+        return (path = file.getAbsolutePath()).endsWith(Common.CLASS_FILE_SUFFIX.getName())
                 &&
                 scanPackage.stream()
                         .map(oldPackageName -> oldPackageName.replace(".", File.separator))
                         .anyMatch(packageName -> {
                             String filterSeparator;
-                            if (!path.contains((filterSeparator = Common.FILTER_CLASS_FILE_SEPARATOR.getName()))) {
+                            if (!path.contains((filterSeparator = Common.FILTER_CLASS_FILE_SEPARATOR.getName())))
                                 filterSeparator = Common.FILTER_TEST_CLASS_FILE_SEPARATOR.getName();
-                            }
-                            return packageName.contains(
-                                    path.substring(path.indexOf(filterSeparator) + filterSeparator.length() + 1)
-                            );
+                            return path
+                                    .substring(path.indexOf(filterSeparator) + filterSeparator.length() + 1)
+                                    .contains(packageName);
                         });
     }
 
     private void collectManagementObjects(
             URL url,
             byte[] bytes,
-            Set<Class<? extends Annotation>> annotations,
-            Map<String, Object> objContainer) {
-        String clazzName = obtainRequireClazzName(annotations, objContainer, bytes);
-        if (!clazzName.isEmpty()){
-            try {
-                Class<?> clazz = IOCClassLoader.loadClass(url, clazzName);
-                if (Objects.nonNull(clazz)) {
-                    objContainer.put(clazzName, clazz.getConstructor().newInstance());
-                } else {
-                    logger.warn(clazzName + " has been loaded");
-                }
-            } catch (Exception ignore) {}
-        }
-    }
-
-    private String obtainRequireClazzName(Set<Class<? extends Annotation>> annotations, Map<String, Object> objContainer, byte[] bytes) {
+            Set<Class<? extends Annotation>> annotations
+    ) {
         ClassReader cr = new ClassReader(bytes);
         ClassNode cn = new ClassNode();
         cr.accept(cn, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         String className = Type.getObjectType(cn.name).getClassName();
-        if (objContainer.containsKey(className))
-            return "";
+        if (IOCClassLoader.getInstance().isAddedClazz(className))
+            return;
         int access = cn.access;
         if ((access & ACC_INTERFACE) != 0 && (access & ACC_ABSTRACT) != 0) {
-            return "";
+            IOCClassLoader.getInstance().putAbstractAndInterface(className);
+            return;
         }
         if (Objects.nonNull(annotations) && !annotations.isEmpty()) {
             if (
@@ -325,15 +360,17 @@ public class ResourceScanner {
                                                     .noneMatch(name::equals)
                             )
             ) {
-                return "";
+                return;
             }
         }
         if (cn.methods.stream().noneMatch(m -> m.name.equals("<init>")
                 && m.desc.equals("()V") && m.access == ACC_PUBLIC)) {
             logger.warn("class {} has no unmanaged parameterless constructor", cn.name);
-            return "";
+            return;
         }
-        return className;
+        if (!className.isEmpty()) {
+            IOCClassLoader.getInstance().put(url, className);
+        }
     }
 
     private List<AnnotationNode> getAnnotationNodes(ClassNode cn) {
@@ -351,23 +388,12 @@ public class ResourceScanner {
         return nodes;
     }
 
-    public void addScanAnnotationClazz(Collection<Class<? extends Annotation>> anno) {
-        this.annotationClazzContainer.addAll(anno);
-    }
-
-    public void addScanJar(String jarName) {
-        this.jarNames.add(jarName);
-    }
-
-    public void addScanPackage(Collection<String> packageName) {
-        this.scanPackage.addAll(packageName);
-    }
-
-    public void clearCache() {
+    public void clearCacheAndCreateBeans() {
         this.scanPackage = null;
         this.annotationClazzContainer = null;
         this.jarNames = null;
         this.urls = null;
+        IOCClassLoader.getInstance().loadClass(AutoSetupExecutor.getInstance().getObjContainer());
     }
 
     private static final class Instance {

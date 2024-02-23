@@ -9,47 +9,49 @@ _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDe
 **程序启动类**
 
 ```java
-    @ScanPackageConfig("scan.package.name")
-    public class DemoApplication {
-        public static void main(String[] args) {
-            Bootstrap.open(args, DemoStarter.class);
-        }
-        
+
+@ScanPackageConfig("scan.package.name")
+public class DemoApplication {
+    public static void main(String[] args) {
+        Bootstrap.open(args, DemoStarter.class);
     }
+
+}
 ```  
 
 **`IStarter`接口实现**
 
 ```java
-    @Component // Inject into the IOC
-    public class DemoStarter implements IStarter {
-    
-        @Setup("Demo") // Load from the IOC
-        private Demo demo;
-    
-        @Override
-        public List<Class<? extends Annotation>> newManageMembers() {
-            return Collections.singletonList(DemoComponent.class); // Returns a collection of annotations for custom injection containers
-        }
-    
-        @Override
-        public void manageNotify(List<?> beans, Class<? extends Annotation> clazz) {
-            if (DemoComponent.class.isAssignableFrom(clazz)) { // Determines whether the bean is marked by the DemoComponent annotation
-                // Beans marked with DemoComponent annotations are treated independently
-            }
-        }
-    
-        @Override
-        public void start(String[] args) throws Exception {
-            demo.test(); // Runs test method of the demo
-        }
-    
-        @Override
-        public void close() throws Exception {
-            // Runs before the IOC ends
-        }
-    
+
+@Component // Inject into the IOC
+public class DemoStarter implements IStarter {
+
+    @Setup("Demo") // Load from the IOC
+    private Demo demo;
+
+    @Override
+    public List<Class<? extends Annotation>> newManageMembers() {
+        return Collections.singletonList(DemoComponent.class); // Returns a collection of annotations for custom injection containers
     }
+
+    @Override
+    public void manageNotify(List<?> beans, Class<? extends Annotation> clazz) {
+        if (DemoComponent.class.isAssignableFrom(clazz)) { // Determines whether the bean is marked by the DemoComponent annotation
+            // Beans marked with DemoComponent annotations are treated independently
+        }
+    }
+
+    @Override
+    public void start(String[] args) throws Exception {
+        demo.test(); // Runs test method of the demo
+    }
+
+    @Override
+    public void close() throws Exception {
+        // Runs before the IOC ends
+    }
+
+}
 ```  
 
 **自定义注入IOC注解标记**
@@ -68,29 +70,30 @@ _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDe
 **自定义注解注入bean**
 
 ```java
-    @DemoComponent("Demo")
-    public class Demo {
-    
-        private final ILoggerHandler logger = LoggerHandler.getLogger(Demo.class);
-    
-        public void test() {
-            logger.info("demo test successful");
-        }
-    
-    
-        @BeanInitial
-        private void beanInitial() throws Exception{
-            // The bean to do initial
-            logger.info("demo start initialize");
-        }
-    
-        @BeanEnable
-        private void beanEnable() throws Exception{
-            // The bean to do enable
-            logger.info("demo start enable");
-        }
-    
+
+@DemoComponent("Demo")
+public class Demo {
+
+    private final ILoggerHandler logger = LoggerHandler.getLogger(Demo.class);
+
+    public void test() {
+        logger.info("demo test successful");
     }
+
+
+    @BeanInitial
+    private void beanInitial() throws Exception {
+        // The bean to do initial
+        logger.info("demo start initialize");
+    }
+
+    @BeanEnable
+    private void beanEnable() throws Exception {
+        // The bean to do enable
+        logger.info("demo start enable");
+    }
+
+}
 ```
 
 ### 说明：

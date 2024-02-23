@@ -1,15 +1,9 @@
 package org.fhm.ioc.service;
 
 
-import org.fhm.ioc.constant.Common;
-
-import java.io.File;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.security.ProtectionDomain;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Classname ASMClassLoader
@@ -17,37 +11,58 @@ import java.util.Map;
  * @Date 2023/10/12 10:56
  * @Author by 月光叶
  */
-public class IOCClassLoader extends ClassLoader {
+public class IOCClassLoader {
 
-    private static final Map<URL[], URLClassLoader> classLoaderContainer = new HashMap<>();
+    private List<URL> urlContainer = new ArrayList<>();
 
-    public static Class<?> loadClass(URL url, String className) throws ClassNotFoundException, MalformedURLException {
-        URL[] urls = {url};
-        return classLoaderContainer.computeIfAbsent(
-                urls, k -> new URLClassLoader(urls)
-        ).loadClass(className);
+    private Set<String> clazzNamesContainer = new HashSet<>();
+
+    private Map<String, Class<?>> abstractAndInterface = new HashMap<>();
+
+    public static IOCClassLoader getInstance() {
+        return Instance.instance;
     }
 
-    public Class<?> loadByteArr(String clazz, byte[] bytes, ProtectionDomain domain) {
-        clazz = clazz.replaceAll(Common.UNKNOWN_PARADIGM_SIGNS.getName(), "");
-        try {
-            findClass(clazz);
-            return null;
-        } catch (ClassNotFoundException e) {
-            try {
-                return loadClass(clazz);
-            } catch (ClassNotFoundException ex) {
-                return defineClass(
-                        clazz, bytes, 0,
-                        bytes.length,
-                        domain
+    public void loadClass(Map<String, Object> objContainer) {
+        URL[] urls = urlContainer.toArray(new URL[]{});
+        try (URLClassLoader loader = new URLClassLoader(urls)) {
+            for (String clazzName : clazzNamesContainer) {
+                objContainer.put(
+                        clazzName,
+                        loader.loadClass(clazzName)
+                                .getConstructor()
+                                .newInstance()
                 );
             }
+
+            for (String className : abstractAndInterface.keySet()) {
+                abstractAndInterface.put(className, loader.loadClass(className));
+            }
+        } catch (Exception ignored) {
         }
     }
 
-    public static IOCClassLoader getInstance(){
-        return Instance.instance;
+    public void put(URL url, String className) {
+        urlContainer.add(url);
+        clazzNamesContainer.add(className);
+    }
+
+    public void putAbstractAndInterface(String className) {
+        abstractAndInterface.put(className, null);
+    }
+
+    public Class<?> getAbstractAndInterface(String className) {
+        return abstractAndInterface.get(className);
+    }
+
+    public boolean isAddedClazz(String clazzName) {
+        return clazzNamesContainer.contains(clazzName);
+    }
+
+    public void clearCache() {
+        urlContainer = null;
+        clazzNamesContainer = null;
+        abstractAndInterface = null;
     }
 
     private static final class Instance {

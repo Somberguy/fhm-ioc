@@ -10,6 +10,7 @@ import org.fhm.ioc.standard.IStarter;
 import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Classname DemoStarter
@@ -25,6 +26,9 @@ public class DemoStarter implements IStarter {
 
     @Setup("->test.demo.bean.name")
     private IDemoTest demoAttach;
+
+    @Setup
+    private Map<String, IDemoTest> iDemoTestMap;
 
     @Override
     public List<Class<? extends Annotation>> newManageMembers() {
@@ -45,6 +49,7 @@ public class DemoStarter implements IStarter {
     public void start(String[] args) throws Exception {
         demo.test(); // Runs test method of the Demo
         demoAttach.test(); // Runs test method of the DemoAttach
+        iDemoTestMap.forEach((k, v) -> v.test());
     }
 
     @Override

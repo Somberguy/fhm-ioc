@@ -7,7 +7,6 @@ import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;
 import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.util.ClazzUtil;
-import org.fhm.ioc.util.IOCExceptionUtil;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -44,49 +43,45 @@ public class AutoSetupExecutor {
     }
 
     public void autoSetup() {
-        objContainer.forEach((k, v) -> {
-            Class<?> clazz = v.getClass();
-            setupValueAndFilter(v, clazz, objContainer);
-        });
+        objContainer.forEach(
+                (k, v) -> {
+                    Class<?> clazz = v.getClass();
+                    setupValueAndFilter(v, clazz, objContainer);
+                }
+        );
+        IOCClassLoader.getInstance().clearCache();
     }
 
     private void setupValueAndFilter(Object v, Class<?> clazz, Map<String, Object> objContainer) {
         Field[] fields = clazz.getDeclaredFields();
         Stream.of(fields).forEach(field -> {
-            if (!field.isAnnotationPresent(Setup.class)) {
+            if (!field.isAnnotationPresent(Setup.class))
                 return;
-            }
             Class<?> fieldType;
             if (Map.class.isAssignableFrom((fieldType = field.getType()))) {
                 Type type = field.getGenericType();
                 if (type instanceof ParameterizedType) {
-                    ParameterizedType parameterizedType = (ParameterizedType) type;
-                    Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+                    Type[] actualTypeArguments = ((ParameterizedType) type).getActualTypeArguments();
                     if (
                             actualTypeArguments.length == 2 &&
                                     "java.lang.String".equals(actualTypeArguments[0].getTypeName())
                     ) {
-                        String clazzName = "";
-                        try {
-                            Class<?> ata =
-                                    IOCClassLoader.getInstance()
-                                            .loadClass(
-                                                    (clazzName = actualTypeArguments[1]
-                                                            .getTypeName()
-                                                            .replaceAll(
-                                                                    Common.UNKNOWN_PARADIGM_SIGNS.getName(),
-                                                                    "")
-                                                    )
-                                            );
-                            if (objContainer.values().stream()
-                                    .anyMatch(o -> ata.isAssignableFrom(o.getClass()))
-                            ) {
-                                setupMapObjs.computeIfAbsent(v, m -> new HashMap<>())
-                                        .put(field, ata);
-                            }
-                        } catch (ClassNotFoundException e) {
-                            logger.error(e, "failed to load " + clazzName);
-                            throw IOCExceptionUtil.generateAutoSetupException(e);
+                        Class<?> abstractAndInterface = IOCClassLoader
+                                .getInstance()
+                                .getAbstractAndInterface(
+                                        actualTypeArguments[1]
+                                                .getTypeName()
+                                                .replaceAll(
+                                                        Common.UNKNOWN_PARADIGM_SIGNS.getName(),
+                                                        ""
+                                                )
+                                );
+                        if (
+                                objContainer.values().stream()
+                                        .anyMatch(o -> abstractAndInterface.isAssignableFrom(o.getClass()))
+                        ) {
+                            setupMapObjs.computeIfAbsent(v, m -> new HashMap<>())
+                                    .put(field, abstractAndInterface);
                         }
                     }
                 }

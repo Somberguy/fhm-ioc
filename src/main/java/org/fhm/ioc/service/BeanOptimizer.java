@@ -189,8 +189,7 @@ public class BeanOptimizer {
     ) {
         Object object;
         String name = starter.getName();
-        if ((object = beans
-                .get(name)) instanceof IStarter) {
+        if ((object = beans.get(name)) instanceof IStarter) {
             IStarter start = (IStarter) object;
             if (Objects.nonNull(newManageAnnotations)) {
                 newManageAnnotations.forEach(anno -> {

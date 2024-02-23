@@ -1,21 +1,19 @@
 package org.fhm.ioc.manager;
 
 import org.fhm.ioc.ability.IActuator;
-import org.fhm.ioc.annotation.ScanPackageConfig;
 import org.fhm.ioc.config.AbstractConfiguration;
-import org.fhm.ioc.constant.Common;
 import org.fhm.ioc.service.*;
 import org.fhm.ioc.standard.ILoggerHandler;
 import org.fhm.ioc.standard.IStarter;
-import org.fhm.ioc.util.IOCExceptionUtil;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -40,8 +38,8 @@ public class Bootstrap {
         printBanner();
         logger.info("read VM parameter");
         VMParametersManage.getInstance().readVMOptionsFileParameters(starterClazz);
-        logger.info("start initial class and resource container");
-        initialClazzAndResourceContainer(starterClazz);
+        logger.info("start collect configuration file and class file");
+        collectConfigAndClassResource(starterClazz);
         logger.info("start auto setup bean");
         autoSetupObj();
         logger.info("start initial configuration");
@@ -75,40 +73,20 @@ public class Bootstrap {
     }
 
 
-    private static void initialClazzAndResourceContainer(
-            Class<? extends IStarter> starterClazz
+    private static void collectConfigAndClassResource(
+            Class<? extends IStarter> clazz
     ) {
         ResourceScanner scanner = ResourceScanner.getInstance();
-        Class<?> mainClazz;
-        String jarNameByClazz;
-        if (
-                Objects.nonNull((mainClazz = getMainClazz()))
-                        && !(jarNameByClazz = getJarNameByClazz(mainClazz)).isEmpty()
-        )
-            scanner.addScanJar(jarNameByClazz);
-        logger.info("start configure resource scanner");
-        newManageAnnotations = obtainManageAnnotation(starterClazz);
-        if (Objects.nonNull(newManageAnnotations))
-            scanner.addScanAnnotationClazz(newManageAnnotations);
-        ScanPackageConfig config;
-        if (Objects.nonNull(mainClazz) && Objects.nonNull((config = mainClazz.getAnnotation(ScanPackageConfig.class))))
-            scanner.addScanPackage(Arrays.asList(config.value()));
-        logger.info("start filter out the required resource path");
-        scanner.filterCPPath();
-        logger.info("scan the path to obtain the required resources and class files");
-        Map<String, Object> objContainer = AutoSetupExecutor.getInstance().getObjContainer();
-        scanner.scanRequiredSystem(objContainer);
-        scanner.scanRequiredFileAndSetupObj(objContainer);
-        scanner.clearCache();
-    }
-
-    private static List<Class<? extends Annotation>> obtainManageAnnotation(Class<? extends IStarter> starterClazz) {
-        try {
-            return starterClazz.newInstance().newManageMembers();
-        } catch (InstantiationException | IllegalAccessException e) {
-            logger.warn(e);
-            return null;
-        }
+        logger.info("start initialize resource scanner");
+        newManageAnnotations = scanner.initialize(clazz);
+        logger.info("start filter out the required class path");
+        scanner.filterClassPath();
+        logger.info("start fixed-point scanning");
+        scanner.scanRequiredSystem();
+        logger.info("start scan the path to obtain the required resources and class files");
+        scanner.scanRequiredFileAndSetupObj();
+        logger.info("start clear cache and create beans");
+        scanner.clearCacheAndCreateBeans();
     }
 
     private static void autoSetupObj() {
@@ -164,26 +142,5 @@ public class Bootstrap {
         });
     }
 
-    private static Class<?> getMainClazz() {
-        try {
-            for (StackTraceElement element : new RuntimeException().getStackTrace()) {
-                if ("main".equals(element.getMethodName())) {
-                    return Class.forName(element.getClassName());
-                }
-            }
-        } catch (ClassNotFoundException e) {
-            throw IOCExceptionUtil.generateNormalException(e);
-        }
-        return null;
-    }
 
-
-    private static String getJarNameByClazz(Class<?> clazz) {
-        String clazzPath = clazz.getProtectionDomain().getCodeSource().getLocation().getPath();
-        if (clazzPath.endsWith(Common.JAR_FILE_SUFFIX.getName())) {
-            return clazzPath.substring(clazzPath.lastIndexOf(File.separator) + 1);
-        } else {
-            return "";
-        }
-    }
 }
