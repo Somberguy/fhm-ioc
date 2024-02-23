@@ -3,7 +3,13 @@ package org.fhm.ioc.service;
 
 import org.fhm.ioc.constant.Common;
 
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.security.ProtectionDomain;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Classname ASMClassLoader
@@ -13,8 +19,13 @@ import java.security.ProtectionDomain;
  */
 public class IOCClassLoader extends ClassLoader {
 
-    public static IOCClassLoader getInstance() {
-        return Instance.instance;
+    private static final Map<URL[], URLClassLoader> classLoaderContainer = new HashMap<>();
+
+    public static Class<?> loadClass(URL url, String className) throws ClassNotFoundException, MalformedURLException {
+        URL[] urls = {url};
+        return classLoaderContainer.computeIfAbsent(
+                urls, k -> new URLClassLoader(urls)
+        ).loadClass(className);
     }
 
     public Class<?> loadByteArr(String clazz, byte[] bytes, ProtectionDomain domain) {
@@ -35,8 +46,11 @@ public class IOCClassLoader extends ClassLoader {
         }
     }
 
-    private static final class Instance {
+    public static IOCClassLoader getInstance(){
+        return Instance.instance;
+    }
 
-        public static IOCClassLoader instance = new IOCClassLoader();
+    private static final class Instance {
+        private static final IOCClassLoader instance = new IOCClassLoader();
     }
 }

@@ -15,11 +15,9 @@ import org.objectweb.asm.tree.ClassNode;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
-import java.net.JarURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
+import java.net.*;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
@@ -53,21 +51,6 @@ public class ResourceScanner {
 
     public static ResourceScanner getInstance() {
         return Instance.instance;
-    }
-
-    private List<AnnotationNode> getAnnotationNodes(ClassNode cn) {
-        List<AnnotationNode> nodes = new ArrayList<>();
-        List<AnnotationNode> visibleAnnotations;
-        List<AnnotationNode> invisibleAnnotations;
-        if (Objects.nonNull((visibleAnnotations = cn.visibleAnnotations))) {
-            nodes.addAll(visibleAnnotations);
-        }
-        if (
-                Objects.nonNull((invisibleAnnotations = cn.invisibleAnnotations))
-        ) {
-            nodes.addAll(invisibleAnnotations);
-        }
-        return nodes;
     }
 
     public void filterCPPath() {
@@ -122,6 +105,65 @@ public class ResourceScanner {
         }
     }
 
+    private void scanJarResource(Map<String, Object> objContainer) {
+        scanPackage.stream()
+                .map(oldPackageName -> oldPackageName.replace(".", "/"))
+                .forEach(packageName -> {
+                    Enumeration<URL> systemResources;
+                    try {
+                        systemResources = ClassLoader.getSystemResources(packageName);
+                    } catch (IOException e) {
+                        throw IOCExceptionUtil.generateResourceScannerException(e);
+                    }
+                    while (systemResources.hasMoreElements()) {
+                        URL url = systemResources.nextElement();
+                        JarFile jarFile = null;
+                        URLConnection urlConnection = null;
+                        try {
+                            if (Objects.nonNull(url)) {
+                                urlConnection = url.openConnection();
+                            }
+                            if (urlConnection instanceof JarURLConnection) {
+                                JarURLConnection jarURLConnection = (JarURLConnection) urlConnection;
+                                jarFile = jarURLConnection.getJarFile();
+                            }
+                        } catch (IOException e) {
+                            logger.error("failed to obtain package {} .jar resource", url, e);
+                            throw IOCExceptionUtil.generateResourceScannerException(e);
+                        }
+                        if (Objects.nonNull(jarFile)) {
+                            Enumeration<JarEntry> jarEntries = jarFile.entries();
+                            while (jarEntries.hasMoreElements()) {
+                                JarEntry jarEntry = jarEntries.nextElement();
+                                String jarEntryName = jarEntry.getName();
+                                InputStream jarInputStream;
+                                try {
+                                    jarInputStream = jarFile.getInputStream(jarEntry);
+                                } catch (IOException e) {
+                                    logger.error("failed to obtain current resource {} stream", jarEntry.getName(), e);
+                                    throw IOCExceptionUtil.generateResourceScannerException(e);
+                                }
+                                if (jarEntry.getName().endsWith(Common.CLASS_FILE_SUFFIX.getName())) {
+                                    collectManagementObjects(
+                                            url,
+                                            IOUtil.inStreamToByte(jarInputStream),
+                                            annotationClazzContainer,
+                                            objContainer
+                                    );
+                                }
+                                if (isRequiredResourceFile(jarEntryName) && Objects.isNull(AbstractConfiguration.resource.get(jarEntryName))) {
+                                    AbstractConfiguration.resource.put(
+                                            jarEntryName,
+                                            jarInputStream
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+        );
+    }
+
     private void dealDirectory(Map<String, Object> objContainer, File file) {
         try {
             Files.walkFileTree(file.toPath(), new SimpleFileVisitor<Path>() {
@@ -157,72 +199,35 @@ public class ResourceScanner {
         }
     }
 
-    private void scanJarResource(Map<String, Object> objContainer) {
-        scanPackage.stream()
-                .map(oldPackageName -> oldPackageName.replace(".", "/"))
-                .forEach(packageName -> {
-                    Enumeration<URL> systemResources;
-                    try {
-                        systemResources = ClassLoader.getSystemResources(packageName);
-                    } catch (IOException e) {
-                        throw IOCExceptionUtil.generateResourceScannerException(e);
-                    }
-                    while (systemResources.hasMoreElements()) {
-                        URL url = systemResources.nextElement();
-                        findClassJar(url, objContainer);
-                    }
-                }
-        );
-    }
-
-    private void findClassJar(URL url, Map<String, Object> objContainer) {
-        JarFile jarFile = null;
-        URLConnection urlConnection = null;
-        try {
-            if (Objects.nonNull(url)) {
-                urlConnection = url.openConnection();
-            }
-            if (urlConnection instanceof JarURLConnection) {
-                JarURLConnection jarURLConnection = (JarURLConnection) urlConnection;
-                jarFile = jarURLConnection.getJarFile();
-            }
-        } catch (IOException e) {
-            logger.error("failed to obtain package {} .jar resource", url, e);
-            throw IOCExceptionUtil.generateResourceScannerException(e);
-        }
-        if (Objects.nonNull(jarFile)) {
-            Enumeration<JarEntry> jarEntries = jarFile.entries();
-            while (jarEntries.hasMoreElements()) {
-                JarEntry jarEntry = jarEntries.nextElement();
-                String jarEntryName = jarEntry.getName();
-                dealInnerJarClassFile(objContainer, jarEntry, jarFile);
-                if (isRequiredResourceFile(jarEntryName) && AbstractConfiguration.resource.get(jarEntryName) == null) {
-                    try {
-                        AbstractConfiguration.resource.put(
-                                jarEntryName,
-                                jarFile.getInputStream(jarEntry)
-                        );
-                    } catch (IOException e) {
-                        logger.error("failed to obtain current resource {} stream", jarEntry.getName(), e);
-                        throw IOCExceptionUtil.generateResourceScannerException(e);
-                    }
-                }
-            }
-        }
-    }
 
     private void dealJarFile(File pathFile, Map<String, Object> objContainer, String requirePackageName) {
         try (JarFile jarFile = new JarFile(pathFile)) {
             Enumeration<JarEntry> entries = jarFile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry jarEntry = entries.nextElement();
+                InputStream jarInputStream;
+                try {
+                    jarInputStream = jarFile.getInputStream(jarEntry);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 String jarEntryName = jarEntry.getName();
                 if (!requirePackageName.isEmpty()) {
                     if (jarEntryName.contains(requirePackageName)) {
-                        dealInnerJarClassFile(objContainer, jarEntry, jarFile);
+                        collectManagementObjects(
+                                pathFile.toURI().toURL(),
+                                IOUtil.inStreamToByte(jarInputStream),
+                                annotationClazzContainer,
+                                objContainer
+                        );
                     }
                 } else {
-                    dealInnerJarClassFile(objContainer, jarEntry, jarFile);
+                    collectManagementObjects(
+                            pathFile.toURI().toURL(),
+                            IOUtil.inStreamToByte(jarInputStream),
+                            annotationClazzContainer,
+                            objContainer
+                    );
                 }
                 if (isRequiredResourceFile(jarEntryName)) {
                     AbstractConfiguration.resource.put(
@@ -237,23 +242,10 @@ public class ResourceScanner {
         }
     }
 
-    private void dealInnerJarClassFile(Map<String, Object> objContainer, JarEntry jarEntry, JarFile jarFile) {
-        if (jarEntry.getName().endsWith(Common.CLASS_FILE_SUFFIX.getName())) {
-            try {
-                collectManagementObjects(
-                        IOUtil.inStreamToByte(jarFile.getInputStream(jarEntry)),
-                        annotationClazzContainer,
-                        objContainer);
-            } catch (IOException e) {
-                logger.error("failed to obtain current resource {} stream", jarEntry.getName(), e);
-                throw IOCExceptionUtil.generateResourceScannerException(e);
-            }
-        }
-    }
-
     private void dealClassFile(File pathFile, Map<String, Object> objContainer) {
         try {
             collectManagementObjects(
+                    pathFile.toURI().toURL(),
                     IOUtil.file2Bytes(pathFile.getAbsolutePath()),
                     annotationClazzContainer,
                     objContainer
@@ -279,42 +271,33 @@ public class ResourceScanner {
         return (path = clazzFile.getAbsolutePath()).endsWith(Common.CLASS_FILE_SUFFIX.getName())
                 &&
                 scanPackage.stream()
-                        .map(packageName -> packageName.replace(".", File.separator))
-                        .anyMatch(interceptPackageName(path)::contains);
+                        .map(oldPackageName -> oldPackageName.replace(".", File.separator))
+                        .anyMatch(packageName -> {
+                            String filterSeparator;
+                            if (!path.contains((filterSeparator = Common.FILTER_CLASS_FILE_SEPARATOR.getName()))) {
+                                filterSeparator = Common.FILTER_TEST_CLASS_FILE_SEPARATOR.getName();
+                            }
+                            return packageName.contains(
+                                    path.substring(path.indexOf(filterSeparator) + filterSeparator.length() + 1)
+                            );
+                        });
     }
 
-    private String interceptPackageName(String path) {
-        String filterSeparator;
-        if (!path.contains((filterSeparator = Common.FILTER_CLASS_FILE_SEPARATOR.getName()))) {
-            filterSeparator = Common.FILTER_TEST_CLASS_FILE_SEPARATOR.getName();
-        }
-        return path.substring(path.indexOf(filterSeparator) + filterSeparator.length() + 1);
-    }
-
-    public void collectManagementObjects(
+    private void collectManagementObjects(
+            URL url,
             byte[] bytes,
             Set<Class<? extends Annotation>> annotations,
             Map<String, Object> objContainer) {
         String clazzName = obtainRequireClazzName(annotations, objContainer, bytes);
-        if (clazzName.isEmpty()) {
-            return;
-        }
-        try {
-            Class<?> srcClass = Class.forName(clazzName);
-            Class<?> aClass = IOCClassLoader
-                    .getInstance()
-                    .loadByteArr(clazzName, bytes, srcClass.getProtectionDomain());
-            if (Objects.nonNull(aClass)) {
-                objContainer
-                        .put(
-                                clazzName,
-                                aClass.getConstructor().newInstance()
-                        );
-            } else {
-                logger.warn(clazzName + " has been loaded");
-            }
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
-                 NoSuchMethodException | ClassNotFoundException ignore) {
+        if (!clazzName.isEmpty()){
+            try {
+                Class<?> clazz = IOCClassLoader.loadClass(url, clazzName);
+                if (Objects.nonNull(clazz)) {
+                    objContainer.put(clazzName, clazz.getConstructor().newInstance());
+                } else {
+                    logger.warn(clazzName + " has been loaded");
+                }
+            } catch (Exception ignore) {}
         }
     }
 
@@ -351,6 +334,21 @@ public class ResourceScanner {
             return "";
         }
         return className;
+    }
+
+    private List<AnnotationNode> getAnnotationNodes(ClassNode cn) {
+        List<AnnotationNode> nodes = new ArrayList<>();
+        List<AnnotationNode> visibleAnnotations;
+        List<AnnotationNode> invisibleAnnotations;
+        if (Objects.nonNull((visibleAnnotations = cn.visibleAnnotations))) {
+            nodes.addAll(visibleAnnotations);
+        }
+        if (
+                Objects.nonNull((invisibleAnnotations = cn.invisibleAnnotations))
+        ) {
+            nodes.addAll(invisibleAnnotations);
+        }
+        return nodes;
     }
 
     public void addScanAnnotationClazz(Collection<Class<? extends Annotation>> anno) {

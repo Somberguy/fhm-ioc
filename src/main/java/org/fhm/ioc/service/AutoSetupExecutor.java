@@ -68,7 +68,6 @@ public class AutoSetupExecutor {
                     ) {
                         String clazzName = "";
                         try {
-
                             Class<?> ata =
                                     IOCClassLoader.getInstance()
                                             .loadClass(
