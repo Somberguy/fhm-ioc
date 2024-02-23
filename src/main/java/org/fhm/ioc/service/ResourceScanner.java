@@ -89,10 +89,11 @@ public class ResourceScanner {
         List<Class<? extends Annotation>> newManageAnnotations = obtainManageAnnotation(starterClazz);
         if (Objects.nonNull(newManageAnnotations))
             this.annotationClazzContainer.addAll(newManageAnnotations);
-        ScanPackageConfig config;
-        if (Objects.nonNull(mainClazz) && Objects.nonNull((config = mainClazz.getAnnotation(ScanPackageConfig.class)))){
+        if (Objects.nonNull(mainClazz)){
+            ScanPackageConfig packageConfig;
             String[] packageNames;
-            if ((packageNames = config.value()).length == 0){
+            if (Objects.isNull((packageConfig = mainClazz.getAnnotation(ScanPackageConfig.class)))
+                    || (packageNames = packageConfig.value()).length == 0){
                 String defaultPackageName;
                 this.rangePackageNames.add((defaultPackageName = Common.PROJECT_PACKAGE_NAME.getName())
                         .replace(".", "/"));
