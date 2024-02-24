@@ -27,6 +27,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.regex.Pattern;
 
 import static org.objectweb.asm.Opcodes.*;
 
@@ -42,7 +43,7 @@ public class ResourceScanner {
 
     private Set<String> urls = new HashSet<>();
 
-    private Set<String> requirePackageNames = new HashSet<>();
+    private Set<Pattern> requirePackageNames = new HashSet<>();
 
     private Set<String> rangePackageNames = new HashSet<>();
 
@@ -95,14 +96,39 @@ public class ResourceScanner {
             if (Objects.isNull((packageConfig = mainClazz.getAnnotation(ScanPackageConfig.class)))
                     || (packageNames = packageConfig.value()).length == 0){
                 String defaultPackageName;
-                this.rangePackageNames.add((defaultPackageName = Common.PROJECT_PACKAGE_NAME.getName())
-                        .replace(".", "/"));
-                this.requirePackageNames.add(defaultPackageName.replace(".", File.separator));
+                this.rangePackageNames.add((
+                        defaultPackageName = Common.PROJECT_PACKAGE_NAME.getName())
+                        .replace("**", "").replace("*", "")
+                        .replaceFirst("\\.$", "").replace(".", "/")
+                );
+                this.requirePackageNames.add(obtainPattern(defaultPackageName));
             } else {
-
+                Arrays.stream(packageNames)
+                        .forEach(name -> {
+                            this.requirePackageNames.add(obtainPattern(name));
+                            this.rangePackageNames.add(
+                                    name.replaceFirst("\\.\\*.*$", "")
+                                            .replace("**", "")
+                                            .replace(".", "/")
+                            );
+                        });
             }
         }
         return newManageAnnotations;
+    }
+
+    private Pattern obtainPattern(String regex){
+        String ALL_MATCH = "**";
+        String ONE_MATCH = "*";
+        if (regex.contains(ALL_MATCH) || regex.contains(ONE_MATCH)){
+            String temp = "[a-zA-Z0-9]+";
+            String end = "." + temp + Common.CLASS_FILE_SUFFIX.getName() + "$";
+            if (regex.endsWith("**"))
+                end = ".*";
+            regex = "^.*" + regex.replace(ALL_MATCH, temp).replace(ONE_MATCH, temp) + end;
+        } else
+            regex = "^.*" + regex + ".*$";
+        return Pattern.compile(regex);
     }
 
     public void filterClassPath() {
@@ -180,12 +206,9 @@ public class ResourceScanner {
                             while (systemResources.hasMoreElements()) {
                                 URL url = systemResources.nextElement();
                                 JarFile jarFile = null;
-                                URLConnection urlConnection = null;
+                                URLConnection urlConnection;
                                 try {
-                                    if (Objects.nonNull(url)) {
-                                        urlConnection = url.openConnection();
-                                    }
-                                    if (urlConnection instanceof JarURLConnection) {
+                                    if (Objects.nonNull(url) && (urlConnection = url.openConnection()) instanceof JarURLConnection) {
                                         JarURLConnection jarURLConnection = (JarURLConnection) urlConnection;
                                         jarFile = jarURLConnection.getJarFile();
                                     }
@@ -326,16 +349,7 @@ public class ResourceScanner {
         String path;
         return (path = file.getAbsolutePath()).endsWith(Common.CLASS_FILE_SUFFIX.getName())
                 &&
-                requirePackageNames.stream()
-                        .map(oldPackageName -> oldPackageName.replace(".", File.separator))
-                        .anyMatch(packageName -> {
-                            String filterSeparator;
-                            if (!path.contains((filterSeparator = Common.FILTER_CLASS_FILE_SEPARATOR.getName())))
-                                filterSeparator = Common.FILTER_TEST_CLASS_FILE_SEPARATOR.getName();
-                            return path
-                                    .substring(path.indexOf(filterSeparator) + filterSeparator.length() + 1)
-                                    .contains(packageName);
-                        });
+                requirePackageNames.stream().anyMatch(pattern -> pattern.matcher(path.replace(File.separator, ".")).matches());
     }
 
     private void collectManagementObjects(

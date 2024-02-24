@@ -10,7 +10,7 @@ import org.fhm.ioc.service.DemoStarter;
  * @Date 2024/2/16 21:56
  * @Author by 月光叶
  */
-//@ScanPackageConfig("org.fhm.ioc") // scan package name
+@ScanPackageConfig("org.*.**") // scan package name
 public class DemoApplication {
     public static void main(String[] args) {
         Bootstrap.open(args, DemoStarter.class);

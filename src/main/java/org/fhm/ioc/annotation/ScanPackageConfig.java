@@ -15,6 +15,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ScanPackageConfig {
 
-    String[] value() default "org/fhm";
+    String[] value() default "org.fhm.**";
 
 }
