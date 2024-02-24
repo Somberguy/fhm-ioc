@@ -19,6 +19,12 @@
 （ 在个人看来`Spring-Framework`的`IOC`最大的优势是`Spring-Boot`的体系依赖于它。`Spring-Boot`
 成功利用操作系统BIOS程序的思想创建了优秀、完善的框架体系。）
 
+## 环境
+
+_开发语言：_ `Java`  
+_JDK-VERSION：_ 1.8  
+_开发OS：_ `Windows`、`Macos`
+
 ## 功能特性
 
 _请阅览_[quick-start_cn.md](quick-start_cn.md)
