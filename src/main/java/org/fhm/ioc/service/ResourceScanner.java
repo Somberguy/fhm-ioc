@@ -108,7 +108,6 @@ public class ResourceScanner {
                             this.requirePackageNames.add(obtainPattern(name));
                             this.rangePackageNames.add(
                                     name.replaceFirst("\\.\\*.*$", "")
-                                            .replace("**", "")
                                             .replace(".", "/")
                             );
                         });
@@ -364,7 +363,7 @@ public class ResourceScanner {
         if (IOCClassLoader.getInstance().isAddedClazz(className))
             return;
         int access = cn.access;
-        if ((access & ACC_INTERFACE) != 0 && (access & ACC_ABSTRACT) != 0) {
+        if ((access & ACC_INTERFACE) != 0 || (access & ACC_ABSTRACT) != 0) {
             IOCClassLoader.getInstance().putAbstractAndInterface(className);
             return;
         }
