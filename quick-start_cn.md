@@ -6,7 +6,7 @@ _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDe
 
 ### 示例：
 
-**程序启动类**
+#### ***程序启动类***
 
 ```java
 
@@ -19,7 +19,7 @@ public class DemoApplication {
 }
 ```  
 
-**`IStarter`接口实现**
+#### ***`IStarter`接口实现***
 
 ```java
 
@@ -54,7 +54,7 @@ public class DemoStarter implements IStarter {
 }
 ```  
 
-**自定义注入IOC注解标记**
+#### ***自定义注入`IOC`注解标记***
 
 ```java
     @Component // Specify a custom annotation
@@ -67,7 +67,7 @@ public class DemoStarter implements IStarter {
     }
 ```
 
-**自定义注解注入bean**
+#### ***自定义注解注入`bean`***
 
 ```java
 
@@ -96,7 +96,8 @@ public class Demo {
 }
 ```
 
-### 说明：
+### 示例说明：
+#### ***类***
 
 |         类         |                说明                 | 类型  |
 |:-----------------:|:---------------------------------:|:---:|
@@ -104,6 +105,8 @@ public class Demo {
 |   `DemoStarter`   |          `IStarter`接口实现           | 普通类 |  
 |  `DemoComponent`  | 自定义注入`IOC`注解标记，**需要添加@Component** | 注解  |
 |      `Demo`       |           `自定义注解注入bean`           | 普通类 |
+
+#### ***方法***
 
 |                                  方法                                   |                 参数                 |   返回值   |    异常    |                说明                |
 |:---------------------------------------------------------------------:|:----------------------------------:|:-------:|:--------:|:--------------------------------:|
@@ -115,13 +118,19 @@ public class Demo {
 |                         `void beanInitial()`                          |                 无                  |    无    | 自定义处理或抛出 | bean经过装载后初始化，**生命周期方法禁止有参数和返回值** |
 |                          `void beanEnable()`                          |                 无                  |    无    | 自定义处理或抛出 | bean经过初始化后启动，**生命周期方法禁止有参数和返回值** |
 
-|                    注解                     |                                   描述                                   |      值说明      |
-|:-----------------------------------------:|:----------------------------------------------------------------------:|:-------------:|
-| `@ScanPackageConfig("scan.package.name")` | 配置注入对象包扫描范围，默认"org.fhm"，表示扫描org.fhm下的所有子包，如org.fhm、org.fhm.a、org.fhm.b |     包扫描路径     |
-|               `@Component`                |                              `IOC`默认注入注解                               |   bean注入名称    |
-|             `@Setup("Demo")`              |                                bean装载注解                                | 需要装载的bean注入名称 |
-|              `@BeanInitial`               |                              标记bean初始化方法                               |       无       |
-|               `@BeanEnable`               |                               标记bean启动方法                               |       无       |
+#### ***注解***
+
+|                    注解                     |         描述          |      值说明      |
+|:-----------------------------------------:|:-------------------:|:-------------:|
+| `@ScanPackageConfig("scan.package.name")` | [包扫描匹配机制](#包扫描匹配机制) |     包扫描路径     |
+|               `@Component`                |     `IOC`默认注入注解     |   bean注入名称    |
+|             `@Setup("Demo")`              |      bean装载注解       | 需要装载的bean注入名称 |
+|              `@BeanInitial`               |     标记bean初始化方法     |       无       |
+|               `@BeanEnable`               |     标记bean启动方法      |       无       |
+
+### 关键点详解：
+#### ***包扫描匹配机制***
+
 
 ### 运行结果日记：
 
