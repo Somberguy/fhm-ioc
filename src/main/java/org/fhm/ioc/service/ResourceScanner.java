@@ -98,8 +98,8 @@ public class ResourceScanner {
                 String defaultPackageName;
                 this.rangePackageNames.add((
                         defaultPackageName = Common.PROJECT_PACKAGE_NAME.getName())
-                        .replace("**", "").replace("*", "")
-                        .replaceFirst("\\.$", "").replace(".", "/")
+                        .replaceFirst("\\.\\*.*$", "")
+                        .replace(".", "/")
                 );
                 this.requirePackageNames.add(obtainPattern(defaultPackageName));
             } else {
