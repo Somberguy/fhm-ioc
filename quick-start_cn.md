@@ -122,14 +122,14 @@ public class Demo {
 
 |                    注解                     |         描述          |      值说明      |
 |:-----------------------------------------:|:-------------------:|:-------------:|
-| `@ScanPackageConfig("scan.package.name")` | [包扫描匹配机制](#包扫描匹配机制) |     包扫描路径     |
+| `@ScanPackageConfig("scan.package.name")` | [扫描包匹配机制](#扫描包匹配机制) |     包扫描路径     |
 |               `@Component`                |     `IOC`默认注入注解     |   bean注入名称    |
 |             `@Setup("Demo")`              |      bean装载注解       | 需要装载的bean注入名称 |
 |              `@BeanInitial`               |     标记bean初始化方法     |       无       |
 |               `@BeanEnable`               |     标记bean启动方法      |       无       |
 
 ### 关键点详解：
-#### ***包扫描匹配机制***
+#### ***扫描包匹配机制***
 
 
 ### 运行结果日记：
