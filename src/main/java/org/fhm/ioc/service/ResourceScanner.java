@@ -385,7 +385,7 @@ public class ResourceScanner {
         }
         if (cn.methods.stream().noneMatch(m -> m.name.equals("<init>")
                 && m.desc.equals("()V") && m.access == ACC_PUBLIC)) {
-            logger.warn("class {} has no unmanaged parameterless constructor", cn.name);
+            logger.warn("the class {} does not have a parameterless constructor, which results in failure to inject into the IOC", className);
             return;
         }
         if (!className.isEmpty()) {
