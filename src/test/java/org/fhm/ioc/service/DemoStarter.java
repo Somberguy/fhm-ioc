@@ -4,6 +4,7 @@ import org.fhm.ioc.annotation.Component;
 import org.fhm.ioc.annotation.DemoComponent;
 import org.fhm.ioc.annotation.DemoTestComponent;
 import org.fhm.ioc.annotation.Setup;
+import org.fhm.ioc.bean.DemoAttach;
 import org.fhm.ioc.bean.IDemoTest;
 import org.fhm.ioc.standard.IStarter;
 
@@ -20,6 +21,9 @@ import java.util.Map;
  */
 @Component // Inject into the IOC
 public class DemoStarter implements IStarter {
+
+    @Setup
+    private DemoAttach attach;
 
     @Setup("Demo") // Load from the IOC
     private IDemoTest demo;
@@ -49,6 +53,7 @@ public class DemoStarter implements IStarter {
 
     @Override
     public void start(String[] args) throws Exception {
+        attach.test();
         demo.test(); // Runs test method of the Demo
         demoAttach.test(); // Runs test method of the DemoAttach
         iDemoTestMap.forEach((k, v) -> v.test());

@@ -26,16 +26,30 @@ public class DemoApplication {
 #### ***`IStarter`接口实现***
 
 ```java
-
 @Component // Inject into the IOC
 public class DemoStarter implements IStarter {
 
-    @Setup("Demo") // Load from the IOC
-    private Demo demo;
+    @Setup // Load from the IOC 
+    private DemoAttach attach;
+    
+    @Setup("Demo") // Load from the IOC by interface or abstract-class
+    private IDemoTest demo;
+
+    @Setup("->test.demo.bean.name") 
+    // Specifies that the reference of the test.demo.bean.name
+    // attribute in the configuration
+    // file is the name of the loading object
+    private IDemoTest demoAttach;
+
+    @Setup // Mapping loads bean mechanisms
+    private Map<String, IDemoTest> iDemoTestMap;
 
     @Override
     public List<Class<? extends Annotation>> newManageMembers() {
-        return Collections.singletonList(DemoComponent.class); // Returns a collection of annotations for custom injection containers
+        ArrayList<Class<? extends Annotation>> classes = new ArrayList<>();
+        classes.add(DemoComponent.class);
+        classes.add(DemoTestComponent.class);
+        return classes; // Returns a collection of annotations for custom injection containers
     }
 
     @Override
@@ -47,7 +61,9 @@ public class DemoStarter implements IStarter {
 
     @Override
     public void start(String[] args) throws Exception {
-        demo.test(); // Runs test method of the demo
+        demo.test(); // Runs test method of the Demo
+        demoAttach.test(); // Runs test method of the DemoAttach
+        iDemoTestMap.forEach((k, v) -> v.test());
     }
 
     @Override
@@ -124,22 +140,44 @@ public class Demo {
 
 #### ***注解***
 
-|                    注解                     |         描述          |      值说明      |
-|:-----------------------------------------:|:-------------------:|:-------------:|
-| `@ScanPackageConfig("scan.package.name")` | [扫描包匹配规则](#扫描包匹配规则) |     包扫描路径     |
-|               `@Component`                |     `IOC`默认注入注解     |   bean注入名称    |
-|             `@Setup("Demo")`              |      bean装载注解       | 需要装载的bean注入名称 |
-|              `@BeanInitial`               |     标记bean初始化方法     |       无       |
-|               `@BeanEnable`               |     标记bean启动方法      |       无       |
+|                    注解                     |         描述          |       值说明       |
+|:-----------------------------------------:|:-------------------:|:---------------:|
+| `@ScanPackageConfig("scan.package.name")` | [扫描包匹配规则](#扫描包匹配规则) |      包扫描路径      |
+|               `@Component`                |     `IOC`默认注入注解     |   `bean`注入名称    |
+|                 `@Setup`                  | [`bean`装载](#bean装载) | 需要装载的`bean`注入名称 |
+|              `@BeanInitial`               |    标记`bean`初始化方法    |        无        |
+|               `@BeanEnable`               |    标记`bean`启动方法     |        无        |
 
 ### 关键点详解：
+
+#### ***生命周期***
+![lifeCycleFlowDiagram.png](lifeCycleFlowDiagram.png)
 
 #### ***扫描包匹配规则***
 1. 注解`@ScanPackageConfig`必须在程序入口方法对应的类上。
 2. 注解`@ScanPackageConfig`的值必须至少包含被扫描包第一级目录。  
    如`scan.package.name`必须含有`scan`。
+3. `**`表示任意级目录；`*`表示一级目录。  
+   如匹配`scan.package.name.bean`、`scan.package.name.config`、`scan.package.name.xxx`，  
+   值可以设置为`scan.**`、`scan.**.name.*`、`scan.package.name.*`、`scan.*.name.bean`
 
-#### ***生命周期***
+#### ***bean装载***
+
+1. 根据类装载：
+```java
+    @Setup 
+    // 通过类装载
+    // 注解值可以选择性赋值
+    private DemoAttach attach;
+```
+
+2. 根据接口或者抽象类装载：
+```java
+    @Setup("Demo")
+    // 通过接口或者抽象类装载
+    // 多个实现需要赋值注解值为其某个实现对象的注入名称
+    private IDemoTest demo;
+```
 
 
 ### 运行结果日记：
