@@ -4,7 +4,7 @@
 
 _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDemoApplication.java)
 
-### <p style="color: red">使用注意事项</p>
+#### ***使用注意事项***
 
 1. 被注入bean必须含有无参构造器
 2. 注解`@ScanPackageConfig`必须在程序入口方法对应的类上
