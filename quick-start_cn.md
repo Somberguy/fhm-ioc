@@ -154,8 +154,8 @@ public class Demo {
 15:13:45.494 [main] INFO org.fhm.ioc.manager.Bootstrap - read VM parameter  
 16:15:52.158 [main] INFO org.fhm.ioc.manager.Bootstrap - start initial class and resource container  
 16:15:52.173 [main] INFO org.fhm.ioc.manager.Bootstrap - start configure resource scanner  
-16:15:52.213 [main] INFO org.fhm.ioc.manager.Bootstrap - start filter out the required resource path  
-16:15:52.216 [main] INFO org.fhm.ioc.manager.Bootstrap - scan the path to obtain the required resources and class files  
+16:15:52.213 [main] INFO org.fhm.ioc.manager.Bootstrap - start filter out the require resource path  
+16:15:52.216 [main] INFO org.fhm.ioc.manager.Bootstrap - scan the path to obtain the require resources and class files  
 16:15:52.238 [main] INFO org.fhm.ioc.service.ResourceScanner - start to obtain the class files of CP  
 16:15:52.518 [main] INFO org.fhm.ioc.service.ResourceScanner - start to obtain the class files in nested packages  
 16:15:52.519 [main] INFO org.fhm.ioc.manager.Bootstrap - start auto setup bean  
