@@ -29,6 +29,10 @@ public class IOCExceptionUtil {
         return new ResourceScannerException(e.getMessage(), e);
     }
 
+    public static ResourceScannerException generateResourceScannerException(String message, Exception e) {
+        return new ResourceScannerException(message, e);
+    }
+
 
     public static ConfigurationException generateConfigurationException(String msg, Exception e) {
         return new ConfigurationException(msg, e);

@@ -1,6 +1,7 @@
 package org.fhm.ioc.service;
 
 
+import java.lang.reflect.Constructor;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.*;
@@ -27,14 +28,10 @@ public class IOCClassLoader {
         URL[] urls = urlContainer.toArray(new URL[]{});
         try (URLClassLoader loader = new URLClassLoader(urls)) {
             for (String clazzName : clazzNamesContainer) {
-                objContainer.put(
-                        clazzName,
-                        loader.loadClass(clazzName)
-                                .getConstructor()
-                                .newInstance()
-                );
+                Constructor<?> constructor = loader.loadClass(clazzName).getDeclaredConstructor();
+                constructor.setAccessible(true);
+                objContainer.put(clazzName, constructor.newInstance());
             }
-
             for (String className : abstractAndInterface.keySet()) {
                 abstractAndInterface.put(className, loader.loadClass(className));
             }

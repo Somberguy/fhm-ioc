@@ -19,6 +19,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -48,6 +50,8 @@ public class ResourceScanner {
     private Set<String> rangePackageNames = new HashSet<>();
 
     private Set<Class<? extends Annotation>> annotationClazzContainer = new HashSet<>(2);
+
+    private Class<? extends IStarter> starterClazz;
 
     private String ownerJarName;
 
@@ -81,6 +85,7 @@ public class ResourceScanner {
     }
 
     public List<Class<? extends Annotation>> initialize(Class<? extends IStarter> starterClazz) {
+        this.starterClazz = starterClazz;
         Class<?> mainClazz;
         if (
             Objects.nonNull((mainClazz = getMainClazz()))
@@ -187,10 +192,16 @@ public class ResourceScanner {
 
     private List<Class<? extends Annotation>> obtainManageAnnotation(Class<? extends IStarter> starterClazz) {
         try {
-            return starterClazz.newInstance().newManageMembers();
-        } catch (InstantiationException | IllegalAccessException e) {
-            logger.warn(e);
+            Constructor<? extends IStarter> constructor = starterClazz.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            IStarter iStarter = constructor.newInstance();
+            AutoSetupExecutor.getInstance().getObjContainer().put(starterClazz.getName(), iStarter);
+            return iStarter.newManageMembers();
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException ignore) {
             return null;
+        } catch (NoSuchMethodException e) {
+            throw IOCExceptionUtil.generateResourceScannerException("a starter class " + starterClazz.getName()
+                    + " must have a parameterless constructor.", e);
         }
     }
 
@@ -360,6 +371,8 @@ public class ResourceScanner {
         ClassNode cn = new ClassNode();
         cr.accept(cn, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
         String className = Type.getObjectType(cn.name).getClassName();
+        if (className.isEmpty() || className.equals(starterClazz.getName()))
+            return;
         if (IOCClassLoader.getInstance().isAddedClazz(className))
             return;
         int access = cn.access;
@@ -384,13 +397,11 @@ public class ResourceScanner {
             }
         }
         if (cn.methods.stream().noneMatch(m -> m.name.equals("<init>")
-                && m.desc.equals("()V") && m.access == ACC_PUBLIC)) {
-            logger.warn("the class {} does not have a parameterless constructor, which results in failure to inject into the IOC", className);
+                && m.desc.equals("()V"))) {
+            logger.error("the class {} does not have a parameterless constructor, which results in failure to inject into the IOC", className);
             return;
         }
-        if (!className.isEmpty()) {
-            IOCClassLoader.getInstance().put(url, className);
-        }
+        IOCClassLoader.getInstance().put(url, className);
     }
 
     private List<AnnotationNode> getAnnotationNodes(ClassNode cn) {
