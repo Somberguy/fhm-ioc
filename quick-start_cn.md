@@ -112,15 +112,15 @@ public class Demo {
 
 #### ***方法***
 
-|                                  方法                                   |                 参数                 |   返回值   |    异常    |         说明          |
-|:---------------------------------------------------------------------:|:----------------------------------:|:-------:|:--------:|:-------------------:|
-|               `Bootstrap.open(args, DemoStarter.class)`               |  1. 程序入口参数；2. 自定义接口`IStarter`实现类   |    无    |    无     |      `IOC`启动方法      |
-|        `List<Class<? extends Annotation>> newManageMembers()`         |                 无                  | 自定义注解集合 |  自定义处理   |   添加自定义注入`IOC`注解    |
-| `void manageNotify(List<?> beans, Class<? extends Annotation> clazz)` | 1. 被参数2自定义注入注解管理bean集合； 2. 自定义注入注解 |    无    | 自定义处理或抛出 | 对参数2标记的对象集合做用户自定义处理 |
-|             `void start(String[] args) throws Exception`              |             1. 程序入口参数              |    无    | 自定义处理或抛出 |      开始执行用户程序       |
-|                    `void close() throws Exception`                    |             `IOC`关闭回调              |    无    | 自定义处理或抛出 |      `IOC`关闭回调      |
-|                         `void beanInitial()`                          |                 无                  |    无    | 自定义处理或抛出 |    [生命周期](#生命周期)    |
-|                          `void beanEnable()`                          |                 无                  |    无    | 自定义处理或抛出 |    [生命周期](#生命周期)    |
+|                                  方法                                   |                参数                 |   返回值   |    异常    |           说明            |
+|:---------------------------------------------------------------------:|:---------------------------------:|:-------:|:--------:|:-----------------------:|
+|               `Bootstrap.open(args, DemoStarter.class)`               |  1. 程序入口参数；2. 自定义接口`IStarter`实现类  |    无    |    无     |        `IOC`启动方法        |
+|        `List<Class<? extends Annotation>> newManageMembers()`         |                 无                 | 自定义注解集合 |  自定义处理   |     添加自定义注入`IOC`注解      |
+| `void manageNotify(List<?> beans, Class<? extends Annotation> clazz)` | 1. 被自定义注入注解管理`bean`集合； 2. 自定义注入注解 |    无    | 自定义处理或抛出 | 对参数`beans`标记的对象集合做自定义处理 |
+|             `void start(String[] args) throws Exception`              |             1. 程序入口参数             |    无    | 自定义处理或抛出 |        开始执行用户程序         |
+|                    `void close() throws Exception`                    |             `IOC`关闭回调             |    无    | 自定义处理或抛出 |        `IOC`关闭回调        |
+|                         `void beanInitial()`                          |                 无                 |    无    | 自定义处理或抛出 |      [生命周期](#生命周期)      |
+|                          `void beanEnable()`                          |                 无                 |    无    | 自定义处理或抛出 |      [生命周期](#生命周期)      |
 
 #### ***注解***
 
