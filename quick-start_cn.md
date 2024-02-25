@@ -4,6 +4,13 @@
 
 _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDemoApplication.java)
 
+### <p style="color: red">使用注意事项</p>
+
+1. 被注入bean必须含有无参构造器
+2. 注解`@ScanPackageConfig`必须在程序入口方法对应的类上
+3. 注解`@ScanPackageConfig`的值必须至少包含被扫描包第一级目录。  
+如`scan.package.name`必须含有`scan`， 细则请看[扫描包匹配规则](#扫描包匹配规则)
+
 ### 示例：
 
 #### ***程序启动类***
