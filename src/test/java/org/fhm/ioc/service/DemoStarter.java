@@ -24,10 +24,12 @@ public class DemoStarter implements IStarter {
     @Setup("Demo") // Load from the IOC
     private IDemoTest demo;
 
-    @Setup("->test.demo.bean.name")
+    @Setup("->test.demo.bean.name") // Specifies that the reference of the test.demo.bean.name
+                                    // attribute in the configuration
+                                    // file is the name of the loading object
     private IDemoTest demoAttach;
 
-    @Setup
+    @Setup // Mapping loads bean mechanisms
     private Map<String, IDemoTest> iDemoTestMap;
 
     @Override

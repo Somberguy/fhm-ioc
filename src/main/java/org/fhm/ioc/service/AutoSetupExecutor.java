@@ -43,12 +43,7 @@ public class AutoSetupExecutor {
     }
 
     public void autoSetup() {
-        objContainer.forEach(
-                (k, v) -> {
-                    Class<?> clazz = v.getClass();
-                    setupValueAndFilter(v, clazz, objContainer);
-                }
-        );
+        objContainer.forEach((k, v) -> setupValueAndFilter(v, v.getClass(), objContainer));
         IOCClassLoader.getInstance().clearCache();
     }
 

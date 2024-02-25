@@ -102,29 +102,6 @@ public class Bootstrap {
         executor.beanDistribute();
     }
 
-    private static void executeBeanOptimizer(String[] args, Class<? extends IStarter> starterClazz) {
-        BeanOptimizer beanOptimizer = BeanOptimizer.getInstance();
-        logger.info("clear not necessary implement and cache");
-        beanOptimizer.clearNotNecessaryObj();
-        logger.info("start bean initial");
-        beanOptimizer.beansInitial();
-        logger.info("start bean enable");
-        beanOptimizer.beansEnable();
-        logger.info("clear cache data");
-        AbstractConfiguration.clearMemory();
-        printMemory();
-        IOCCostTimer.getInstance().endAndPrint();
-        logger.info("enable project complete");
-        beanOptimizer.start(args, newManageAnnotations, starterClazz);
-    }
-
-    private static void printMemory() {
-        Runtime runtime = Runtime.getRuntime();
-        logger.info("current maximum heap memory: {}MB", runtime.maxMemory() / 1024 / 1024);
-        long costMemory = (runtime.totalMemory() - runtime.freeMemory()) / 1024;
-        logger.info("current cost memory: {}MB {}KB", costMemory / 1024, costMemory % 1024);
-    }
-
     private static void initialConfiguration() {
         AbstractConfiguration.configObj.forEach((k, obj) -> {
             if (obj instanceof IActuator) {
@@ -143,5 +120,28 @@ public class Bootstrap {
         });
     }
 
+    private static void executeBeanOptimizer(String[] args, Class<? extends IStarter> starterClazz) {
+        BeanOptimizer beanOptimizer = BeanOptimizer.getInstance();
+        logger.info("clear not necessary implement and cache");
+        beanOptimizer.clearNotNecessaryObj();
+        logger.info("start bean initial");
+        beanOptimizer.beansInitial();
+        logger.info("start bean enable");
+        beanOptimizer.beansEnable();
+        logger.info("clear cache data");
+        AbstractConfiguration.clearMemory();
+        printMachineCurrentStatus();
+        IOCCostTimer.getInstance().endAndPrint();
+        logger.info("enable project complete");
+        beanOptimizer.start(args, newManageAnnotations, starterClazz);
+    }
+
+    private static void printMachineCurrentStatus() {
+        Runtime runtime = Runtime.getRuntime();
+        logger.info("current the number of available processors : {}", runtime.availableProcessors());
+        logger.info("current maximum heap memory: {}MB", runtime.maxMemory() / 1024 / 1024);
+        long costMemory = (runtime.totalMemory() - runtime.freeMemory()) / 1024;
+        logger.info("current cost memory: {}MB {}KB", costMemory / 1024, costMemory % 1024);
+    }
 
 }
