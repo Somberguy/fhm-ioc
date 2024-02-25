@@ -2,7 +2,7 @@
 
 ## _使用须知注意事项：_
 
-1. 被注入`bean`必须含有无参构造器，即被@Component、@Configuration或者自定义注入注解标记的类必须含有无参构造器。
+1. 被注入`bean`必须含有无参构造器，即被`@Component`、`@Configuration`或者自定义注入注解标记的类必须含有无参构造器。
 
 ## Quick Start
 
@@ -117,6 +117,7 @@ public class Demo {
 ```
 
 ### 示例说明：
+
 #### ***类***
 
 |         类         |                说明                 | 类型  |
@@ -151,9 +152,11 @@ public class Demo {
 ### 关键点详解：
 
 #### ***生命周期***
+
 ![lifeCycleFlowDiagram.png](lifeCycleFlowDiagram.png)
 
 #### ***扫描包匹配规则***
+
 1. 注解`@ScanPackageConfig`必须在程序入口方法对应的类上。
 2. 注解`@ScanPackageConfig`的值必须至少包含被扫描包第一级目录。  
    如`scan.package.name`必须含有`scan`。
