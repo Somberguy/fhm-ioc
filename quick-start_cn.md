@@ -32,7 +32,10 @@ public class DemoStarter implements IStarter {
     @Setup // Load from the IOC 
     private DemoAttach attach;
     
-    @Setup("Demo") // Load from the IOC by interface or abstract-class
+    @Setup("Demo") 
+    // Load from the IOC by interface or abstract-class.
+    // Multiple implementations need to be annotated with values that 
+    // correspond to the injection names of their respective implementation objects.
     private IDemoTest demo;
 
     @Setup("->test.demo.bean.name") 
@@ -180,6 +183,21 @@ public class Demo {
     // 通过接口或者抽象类装载
     // 多个实现需要赋值注解值为其某个实现对象的注入名称
     private IDemoTest demo;
+```
+
+3. 根据配置文件属性值装载：
+```java
+    @Setup("->test.demo.bean.name") 
+    // 指定配置文件中test.demo.bean.name属性值为对象的注入名称
+    private IDemoTest demoAttach;
+```
+
+4. 根据映射机制装载：
+```java
+    @Setup 
+    // 注解值不填
+    // map容器映射装载，key为接口或者抽象类实现的类名称，value为实现对象
+    private Map<String, IDemoTest> iDemoTestMap;
 ```
 
 
