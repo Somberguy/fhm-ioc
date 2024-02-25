@@ -112,15 +112,15 @@ public class Demo {
 
 #### ***方法***
 
-|                                  方法                                   |                 参数                 |   返回值   |    异常    |                说明                |
-|:---------------------------------------------------------------------:|:----------------------------------:|:-------:|:--------:|:--------------------------------:|
-|               `Bootstrap.open(args, DemoStarter.class)`               |  1. 程序入口参数；2. 自定义接口`IStarter`实现类   |    无    |    无     |            `IOC`启动方法             |
-|        `List<Class<? extends Annotation>> newManageMembers()`         |                 无                  | 自定义注解集合 |  自定义处理   |          添加自定义注入`IOC`注解          |
-| `void manageNotify(List<?> beans, Class<? extends Annotation> clazz)` | 1. 被参数2自定义注入注解管理bean集合； 2. 自定义注入注解 |    无    | 自定义处理或抛出 |       对参数2标记的对象集合做用户自定义处理        |
-|             `void start(String[] args) throws Exception`              |             1. 程序入口参数              |    无    | 自定义处理或抛出 |             开始执行用户程序             |
-|                    `void close() throws Exception`                    |             `IOC`关闭回调              |    无    | 自定义处理或抛出 |            `IOC`关闭回调             |
-|                         `void beanInitial()`                          |                 无                  |    无    | 自定义处理或抛出 | bean经过装载后初始化，**生命周期方法禁止有参数和返回值** |
-|                          `void beanEnable()`                          |                 无                  |    无    | 自定义处理或抛出 | bean经过初始化后启动，**生命周期方法禁止有参数和返回值** |
+|                                  方法                                   |                 参数                 |   返回值   |    异常    |         说明          |
+|:---------------------------------------------------------------------:|:----------------------------------:|:-------:|:--------:|:-------------------:|
+|               `Bootstrap.open(args, DemoStarter.class)`               |  1. 程序入口参数；2. 自定义接口`IStarter`实现类   |    无    |    无     |      `IOC`启动方法      |
+|        `List<Class<? extends Annotation>> newManageMembers()`         |                 无                  | 自定义注解集合 |  自定义处理   |   添加自定义注入`IOC`注解    |
+| `void manageNotify(List<?> beans, Class<? extends Annotation> clazz)` | 1. 被参数2自定义注入注解管理bean集合； 2. 自定义注入注解 |    无    | 自定义处理或抛出 | 对参数2标记的对象集合做用户自定义处理 |
+|             `void start(String[] args) throws Exception`              |             1. 程序入口参数              |    无    | 自定义处理或抛出 |      开始执行用户程序       |
+|                    `void close() throws Exception`                    |             `IOC`关闭回调              |    无    | 自定义处理或抛出 |      `IOC`关闭回调      |
+|                         `void beanInitial()`                          |                 无                  |    无    | 自定义处理或抛出 |    [生命周期](#生命周期)    |
+|                          `void beanEnable()`                          |                 无                  |    无    | 自定义处理或抛出 |    [生命周期](#生命周期)    |
 
 #### ***注解***
 
@@ -133,10 +133,14 @@ public class Demo {
 |               `@BeanEnable`               |     标记bean启动方法      |       无       |
 
 ### 关键点详解：
+
 #### ***扫描包匹配规则***
 1. 注解`@ScanPackageConfig`必须在程序入口方法对应的类上。
 2. 注解`@ScanPackageConfig`的值必须至少包含被扫描包第一级目录。  
    如`scan.package.name`必须含有`scan`。
+
+#### ***生命周期***
+
 
 ### 运行结果日记：
 
