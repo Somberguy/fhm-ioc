@@ -4,12 +4,9 @@
 
 _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDemoApplication.java)
 
-#### ***使用注意事项***
+### _使用须知注意事项：_
 
-1. 被注入bean必须含有无参构造器
-2. 注解`@ScanPackageConfig`必须在程序入口方法对应的类上
-3. 注解`@ScanPackageConfig`的值必须至少包含被扫描包第一级目录。  
-如`scan.package.name`必须含有`scan`， 细则请看[扫描包匹配规则](#扫描包匹配规则)
+1. 被注入`bean`必须含有无参构造器。
 
 ### 示例：
 
@@ -137,7 +134,9 @@ public class Demo {
 
 ### 关键点详解：
 #### ***扫描包匹配规则***
-
+1. 注解`@ScanPackageConfig`必须在程序入口方法对应的类上。
+2. 注解`@ScanPackageConfig`的值必须至少包含被扫描包第一级目录。  
+   如`scan.package.name`必须含有`scan`。
 
 ### 运行结果日记：
 
