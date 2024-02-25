@@ -6,7 +6,7 @@ _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDe
 
 ### _使用须知注意事项：_
 
-1. 被注入`bean`必须含有无参构造器。
+1. 被注入`bean`必须含有无参构造器，即被@Component、@Configuration或者自定义注入注解标记的类必须含有无参构造器。
 
 ### 示例：
 
