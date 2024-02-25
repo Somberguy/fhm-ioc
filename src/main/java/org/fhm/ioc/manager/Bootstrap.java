@@ -80,7 +80,7 @@ public class Bootstrap {
         ResourceScanner scanner = ResourceScanner.getInstance();
         logger.info("start initialize resource scanner");
         newManageAnnotations = scanner.initialize(clazz);
-        logger.info("start filter out the require CP");
+        logger.info("start filter out the required CP");
         scanner.filterClassPath();
         logger.info("start fixed-point scanning");
         scanner.scanRequiredSystem();
