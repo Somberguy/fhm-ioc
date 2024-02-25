@@ -165,7 +165,7 @@ public class Demo {
    如`scan.package.name`必须含有`scan`。
 3. `**`表示任意级目录；`*`表示一级目录。  
    如匹配`scan.package.name.bean`、`scan.package.name.config`、`scan.package.name.xxx`，  
-   值可以设置为`scan.**`、`scan.**.name.*`、`scan.package.name.*`、`scan.*.name.bean`
+   值可以设置为`scan.**`、`scan.**.name.*`、`scan.package.name.*`、`scan.*.name.*`
 
 #### ***bean装载***
 
