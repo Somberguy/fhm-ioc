@@ -151,12 +151,11 @@ public class Demo {
         ██      ██   ██ ██      ██       ██  ██████   ██████
         ============================version 1.0.0 release===
 
-15:13:45.494 [main] INFO org.fhm.ioc.manager.Bootstrap - read VM parameter
+15:13:45.494 [main] INFO org.fhm.ioc.manager.Bootstrap - read VM parameter  
 16:15:52.158 [main] INFO org.fhm.ioc.manager.Bootstrap - start initial class and resource container  
 16:15:52.173 [main] INFO org.fhm.ioc.manager.Bootstrap - start configure resource scanner  
 16:15:52.213 [main] INFO org.fhm.ioc.manager.Bootstrap - start filter out the required resource path  
-16:15:52.216 [main] INFO org.fhm.ioc.manager.Bootstrap - scan the path to obtain the required resources and class
-files  
+16:15:52.216 [main] INFO org.fhm.ioc.manager.Bootstrap - scan the path to obtain the required resources and class files  
 16:15:52.238 [main] INFO org.fhm.ioc.service.ResourceScanner - start to obtain the class files of CP  
 16:15:52.518 [main] INFO org.fhm.ioc.service.ResourceScanner - start to obtain the class files in nested packages  
 16:15:52.519 [main] INFO org.fhm.ioc.manager.Bootstrap - start auto setup bean  
@@ -165,8 +164,7 @@ files
 16:15:52.531 [main] INFO org.fhm.ioc.manager.Bootstrap - auto setup map obj  
 16:15:52.532 [main] INFO org.fhm.ioc.manager.Bootstrap - distribute bean  
 16:15:52.535 [main] INFO org.fhm.ioc.manager.Bootstrap - start initial configuration  
-16:15:52.599 [main] WARN org.fhm.ioc.config.AbstractConfiguration - the default configuration file demo.properties was
-not scanned  
+16:15:52.599 [main] WARN org.fhm.ioc.config.AbstractConfiguration - the default configuration file demo.properties was not scanned  
 16:15:52.616 [main] INFO org.fhm.ioc.manager.Bootstrap - start optimize bean  
 16:15:52.616 [main] INFO org.fhm.ioc.manager.Bootstrap - clear not necessary implement and cache  
 16:15:52.617 [main] INFO org.fhm.ioc.manager.Bootstrap - start bean initial  
