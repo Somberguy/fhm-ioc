@@ -2,7 +2,7 @@
 
 ## _使用须知注意事项：_
 
-1. 被注入`bean`必须含有无参构造器，即被`@Component`、`@Configuration`或者自定义注入注解标记的类必须含有无参构造器。
+1. 被注入`bean`必须含有无参构造方法，即被`@Component`、`@Configuration`或者自定义注入注解标记的类必须含有无参构造方法。
 
 ## Quick Start
 
@@ -167,7 +167,7 @@ public class Demo {
    如匹配`scan.package.name.bean`、`scan.package.name.config`、`scan.package.name.xxx`，  
    值可以设置为`scan.**`、`scan.**.name.*`、`scan.package.name.*`、`scan.*.name.*`
 
-#### ***bean装载***
+#### ***`bean`装载***
 
 1. 根据类装载：
 ```java
