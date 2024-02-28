@@ -77,7 +77,7 @@ public class DemoStarter implements IStarter {
 }
 ```  
 
-#### ***自定义注入`IOC`注解标记***
+#### ***自定义注入注解***
 
 ```java
     @Component // Specify a custom annotation
@@ -90,7 +90,7 @@ public class DemoStarter implements IStarter {
     }
 ```
 
-#### ***自定义注解注入`bean`***
+#### ***自定义注入注解注入`IOC`***
 
 ```java
 
@@ -123,12 +123,12 @@ public class Demo {
 
 #### ***类***
 
-|         类         |                说明                 | 类型  |
-|:-----------------:|:---------------------------------:|:---:|
-| `DemoApplication` |               程序启动类               | 普通类 |
-|   `DemoStarter`   |          `IStarter`接口实现           | 普通类 |  
-|  `DemoComponent`  | 自定义注入`IOC`注解标记，**需要添加@Component** | 注解  |
-|      `Demo`       |           `自定义注解注入bean`           | 普通类 |
+|         类         |              说明              | 类型  |
+|:-----------------:|:----------------------------:|:---:|
+| `DemoApplication` |            程序启动类             | 普通类 |
+|   `DemoStarter`   |        `IStarter`接口实现        | 普通类 |  
+|  `DemoComponent`  | 自定义注入注解，**需要添加`@Component`** | 注解  |
+|      `Demo`       |        自定义注入注解注入`IOC`        | 普通类 |
 
 #### ***方法***
 
