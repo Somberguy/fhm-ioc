@@ -2,7 +2,7 @@
 
 ## _使用注意事项：_
 
-被注入`bean`必须含有无参构造方法，  
+* 被注入`bean`必须含有无参构造方法，  
 即被`@Component`、`@Configuration`或者自定义注入注解标记的类必须含有无参构造方法。
 
 ## Quick Start
@@ -162,16 +162,16 @@ public class Demo {
 
 #### ***扫描包匹配规则***
 
-1. 注解`@ScanPackageConfig`必须在程序入口方法对应的类上。
-2. 注解`@ScanPackageConfig`的值必须至少包含被扫描包第一级目录。  
+* 注解`@ScanPackageConfig`必须在程序入口方法对应的类上。
+* 注解`@ScanPackageConfig`的值必须至少包含被扫描包第一级目录。  
    如`scan.package.name`必须含有`scan`。
-3. `**`表示任意级目录；`*`表示一级目录。  
+* `**`表示任意级目录；`*`表示一级目录。  
    如匹配`scan.package.name.bean`、`scan.package.name.config`、`scan.package.name.xxx`，  
    值可以设置为`scan.**`、`scan.**.name.*`、`scan.package.name.*`、`scan.*.name.*`
 
 #### ***`bean`装载***
 
-1. 根据类装载：
+* 根据类装载：
 ```java
     @Setup 
     // 通过类装载
@@ -179,7 +179,7 @@ public class Demo {
     private DemoAttach attach;
 ```
 
-2. 根据接口或者抽象类装载：
+* 根据接口或者抽象类装载：
 ```java
     @Setup("Demo")
     // 通过接口或者抽象类装载
@@ -187,14 +187,14 @@ public class Demo {
     private IDemoTest demo;
 ```
 
-3. 根据配置文件属性值装载：
+* 根据配置文件属性值装载：
 ```java
     @Setup("->test.demo.bean.name") 
     // 指定配置文件中test.demo.bean.name属性值为对象的注入名称
     private IDemoTest demoAttach;
 ```
 
-4. 根据映射机制装载：
+* 根据映射机制装载：
 ```java
     @Setup 
     // 注解值不填
