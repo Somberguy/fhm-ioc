@@ -29,6 +29,10 @@ public class Bootstrap {
 
     private static final String BANNER_FILE_NAME = "banner.txt";
 
+    static {
+        LoggerHandler.getInstance().initializeLoggerHandler();
+    }
+
     private static final ILoggerHandler logger = LoggerHandler.getLogger(Bootstrap.class);
 
     private static List<Class<? extends Annotation>> newManageAnnotations;
