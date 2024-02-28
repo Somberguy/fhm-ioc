@@ -7,7 +7,7 @@ import org.fhm.ioc.constant.Common;
 import org.fhm.ioc.constant.DataTypeMark;
 import org.fhm.ioc.constant.VMParameters;
 import org.fhm.ioc.service.LoggerHandler;
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 import org.fhm.ioc.util.IOCExceptionUtil;
 
 import java.io.IOException;
@@ -41,7 +41,7 @@ public abstract class AbstractConfiguration implements IActuator {
      * Record the processed configuration file
      */
     private static Set<String> recordConfig = new HashSet<>();
-    private final ILoggerHandler logger = LoggerHandler.getLogger(AbstractConfiguration.class);
+    private final ILogger logger = LoggerHandler.getLogger(AbstractConfiguration.class);
     /*
      * Configuration file name
      */

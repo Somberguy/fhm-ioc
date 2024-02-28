@@ -1,7 +1,7 @@
 package org.fhm.ioc.util;
 
 import org.fhm.ioc.service.LoggerHandler;
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 
 import java.lang.reflect.Field;
 
@@ -13,7 +13,7 @@ import java.lang.reflect.Field;
  */
 public class ClazzUtil {
 
-    private static final ILoggerHandler logger = LoggerHandler.getLogger(ClazzUtil.class);
+    private static final ILogger logger = LoggerHandler.getLogger(ClazzUtil.class);
 
     public static void setClazzValue(Object o, Object obj, Field field) {
         if (!field.isAccessible()) {

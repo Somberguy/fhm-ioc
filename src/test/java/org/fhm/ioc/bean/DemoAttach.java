@@ -2,7 +2,7 @@ package org.fhm.ioc.bean;
 
 import org.fhm.ioc.annotation.DemoTestComponent;
 import org.fhm.ioc.service.LoggerHandler;
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 
 /**
  * @Classname Demo2
@@ -13,7 +13,7 @@ import org.fhm.ioc.standard.ILoggerHandler;
 @DemoTestComponent("DemoAttach")
 public class DemoAttach implements IDemoTest {
 
-    private final ILoggerHandler logger = LoggerHandler.getLogger(DemoAttach.class);
+    private final ILogger logger = LoggerHandler.getLogger(DemoAttach.class);
 
     @Override
     public void test() {

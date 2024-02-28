@@ -6,7 +6,7 @@ import org.fhm.ioc.annotation.DemoComponent;
 import org.fhm.ioc.annotation.Setup;
 import org.fhm.ioc.config.TestDemoConfiguration;
 import org.fhm.ioc.service.LoggerHandler;
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 
 /**
  * @Classname Demo
@@ -17,7 +17,7 @@ import org.fhm.ioc.standard.ILoggerHandler;
 @DemoComponent("Demo")
 public class Demo implements IDemoTest {
 
-    private final ILoggerHandler logger = LoggerHandler.getLogger(Demo.class);
+    private final ILogger logger = LoggerHandler.getLogger(Demo.class);
 
     @Setup
     private TestDemoConfiguration testDemoConfiguration;

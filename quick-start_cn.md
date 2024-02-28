@@ -97,7 +97,7 @@ public class DemoStarter implements IStarter {
 @DemoComponent("Demo")
 public class Demo {
 
-    private final ILoggerHandler logger = LoggerHandler.getLogger(Demo.class);
+    private final ILogger logger = LoggerHandler.getLogger(Demo.class);
 
     public void test() {
         logger.info("demo test successful");
@@ -156,7 +156,7 @@ public class Demo {
 
 |        接口        |   描述   |                  说明                  |                    使用                    |
 |:----------------:|:------:|:------------------------------------:|:----------------------------------------:|
-| `ILoggerHandler` | 日记处理接口 | 封装日记打印方法，解构项目和日志框架，方便自定义日志功能或者更换日志框架 | 重写`ILoggerHandler`实现，[自定义日志框架](#自定义日志框架) |
+| `ILogger` | 日记处理接口 | 封装日记打印方法，解构项目和日志框架，方便自定义日志功能或者更换日志框架 | 重写`ILogger`实现，[自定义日志框架](#自定义日志框架) |
 
 
 ### 关键点详解：
@@ -309,7 +309,7 @@ public class Demo {
    @DemoComponent("Demo")
    public class Demo implements IDemoTest {
    
-       private final ILoggerHandler logger = LoggerHandler.getLogger(Demo.class);
+       private final ILogger logger = LoggerHandler.getLogger(Demo.class);
    
        @Setup
        private TestDemoConfiguration testDemoConfiguration;
@@ -336,6 +336,20 @@ public class Demo {
        }
    
    }
+```
+
+## 日志管理
+### 示例
+
+#### ***导入相关字节码***
+```java
+   import org.fhm.ioc.service.LoggerHandler;
+   import org.fhm.ioc.standard.ILogger;
+```
+
+#### ***声明日记对象***
+```java
+    private final ILogger logger = LoggerHandler.getLogger(Demo.class);
 ```
 
 

@@ -10,7 +10,7 @@ public class LoggerHandler extends AbstractLoggerHandler{
 
     @Override
     public void initializeLoggerHandler() {
-        AbstractLoggerHandler.create = CommonHandler::new;
+        AbstractLoggerHandler.create = CommonLogger::new;
     }
 
     public static AbstractLoggerHandler getInstance(){

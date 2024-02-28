@@ -1,6 +1,6 @@
 package org.fhm.ioc.service;
 
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,11 +15,11 @@ import java.util.function.Function;
  */
 public abstract class AbstractLoggerHandler {
 
-    private static final Map<String, ILoggerHandler> loggerHandlerContainer = new HashMap<>();
-    protected static Function<Class<?>, ILoggerHandler> create;
+    private static final Map<String, ILogger> loggerHandlerContainer = new HashMap<>();
+    protected static Function<Class<?>, ILogger> create;
     public abstract void initializeLoggerHandler();
-    public static ILoggerHandler getLogger(Class<?> clazz) {
-        ILoggerHandler handler;
+    public static ILogger getLogger(Class<?> clazz) {
+        ILogger handler;
         String clazzName = clazz.getName();
         if (Objects.isNull((handler = loggerHandlerContainer.get(clazzName)))) {
             synchronized(AbstractLoggerHandler.class){

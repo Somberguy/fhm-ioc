@@ -5,7 +5,7 @@ import org.fhm.ioc.annotation.Configuration;
 import org.fhm.ioc.annotation.Setup;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 import org.fhm.ioc.util.ClazzUtil;
 
 import java.lang.reflect.Field;
@@ -24,7 +24,7 @@ import java.util.stream.Stream;
  */
 public class AutoSetupExecutor {
 
-    private final ILoggerHandler logger = LoggerHandler.getLogger(AutoSetupExecutor.class);
+    private final ILogger logger = LoggerHandler.getLogger(AutoSetupExecutor.class);
 
     public Map<Object, Map<Field, Class<?>>> setupInterfaceAndAbstractObjs;
 

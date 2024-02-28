@@ -6,7 +6,7 @@ package org.fhm.ioc.standard;
  * @Date 2023/12/19-11:34 AM
  * @Author tanbo
  */
-public interface ILoggerHandler {
+public interface ILogger {
 
     void info(String message, Object... parameters);
 

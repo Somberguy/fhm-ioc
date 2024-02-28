@@ -6,7 +6,7 @@ import org.fhm.ioc.annotation.Component;
 import org.fhm.ioc.annotation.Setup;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 import org.fhm.ioc.standard.IStarter;
 import org.fhm.ioc.util.ClazzUtil;
 import org.fhm.ioc.util.IOCExceptionUtil;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 public class BeanOptimizer {
 
-    private final ILoggerHandler logger = LoggerHandler.getLogger(BeanOptimizer.class);
+    private final ILogger logger = LoggerHandler.getLogger(BeanOptimizer.class);
 
     private final Map<String, Object> beans = new HashMap<>();
 

@@ -1,7 +1,7 @@
 package org.fhm.ioc.exception;
 
 import org.fhm.ioc.service.LoggerHandler;
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 
 /**
  * @Classname FHMException
@@ -12,7 +12,7 @@ import org.fhm.ioc.standard.ILoggerHandler;
 public class NormalException extends RuntimeException {
 
     private static final long serialVersionUID = -7034897190745766933L;
-    private final ILoggerHandler logger = LoggerHandler.getLogger(NormalException.class);
+    private final ILogger logger = LoggerHandler.getLogger(NormalException.class);
 
 
     public NormalException(String msg) {

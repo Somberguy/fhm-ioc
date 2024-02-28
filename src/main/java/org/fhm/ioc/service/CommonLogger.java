@@ -1,14 +1,14 @@
 package org.fhm.ioc.service;
 
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CommonHandler implements ILoggerHandler {
+public class CommonLogger implements ILogger {
 
     private final Logger log;
 
-    public CommonHandler(Class<?> clazz) {
+    public CommonLogger(Class<?> clazz) {
         log = LoggerFactory.getLogger(clazz);
     }
 

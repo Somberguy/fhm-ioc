@@ -3,7 +3,7 @@ package org.fhm.ioc.manager;
 import org.fhm.ioc.ability.IActuator;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.service.*;
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 import org.fhm.ioc.standard.IStarter;
 
 import java.io.BufferedReader;
@@ -33,7 +33,7 @@ public class Bootstrap {
         LoggerHandler.getInstance().initializeLoggerHandler();
     }
 
-    private static final ILoggerHandler logger = LoggerHandler.getLogger(Bootstrap.class);
+    private static final ILogger logger = LoggerHandler.getLogger(Bootstrap.class);
 
     private static List<Class<? extends Annotation>> newManageAnnotations;
 

@@ -1,7 +1,7 @@
 package org.fhm.ioc.service;
 
 import org.fhm.ioc.constant.VMParameters;
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 import org.fhm.ioc.standard.IStarter;
 
 import java.io.BufferedReader;
@@ -19,7 +19,7 @@ import java.util.Objects;
  */
 public class VMParametersManage {
 
-    private static final ILoggerHandler logger = LoggerHandler.getLogger(VMParametersManage.class);
+    private static final ILogger logger = LoggerHandler.getLogger(VMParametersManage.class);
 
     private static final String VM_OPTIONS_FILE_SUFFIX = ".vmoptions";
 

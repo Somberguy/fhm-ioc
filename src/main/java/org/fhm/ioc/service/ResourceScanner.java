@@ -6,7 +6,7 @@ import org.fhm.ioc.annotation.ScanPackageConfig;
 import org.fhm.ioc.config.AbstractConfiguration;
 import org.fhm.ioc.constant.Common;
 import org.fhm.ioc.constant.VMParameters;
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 import org.fhm.ioc.standard.IStarter;
 import org.fhm.ioc.util.IOCExceptionUtil;
 import org.fhm.ioc.util.IOUtil;
@@ -41,7 +41,7 @@ import static org.objectweb.asm.Opcodes.*;
  */
 public class ResourceScanner {
 
-    private final ILoggerHandler logger = LoggerHandler.getLogger(ResourceScanner.class);
+    private final ILogger logger = LoggerHandler.getLogger(ResourceScanner.class);
 
     private Set<String> urls = new HashSet<>();
 

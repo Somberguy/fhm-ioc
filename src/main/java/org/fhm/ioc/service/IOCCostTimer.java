@@ -1,6 +1,6 @@
 package org.fhm.ioc.service;
 
-import org.fhm.ioc.standard.ILoggerHandler;
+import org.fhm.ioc.standard.ILogger;
 
 /**
  * @Classname IOCCostTimer
@@ -10,7 +10,7 @@ import org.fhm.ioc.standard.ILoggerHandler;
  */
 public class IOCCostTimer {
 
-    private final ILoggerHandler logger = LoggerHandler.getLogger(IOCCostTimer.class);
+    private final ILogger logger = LoggerHandler.getLogger(IOCCostTimer.class);
 
     private long start;
 
