@@ -119,7 +119,7 @@ public class Demo {
 }
 ```
 
-### 示例说明：
+### 说明：
 
 #### ***类***
 
@@ -151,6 +151,13 @@ public class Demo {
 |                 `@Setup`                  | [`bean`装载](#bean装载) | 需要装载的`bean`注入名称 |
 |              `@BeanInitial`               |    标记`bean`初始化方法    |        无        |
 |               `@BeanEnable`               |    标记`bean`启动方法     |        无        |
+
+#### **核心接口**
+
+|        接口        | 描述     | 说明                                   | 使用                              |
+|:----------------:|--------|--------------------------------------|---------------------------------|
+| `ILoggerHandler` | 日记处理接口 | 封装日记打印方法，解构项目和日志框架，方便自定义日志功能或者更换日志框架 | 重写`ILoggerHandler`实现以自定义或更换日志框架 |
+
 
 ### 关键点详解：
 
@@ -245,3 +252,89 @@ public class Demo {
 11:16:15.085 [main] INFO org.fhm.ioc.bean.DemoAttach - `demoAttach demo test successful`  // 调用bean测试方法  
 
 ## 配置管理
+
+### 示例：
+
+#### ***自定义配置抽象类***
+```java
+   public abstract class AbstractDemoConfiguration extends AbstractConfiguration {
+       protected AbstractDemoConfiguration() {
+           super("demo.properties"); 
+           // Invoked the parent class constructor to 
+           // set the member attributes of the current configuration object with 
+           // the name of the configuration file it resides in.
+       }
+   }
+```
+
+#### ***自定义配置类***
+```java
+   @Configuration("test.demo") 
+   // The annotation of mark configuration object, value is the prefix of configuration properties names
+   public class TestDemoConfiguration extends AbstractDemoConfiguration {
+   
+   
+       @Value("desc")
+       // Members annotated with this indicate that 
+       // they have a mapping in the corresponding configuration file 
+       // for the current configuration object and require assignment,
+       // value is the names of configuration properties.
+       private String desc;
+   
+       @Value("lucky.number")
+       private Integer luckyNumber;
+   
+       @Value("bean.name")
+       private String beanName;
+   
+   
+       public String getDesc() {
+           return desc;
+       }
+   
+       public Integer getLuckyNumber() {
+           return luckyNumber;
+       }
+   
+       public String getBeanName() {
+           return beanName;
+       }
+   }
+```
+
+#### ***配置对象使用样例类***
+```java
+   @DemoComponent("Demo")
+   public class Demo implements IDemoTest {
+   
+       private final ILoggerHandler logger = LoggerHandler.getLogger(Demo.class);
+   
+       @Setup
+       private TestDemoConfiguration testDemoConfiguration;
+   
+       @Override
+       public void test() {
+           logger.info("demo test successful");
+           logger.info("desc: {}, lucky number: {}", testDemoConfiguration.getDesc(), testDemoConfiguration.getLuckyNumber());
+       }
+   
+   
+       @BeanInitial
+       private void beanInitial() throws Exception {
+           // The bean to do initial
+           logger.info("demo start initialize");
+           logger.info("desc: {}, lucky number: {}", testDemoConfiguration.getDesc(), testDemoConfiguration.getLuckyNumber());
+       }
+   
+       @BeanEnable
+       private void beanEnable() throws Exception {
+           // The bean to do enable
+           logger.info("demo start enable");
+           logger.info("desc: {}, lucky number: {}", testDemoConfiguration.getDesc(), testDemoConfiguration.getLuckyNumber());
+       }
+   
+   }
+```
+
+
+
