@@ -1,8 +1,9 @@
 # 功能特性
 
-## _使用须知注意事项：_
+## _使用注意事项：_
 
-1. 被注入`bean`必须含有无参构造方法，即被`@Component`、`@Configuration`或者自定义注入注解标记的类必须含有无参构造方法。
+被注入`bean`必须含有无参构造方法，  
+即被`@Component`、`@Configuration`或者自定义注入注解标记的类必须含有无参构造方法。
 
 ## Quick Start
 
@@ -152,12 +153,6 @@ public class Demo {
 |              `@BeanInitial`               |    标记`bean`初始化方法    |        无        |
 |               `@BeanEnable`               |    标记`bean`启动方法     |        无        |
 
-#### **核心接口**
-
-|        接口        |   描述   |                  说明                  |                    使用                    |
-|:----------------:|:------:|:------------------------------------:|:----------------------------------------:|
-| `ILogger` | 日记处理接口 | 封装日记打印方法，解构项目和日志框架，方便自定义日志功能或者更换日志框架 | 重写`ILogger`实现，[自定义日志框架](#自定义日志框架) |
-
 
 ### 关键点详解：
 
@@ -207,10 +202,7 @@ public class Demo {
     private Map<String, IDemoTest> iDemoTestMap;
 ```
 
-#### ***自定义日志框架***
-
-
-### 运行结果日记：
+### 运行结果：
 
         ███████ ██   ██ ███    ███       ██  ██████   ██████
         ██      ██   ██ ████  ████       ██ ██    ██ ██
@@ -270,6 +262,7 @@ public class Demo {
 ```
 
 #### ***自定义配置类***
+
 ```java
    @Configuration("test.demo") 
    // The annotation of mark configuration object, value is the prefix of configuration properties names
@@ -305,6 +298,7 @@ public class Demo {
 ```
 
 #### ***配置对象使用样例类***
+
 ```java
    @DemoComponent("Demo")
    public class Demo implements IDemoTest {
@@ -338,19 +332,40 @@ public class Demo {
    }
 ```
 
+### 说明
+
+
+### 关键点详解：
+
+
 ## 日志管理
+
 ### 示例
 
 #### ***导入相关字节码***
+
 ```java
    import org.fhm.ioc.service.LoggerHandler;
    import org.fhm.ioc.standard.ILogger;
 ```
 
 #### ***声明日记对象***
+
 ```java
     private final ILogger logger = LoggerHandler.getLogger(Demo.class);
 ```
 
+### 说明
 
+#### **接口**
 
+|    接口     |  描述  |                  说明                  |         使用          |
+|:---------:|:----:|:------------------------------------:|:-------------------:|
+| `ILogger` | 日记接口 | 封装日记打印方法，解耦项目和日志框架，方便自定义日志功能或者更换日志框架 | [自定义日志框架](#自定义日志框架) |
+
+### 关键点详解：
+
+#### ***自定义日志框架***
+
+1. 创建自定义日志类，实现`ILogger`接口。
+2. 修改[LoggerHandler.java](src%2Fmain%2Fjava%2Forg%2Ffhm%2Fioc%2Fservice%2FLoggerHandler.java)中`initializeLoggerHandler`方法，将创建自定义日志对象的`Function`(参数为类对象，返回自定义日志对象)赋值给`create`变量
