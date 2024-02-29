@@ -1,6 +1,6 @@
 # FHM-IOC
 
-![license](https://img.shields.io/badge/license-apache-2.0-blue.svg) ![java](https://img.shields.io/badge/java-v1.8-green.svg) ![release](https://img.shields.io/badge/release-v1.0.0-red.svg)
+![license](https://img.shields.io/badge/license-apache2.0-blue.svg) ![java](https://img.shields.io/badge/java-v1.8-green.svg) ![release](https://img.shields.io/badge/release-v1.0.0-red.svg)
 
 ## 简介
 
