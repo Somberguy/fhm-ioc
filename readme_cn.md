@@ -25,9 +25,13 @@ _开发语言：_ `Java`
 _JDK-VERSION：_ 1.8  
 _开发OS：_ `Windows`、`Macos`
 
-## 功能特性
+## 快速开始
 
 _请阅览_[quick-start_cn.md](quick-start_cn.md)
+
+## 功能特性
+
+_请阅览_[features_cn.md](features_cn.md)
 
 ## 开发团队
 

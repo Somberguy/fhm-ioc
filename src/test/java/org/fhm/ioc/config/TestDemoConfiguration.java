@@ -12,7 +12,6 @@ import org.fhm.ioc.annotation.Value;
 @Configuration("test.demo")
 public class TestDemoConfiguration extends AbstractDemoConfiguration {
 
-
     @Value("desc")
     private String desc;
 
