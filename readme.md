@@ -1,5 +1,7 @@
 # FHM-IOC
 
+![license](https://img.shields.io/badge/license-v1.0.0-blue.svg) ![java](https://img.shields.io/badge/java-v1.8-green.svg) ![release](https://img.shields.io/badge/release-v1.0.0-red.svg)
+
 ## 简介
 
 `FHM-IOC`是轻量级的对象容器，他不但兼顾了`Spring-Framework`中`IOC`的功能、沿用其注解注入对象的方式、针对Map、抽象、接口特殊注入的方式、
