@@ -5,6 +5,7 @@
 ### 注意：
 
 * 目前只支持`.properties`格式文件
+* 文件默认存放位置为src/main/java/resources/，可以通过`VM`参数`fhm.ioc.config.file.path`自行设置，[VM参数说明](#VM参数说明)
 
 ### 示例：
 
@@ -329,7 +330,7 @@
 
 ### 说明：
 
-#### ***参数说明***
+#### ***VM参数说明***
 
 * `fhm.ioc.vm.options.file.path`：
   1. 设置`ioc.vmoptions`文件所在目录。
