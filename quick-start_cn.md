@@ -205,13 +205,13 @@ public class DemoStarter implements IStarter {
 ```
 
 ### 运行结果：
-
-        ███████ ██   ██ ███    ███       ██  ██████   ██████
-        ██      ██   ██ ████  ████       ██ ██    ██ ██
-        █████   ███████ ██ ████ ██ █████ ██ ██    ██ ██
-        ██      ██   ██ ██  ██  ██       ██ ██    ██ ██
-        ██      ██   ██ ██      ██       ██  ██████   ██████
-        ============================version 1.0.0 release===
+___________  ___ ___     _____            .___ ________   _________
+\_   _____/ /   |   \   /     \           |   |\_____  \  \_   ___ \
+|    __)  /    ~    \ /  \ /  \   ______ |   | /   |   \ /    \  \/
+|     \   \    Y    //    Y    \ /_____/ |   |/    |    \\     \____
+\___  /    \___|_  / \____|__  /         |___|\_______  / \______  /
+\/           \/          \/                       \/         \/
+==============================================version 1.0.0 release==
 11:16:14.856 [main] INFO org.fhm.ioc.manager.Bootstrap - read VM parameter  
 11:16:14.864 [main] INFO org.fhm.ioc.manager.Bootstrap - start collect configuration file and class file  
 11:16:14.869 [main] INFO org.fhm.ioc.manager.Bootstrap - start initialize resource scanner  

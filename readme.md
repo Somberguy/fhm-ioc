@@ -1,7 +1,6 @@
-
 # FHM-IOC
 
-![license](https://img.shields.io/badge/for-human-blue.svg)
+![license](https://img.shields.io/badge/for-human-blue.svg)  
 
 ![license](https://img.shields.io/badge/license-apache2.0-blue.svg) ![java](https://img.shields.io/badge/java-v1.8-green.svg) ![release](https://img.shields.io/badge/release-v1.0.0-red.svg)
 
@@ -10,7 +9,7 @@
 `FHM-IOC`是轻量级的对象容器，他不但兼顾了`Spring-Framework`中`IOC`的功能、沿用其注解注入对象的方式、针对Map、抽象、接口特殊注入的方式、
 生命周期方法等特性。具有对象初始化速度快、研发项目占用磁盘体积小、对象占用VM内存小的优秀特点。更重要的是其代码实现简单、阅读难度低、透明度高，
 在项目开发中找寻项目BUG速度快、还可以自定义`IOC`功能，由于代码逻辑易读、透明度高，在安全方面有很好的保障。另外还增加了多项`Spring-Framework`
-未实现但是有需要的多种特性，如***IOC仓库规划***功能、 通过配置VM参数实现***定点扫描注入***功能。
+未实现但是有需要的多种特性，如***IOC仓库规划***功能、 通过配置VM参数实现***定点扫描注入***功能等。
 
 ## 背景
 
