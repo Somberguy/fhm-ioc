@@ -65,7 +65,8 @@ public class Bootstrap {
         ) {
             String text;
             while (Objects.nonNull((text = bufferedReader.readLine()))) {
-                System.out.println(text);
+                Charset defaultCharset = Charset.defaultCharset();
+                System.out.println(new String(text.getBytes(defaultCharset), defaultCharset));
             }
         } catch (IOException e) {
             logger.error("fail to print banner", e);

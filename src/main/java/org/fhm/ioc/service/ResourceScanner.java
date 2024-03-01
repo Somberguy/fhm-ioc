@@ -180,7 +180,7 @@ public class ResourceScanner {
                         if (file.isDirectory())
                             dealDirectory(file);
                         if (file.isFile()) {
-                            if (isRequiredClazzFile(file))
+                            if (isRequiredClazzFile(file.getAbsolutePath()))
                                 dealClassFile(file);
                             if (isRequiredJar(file.getName()))
                                 dealJarFile(file, "");
@@ -238,7 +238,7 @@ public class ResourceScanner {
                                             logger.error("failed to obtain current resource {} stream", jarEntry.getName(), e);
                                             throw IOCExceptionUtil.generateResourceScannerException(e);
                                         }
-                                        if (jarEntry.getName().endsWith(Common.CLASS_FILE_SUFFIX.getName())) {
+                                        if (isRequiredClazzFile(jarEntryName)) {
                                             collectManagementObjects(
                                                     url,
                                                     IOUtil.inStreamToByte(jarInputStream),
@@ -264,17 +264,17 @@ public class ResourceScanner {
                 @Override
                 public FileVisitResult visitFile(Path path, BasicFileAttributes attrs) throws IOException {
                     File subFile = path.toFile();
-                    String fileName = subFile.getName();
+                    String fileName = subFile.getAbsolutePath();
                     if (subFile.exists() && subFile.isFile()) {
-                        if (isRequiredClazzFile(subFile)) {
+                        if (isRequiredClazzFile(fileName)) {
                             dealClassFile(subFile);
                             return super.visitFile(path, attrs);
                         }
                         if (isRequiredResourceFile(fileName)) {
                             AbstractConfiguration.resource.put(
-                                    fileName,
+                                    subFile.getName(),
                                     Files.newInputStream(
-                                            Paths.get(subFile.getAbsolutePath())
+                                            Paths.get(fileName)
                                     )
                             );
                             return super.visitFile(path, attrs);
@@ -305,27 +305,31 @@ public class ResourceScanner {
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                String jarEntryName = jarEntry.getName();
-                if (!requirePackageName.isEmpty()) {
-                    if (jarEntryName.contains(requirePackageName)) {
-                        collectManagementObjects(
-                                pathFile.toURI().toURL(),
-                                IOUtil.inStreamToByte(jarInputStream),
-                                annotationClazzContainer
-                        );
-                    }
-                } else {
-                    collectManagementObjects(
-                            pathFile.toURI().toURL(),
-                            IOUtil.inStreamToByte(jarInputStream),
-                            annotationClazzContainer
-                    );
-                }
-                if (isRequiredResourceFile(jarEntryName)) {
+                String jarEntryName;
+                if (isRequiredResourceFile((jarEntryName = jarEntry.getName()))) {
                     AbstractConfiguration.resource.put(
                             pathFile.getName(),
                             jarFile.getInputStream(jarEntry)
                     );
+                    return;
+                }
+                if (jarEntryName.endsWith(Common.CLASS_FILE_SUFFIX.getName())){
+                    String newEntryName = jarEntryName.replace("/", ".");
+                    if (!requirePackageName.isEmpty()) {
+                        if (newEntryName.contains(requirePackageName))
+                            collectManagementObjects(
+                                    pathFile.toURI().toURL(),
+                                    IOUtil.inStreamToByte(jarInputStream),
+                                    annotationClazzContainer
+                            );
+                    } else {
+                        if (isRequiredClass(newEntryName))
+                            collectManagementObjects(
+                                    pathFile.toURI().toURL(),
+                                    IOUtil.inStreamToByte(jarInputStream),
+                                    annotationClazzContainer
+                            );
+                    }
                 }
             }
         } catch (IOException e) {
@@ -355,11 +359,14 @@ public class ResourceScanner {
         return fileName.endsWith(".properties") && !fileName.contains("pom.properties");
     }
 
-    private Boolean isRequiredClazzFile(File file) {
-        String path;
-        return (path = file.getAbsolutePath()).endsWith(Common.CLASS_FILE_SUFFIX.getName())
+    private Boolean isRequiredClazzFile(String filePath) {
+        return filePath.endsWith(Common.CLASS_FILE_SUFFIX.getName())
                 &&
-                requirePackageNames.stream().anyMatch(pattern -> pattern.matcher(path.replace(File.separator, ".")).matches());
+                isRequiredClass(filePath);
+    }
+
+    private Boolean isRequiredClass(String classDesc){
+        return requirePackageNames.stream().anyMatch(pattern -> pattern.matcher(classDesc.replace(File.separator, ".")).matches());
     }
 
     private void collectManagementObjects(
@@ -367,41 +374,44 @@ public class ResourceScanner {
             byte[] bytes,
             Set<Class<? extends Annotation>> annotations
     ) {
-        ClassReader cr = new ClassReader(bytes);
-        ClassNode cn = new ClassNode();
-        cr.accept(cn, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
-        String className = Type.getObjectType(cn.name).getClassName();
-        if (className.isEmpty() || className.equals(starterClazz.getName()))
-            return;
-        if (IOCClassLoader.getInstance().isAddedClazz(className))
-            return;
-        int access = cn.access;
-        if ((access & ACC_INTERFACE) != 0 || (access & ACC_ABSTRACT) != 0) {
-            IOCClassLoader.getInstance().putAbstractAndInterface(className);
-            return;
-        }
-        if (Objects.nonNull(annotations) && !annotations.isEmpty()) {
-            if (
-                    annotations.stream()
-                            .map(Class::getName)
-                            .allMatch(
-                                    name ->
-                                            getAnnotationNodes(cn)
-                                                    .stream()
-                                                    .map(an -> an.desc.replace("/", "."))
-                                                    .map(an -> an.substring(1, an.length() - 1))
-                                                    .noneMatch(name::equals)
-                            )
-            ) {
+        try {
+            ClassNode cn = new ClassNode();
+            new ClassReader(bytes).accept(cn, ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
+            String className = Type.getObjectType(cn.name).getClassName();
+            if (className.isEmpty() || className.equals(starterClazz.getName()))
+                return;
+            if (IOCClassLoader.getInstance().isAddedClazz(className))
+                return;
+            int access = cn.access;
+            if ((access & ACC_INTERFACE) != 0 || (access & ACC_ABSTRACT) != 0) {
+                IOCClassLoader.getInstance().putAbstractAndInterface(className);
                 return;
             }
+            if (Objects.nonNull(annotations) && !annotations.isEmpty()) {
+                if (
+                        annotations.stream()
+                                .map(Class::getName)
+                                .allMatch(
+                                        name ->
+                                                getAnnotationNodes(cn)
+                                                        .stream()
+                                                        .map(an -> an.desc.replace("/", "."))
+                                                        .map(an -> an.substring(1, an.length() - 1))
+                                                        .noneMatch(name::equals)
+                                )
+                ) {
+                    return;
+                }
+            }
+            if (cn.methods.stream().noneMatch(m -> m.name.equals("<init>")
+                    && m.desc.equals("()V"))) {
+                logger.error("the class {} does not have a parameterless constructor, which results in failure to inject into the IOC", className);
+                return;
+            }
+            IOCClassLoader.getInstance().put(url, className);
+        } catch (Exception e){
+            logger.error("failed to collect the management object，the error description is {}", e.getMessage(), e);
         }
-        if (cn.methods.stream().noneMatch(m -> m.name.equals("<init>")
-                && m.desc.equals("()V"))) {
-            logger.error("the class {} does not have a parameterless constructor, which results in failure to inject into the IOC", className);
-            return;
-        }
-        IOCClassLoader.getInstance().put(url, className);
     }
 
     private List<AnnotationNode> getAnnotationNodes(ClassNode cn) {
