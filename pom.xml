@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.fhm.jSubstrate</groupId>
+    <groupId>cn.org.forhuman.substrate</groupId>
     <artifactId>fhm-jSubstrate</artifactId>
     <version>1.0.0</version>
 
@@ -31,4 +31,115 @@
             <version>1.2.9</version>
         </dependency>
     </dependencies>
+
+    <name>fhm-jSubstrate</name>
+    <description>A foundational Java framework that encompasses Spring's core IoC (Inversion of Control) features,
+        configuration management capabilities, and targeted component scanning and injection functionalities.</description>
+    <url>https://gitee.com/somberguy/fhm-jSubstrate</url>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <name>somberguy</name>
+            <email>279166601@qq.com</email>
+            <url>https://gitee.com/Somberguy</url>
+        </developer>
+    </developers>
+
+    <scm>
+        <url>https://gitee.com/somberguy/fhm-jSubstrate</url>
+        <connection>https://gitee.com/somberguy/fhm-jSubstrate.git</connection>
+        <developerConnection>https://gitee.com/somberguy/fhm-jSubstrate.git</developerConnection>
+    </scm>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>central</id>
+            <url>https://central.sonatype.com/content/repositories/snapshots</url>
+        </snapshotRepository>
+        <repository>
+            <id>central</id>
+            <url>https://central.sonatype.com/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <build>
+        <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                        <configuration>
+                            <keyname>Somberguy</keyname>
+                            <passphrase>Somberguy</passphrase>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version> <!-- Check the latest version -->
+                <configuration>
+                    <source>1.8</source> <!-- For Java 8 -->
+                    <target>1.8</target> <!-- For Java 8 bytecode compatibility -->
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.4.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                    <tokenAuth>true</tokenAuth>
+                    <autoPublish>true</autoPublish>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>

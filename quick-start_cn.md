@@ -7,6 +7,16 @@
 
 _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDemoApplication.java)
 
+### `maven`引入
+
+```xml
+    <dependency>
+        <groupId>cn.org.forhuman.substrate</groupId>
+        <artifactId>fhm-jSubstrate</artifactId>
+        <version>1.0.0</version>
+    </dependency>
+```
+
 ### 示例：
 
 #### ***程序启动类***
@@ -209,13 +219,13 @@ public class DemoStarter implements IStarter {
 ```
 
 ### 运行结果：
-___________  ___ ___     _____            .___ ________   _________
-\_   _____/ /   |   \   /     \           |   |\_____  \  \_   ___ \
-|    __)  /    ~    \ /  \ /  \   ______ |   | /   |   \ /    \  \/
-|     \   \    Y    //    Y    \ /_____/ |   |/    |    \\     \____
-\___  /    \___|_  / \____|__  /         |___|\_______  / \______  /
-\/           \/          \/                       \/         \/
-==============================================version 1.0.0 release==
+_____.__                           __  _________    ___.             __                 __
+_/ ____\  |__   _____               |__|/   _____/__ _\_ |__   _______/  |_____________ _/  |_  ____
+\   __\|  |  \ /     \   ______     |  |\_____  \|  |  \ __ \ /  ___/\   __\_  __ \__  \\   __\/ __ \
+|  |  |   Y  \  Y Y  \ /_____/     |  |/        \  |  / \_\ \\___ \  |  |  |  | \// __ \|  | \  ___/
+|__|  |___|  /__|_|  /         /\__|  /_______  /____/|___  /____  > |__|  |__|  (____  /__|  \___  >
+\/      \/          \______|       \/          \/     \/                   \/          \/
+===============================================================================version 1.0.0 release==
 11:16:14.856 [main] INFO org.fhm.ioc.manager.Bootstrap - read VM parameter  
 11:16:14.864 [main] INFO org.fhm.ioc.manager.Bootstrap - start collect configuration file and class file  
 11:16:14.869 [main] INFO org.fhm.ioc.manager.Bootstrap - start initialize resource scanner  
