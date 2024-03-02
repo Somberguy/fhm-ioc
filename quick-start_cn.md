@@ -75,6 +75,8 @@ public class DemoStarter implements IStarter {
 }
 ```
 
+#### ***注入`bean`***
+
 ```java
    @Component("Demo")
    public class Demo implements IDemoTest {
@@ -107,6 +109,8 @@ public class DemoStarter implements IStarter {
    
    }
 ```
+
+#### ***注入`bean`***
 
 ```java
    @Component("DemoAttach")
