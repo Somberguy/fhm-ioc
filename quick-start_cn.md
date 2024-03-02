@@ -219,6 +219,7 @@ public class DemoStarter implements IStarter {
 ```
 
 ### 运行结果：
+```text
 _____.__                           __  _________    ___.             __                 __
 _/ ____\  |__   _____               |__|/   _____/__ _\_ |__   _______/  |_____________ _/  |_  ____
 \   __\|  |  \ /     \   ______     |  |\_____  \|  |  \ __ \ /  ___/\   __\_  __ \__  \\   __\/ __ \
@@ -226,6 +227,7 @@ _/ ____\  |__   _____               |__|/   _____/__ _\_ |__   _______/  |______
 |__|  |___|  /__|_|  /         /\__|  /_______  /____/|___  /____  > |__|  |__|  (____  /__|  \___  >
 \/      \/          \______|       \/          \/     \/                   \/          \/
 ===============================================================================version 1.0.0 release==
+```
 11:16:14.856 [main] INFO org.fhm.ioc.manager.Bootstrap - read VM parameter  
 11:16:14.864 [main] INFO org.fhm.ioc.manager.Bootstrap - start collect configuration file and class file  
 11:16:14.869 [main] INFO org.fhm.ioc.manager.Bootstrap - start initialize resource scanner  
