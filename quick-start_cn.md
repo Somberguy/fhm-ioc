@@ -5,7 +5,7 @@
 
 ## Quick Start
 
-_详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDemoApplication.java)
+_详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fsubstrate%2FDemoApplication.java)
 
 ### `maven`引入
 
@@ -34,55 +34,55 @@ _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDe
 #### ***`IStarter`接口实现***
 
 ```java
-    @Component // Inject into the IOC
-    public class DemoStarter implements IStarter {
+@Component // Inject into the IOC
+public class DemoStarter implements IStarter {
+
+    @Setup // Load from the IOC 
+    private DemoAttach attach;
     
-        @Setup // Load from the IOC 
-        private DemoAttach attach;
-        
-        @Setup("Demo") 
-        // Load from the IOC by interface or abstract-class.
-        // Multiple implementations need to be annotated with values that 
-        // correspond to the injection names of their respective implementation objects.
-        private IDemoTest demo;
-    
-        @Setup("->test.demo.bean.name") 
-        // Specifies that the reference of the test.demo.bean.name
-        // attribute in the configuration
-        // file is the name of the loading object
-        private IDemoTest demoAttach;
-    
-        @Setup // Mapping loads bean mechanisms
-        private Map<String, IDemoTest> iDemoTestMap;
-    
-        @Override
-        public List<Class<? extends Annotation>> newManageMembers() {
-            ArrayList<Class<? extends Annotation>> classes = new ArrayList<>();
-            classes.add(DemoComponent.class);
-            classes.add(DemoTestComponent.class);
-            return classes; // Returns a collection of annotations for custom injection containers
-        }
-    
-        @Override
-        public void manageNotify(List<?> beans, Class<? extends Annotation> clazz) {
-            if (DemoComponent.class.isAssignableFrom(clazz)) { // Determines whether the bean is marked by the DemoComponent annotation
-                // Beans marked with DemoComponent annotations are treated independently
-            }
-        }
-    
-        @Override
-        public void start(String[] args) throws Exception {
-            demo.test(); // Runs test method of the Demo
-            demoAttach.test(); // Runs test method of the DemoAttach
-            iDemoTestMap.forEach((k, v) -> v.test());
-        }
-    
-        @Override
-        public void close() throws Exception {
-            // Runs before the IOC ends
-        }
-    
+    @Setup("Demo") 
+    // Load from the IOC by interface or abstract-class.
+    // Multiple implementations need to be annotated with values that 
+    // correspond to the injection names of their respective implementation objects.
+    private IDemoTest demo;
+
+    @Setup("->test.demo.bean.name") 
+    // Specifies that the reference of the test.demo.bean.name
+    // attribute in the configuration
+    // file is the name of the loading object
+    private IDemoTest demoAttach;
+
+    @Setup // Mapping loads bean mechanisms
+    private Map<String, IDemoTest> iDemoTestMap;
+
+    @Override
+    public List<Class<? extends Annotation>> newManageMembers() {
+        ArrayList<Class<? extends Annotation>> classes = new ArrayList<>();
+        classes.add(DemoComponent.class);
+        classes.add(DemoTestComponent.class);
+        return classes; // Returns a collection of annotations for custom injection containers
     }
+
+    @Override
+    public void manageNotify(List<?> beans, Class<? extends Annotation> clazz) {
+        if (DemoComponent.class.isAssignableFrom(clazz)) { // Determines whether the bean is marked by the DemoComponent annotation
+            // Beans marked with DemoComponent annotations are treated independently
+        }
+    }
+
+    @Override
+    public void start(String[] args) throws Exception {
+        demo.test(); // Runs test method of the Demo
+        demoAttach.test(); // Runs test method of the DemoAttach
+        iDemoTestMap.forEach((k, v) -> v.test());
+    }
+
+    @Override
+    public void close() throws Exception {
+        // Runs before the IOC ends
+    }
+
+}
 ```
 
 #### ***注入`bean`***
@@ -220,45 +220,45 @@ _详情请阅览_[DemoApplication.java](src%2Ftest%2Fjava%2Forg%2Ffhm%2Fioc%2FDe
 
 ### 运行结果：
 ```text
-_____.__                           __  _________    ___.             __                 __
-_/ ____\  |__   _____               |__|/   _____/__ _\_ |__   _______/  |_____________ _/  |_  ____
-\   __\|  |  \ /     \   ______     |  |\_____  \|  |  \ __ \ /  ___/\   __\_  __ \__  \\   __\/ __ \
-|  |  |   Y  \  Y Y  \ /_____/     |  |/        \  |  / \_\ \\___ \  |  |  |  | \// __ \|  | \  ___/
-|__|  |___|  /__|_|  /         /\__|  /_______  /____/|___  /____  > |__|  |__|  (____  /__|  \___  >
-\/      \/          \______|       \/          \/     \/                   \/          \/
-===============================================================================version 1.0.0 release==
+_____.__                           __  _________    ___.             __                 __  
+_/ ____\  |__   _____               |__|/   _____/__ _\_ |__   _______/  |_____________ _/  |_  ____  
+\   __\|  |  \ /     \   ______     |  |\_____  \|  |  \ __ \ /  ___/\   __\_  __ \__  \\   __\/ __ \  
+|  |  |   Y  \  Y Y  \ /_____/     |  |/        \  |  / \_\ \\___ \  |  |  |  | \// __ \|  | \  ___/  
+|__|  |___|  /__|_|  /         /\__|  /_______  /____/|___  /____  > |__|  |__|  (____  /__|  \___  >  
+\/      \/          \______|       \/          \/     \/                   \/          \/  
+===============================================================================version 1.0.0 release==  
 ```
-11:16:14.856 [main] INFO org.fhm.ioc.manager.Bootstrap - read VM parameter  
-11:16:14.864 [main] INFO org.fhm.ioc.manager.Bootstrap - start collect configuration file and class file  
-11:16:14.869 [main] INFO org.fhm.ioc.manager.Bootstrap - start initialize resource scanner  
-11:16:14.870 [main] INFO org.fhm.ioc.service.ResourceScanner - start configure resource scanner  
-11:16:14.889 [main] INFO org.fhm.ioc.manager.Bootstrap - start filter out the required CP  
-11:16:14.889 [main] INFO org.fhm.ioc.manager.Bootstrap - start fixed-point scanning  
-11:16:14.890 [main] INFO org.fhm.ioc.manager.Bootstrap - start scan the path to obtain the required resources and class files  
-11:16:15.025 [main] INFO org.fhm.ioc.manager.Bootstrap - start clear cache and create beans  
-11:16:15.033 [main] INFO org.fhm.ioc.manager.Bootstrap - start auto setup bean  
-11:16:15.033 [main] INFO org.fhm.ioc.manager.Bootstrap - initial auto setup container  
-11:16:15.033 [main] INFO org.fhm.ioc.manager.Bootstrap - auto setup obj  
-11:16:15.046 [main] INFO org.fhm.ioc.manager.Bootstrap - auto setup map obj  
-11:16:15.052 [main] INFO org.fhm.ioc.manager.Bootstrap - distribute bean  
-11:16:15.054 [main] INFO org.fhm.ioc.manager.Bootstrap - start initial configuration  
-11:16:15.063 [main] INFO org.fhm.ioc.manager.Bootstrap - start optimize bean  
-11:16:15.063 [main] INFO org.fhm.ioc.manager.Bootstrap - clear not necessary implement and cache  
-11:16:15.070 [main] INFO org.fhm.ioc.manager.Bootstrap - start bean initial  
-11:16:15.073 [main] INFO org.fhm.ioc.bean.Demo - `demo start initialize` // bean初始化调用  
-11:16:15.073 [main] INFO org.fhm.ioc.bean.Demo - `desc: hello,reality, lucky number: 66` // bean初始化调用获取配置文件信息  
-11:16:15.076 [main] INFO org.fhm.ioc.manager.Bootstrap - start bean enable  
-11:16:15.076 [main] INFO org.fhm.ioc.bean.Demo - `demo start enable` // bean启动调用  
-11:16:15.076 [main] INFO org.fhm.ioc.bean.Demo - `desc: hello,reality, lucky number: 66` // bean启动调用获取配置文件信息  
-11:16:15.076 [main] INFO org.fhm.ioc.manager.Bootstrap - clear cache data  
-11:16:15.083 [main] INFO org.fhm.ioc.manager.Bootstrap - current the number of available processors : 16  
-11:16:15.083 [main] INFO org.fhm.ioc.manager.Bootstrap - current maximum heap memory: 3890MB  
-11:16:15.083 [main] INFO org.fhm.ioc.manager.Bootstrap - current cost memory: 2MB 945KB  
-11:16:15.083 [main] INFO org.fhm.ioc.service.IOCCostTimer - enable project cost: 0s 232ms  
-11:16:15.083 [main] INFO org.fhm.ioc.manager.Bootstrap - enable project complete  
-11:16:15.085 [main] INFO org.fhm.ioc.bean.Demo - `demo test successful`  // 调用bean测试方法  以下为接口方式装载调用  
-11:16:15.085 [main] INFO org.fhm.ioc.bean.Demo - `desc: hello,reality, lucky number: 66`  // 配置文件信息  
-11:16:15.085 [main] INFO org.fhm.ioc.bean.DemoAttach - `demoAttach demo test successful`  // 调用bean测试方法  
-11:16:15.085 [main] INFO org.fhm.ioc.bean.Demo - `demo test successful`  // 调用bean测试方法  以下为Map方式装载调用  
-11:16:15.085 [main] INFO org.fhm.ioc.bean.Demo - `desc: hello,reality, lucky number: 66`  // 配置文件信息  
-11:16:15.085 [main] INFO org.fhm.ioc.bean.DemoAttach - `demoAttach demo test successful`  // 调用bean测试方法  
+11:16:14.856 [main] INFO org.fhm.substrate.manager.Bootstrap - read VM parameter  
+11:16:14.864 [main] INFO org.fhm.substrate.manager.Bootstrap - start collect configuration file and class file  
+11:16:14.869 [main] INFO org.fhm.substrate.manager.Bootstrap - start initialize resource scanner  
+11:16:14.870 [main] INFO org.fhm.substrate.service.ResourceScanner - start configure resource scanner  
+11:16:14.889 [main] INFO org.fhm.substrate.manager.Bootstrap - start filter out the required CP  
+11:16:14.889 [main] INFO org.fhm.substrate.manager.Bootstrap - start fixed-point scanning  
+11:16:14.890 [main] INFO org.fhm.substrate.manager.Bootstrap - start scan the path to obtain the required resources and class files  
+11:16:15.025 [main] INFO org.fhm.substrate.manager.Bootstrap - start clear cache and create beans  
+11:16:15.033 [main] INFO org.fhm.substrate.manager.Bootstrap - start auto setup bean  
+11:16:15.033 [main] INFO org.fhm.substrate.manager.Bootstrap - initial auto setup container  
+11:16:15.033 [main] INFO org.fhm.substrate.manager.Bootstrap - auto setup obj  
+11:16:15.046 [main] INFO org.fhm.substrate.manager.Bootstrap - auto setup map obj  
+11:16:15.052 [main] INFO org.fhm.substrate.manager.Bootstrap - distribute bean  
+11:16:15.054 [main] INFO org.fhm.substrate.manager.Bootstrap - start initial configuration  
+11:16:15.063 [main] INFO org.fhm.substrate.manager.Bootstrap - start optimize bean  
+11:16:15.063 [main] INFO org.fhm.substrate.manager.Bootstrap - clear not necessary implement and cache  
+11:16:15.070 [main] INFO org.fhm.substrate.manager.Bootstrap - start bean initial  
+11:16:15.073 [main] INFO org.fhm.substrate.bean.Demo - `demo start initialize` // bean初始化调用  
+11:16:15.073 [main] INFO org.fhm.substrate.bean.Demo - `desc: hello,reality, lucky number: 66` // bean初始化调用获取配置文件信息  
+11:16:15.076 [main] INFO org.fhm.substrate.manager.Bootstrap - start bean enable  
+11:16:15.076 [main] INFO org.fhm.substrate.bean.Demo - `demo start enable` // bean启动调用  
+11:16:15.076 [main] INFO org.fhm.substrate.bean.Demo - `desc: hello,reality, lucky number: 66` // bean启动调用获取配置文件信息  
+11:16:15.076 [main] INFO org.fhm.substrate.manager.Bootstrap - clear cache data  
+11:16:15.083 [main] INFO org.fhm.substrate.manager.Bootstrap - current the number of available processors : 16  
+11:16:15.083 [main] INFO org.fhm.substrate.manager.Bootstrap - current maximum heap memory: 3890MB  
+11:16:15.083 [main] INFO org.fhm.substrate.manager.Bootstrap - current cost memory: 2MB 945KB  
+11:16:15.083 [main] INFO org.fhm.substrate.service.IOCCostTimer - enable project cost: 0s 232ms  
+11:16:15.083 [main] INFO org.fhm.substrate.manager.Bootstrap - enable project complete  
+11:16:15.085 [main] INFO org.fhm.substrate.bean.Demo - `demo test successful`  // 调用bean测试方法  以下为接口方式装载调用  
+11:16:15.085 [main] INFO org.fhm.substrate.bean.Demo - `desc: hello,reality, lucky number: 66`  // 配置文件信息  
+11:16:15.085 [main] INFO org.fhm.substrate.bean.DemoAttach - `demoAttach demo test successful`  // 调用bean测试方法  
+11:16:15.085 [main] INFO org.fhm.substrate.bean.Demo - `demo test successful`  // 调用bean测试方法  以下为Map方式装载调用  
+11:16:15.085 [main] INFO org.fhm.substrate.bean.Demo - `desc: hello,reality, lucky number: 66`  // 配置文件信息  
+11:16:15.085 [main] INFO org.fhm.substrate.bean.DemoAttach - `demoAttach demo test successful`  // 调用bean测试方法  

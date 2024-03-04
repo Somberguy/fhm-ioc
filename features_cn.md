@@ -5,7 +5,7 @@
 ### 注意：
 
 * 目前只支持`.properties`格式文件
-* 文件默认存放位置为src/main/java/resources/，可以通过`VM`参数`fhm.ioc.config.file.path`自行设置，[VM参数说明](#VM参数说明)
+* 文件默认存放位置为src/main/java/resources/，可以通过`VM`参数`fhm.substrate.config.file.path`自行设置，[VM参数说明](#VM参数说明)
 
 ### 示例：
 
@@ -96,12 +96,12 @@
 
 #### ***类***
 
-|                     类                      |                    说明                    | 类型  |
-|:------------------------------------------:|:----------------------------------------:|:---:|
-| `org.fhm.ioc.config.AbstractConfiguration` |            [配置对象注入](#配置对象注入)             | 抽象类 |
-|        `AbstractDemoConfiguration`         |     所有继承此类配置`bean`，其属性值都集中在此类配置的文件中      | 抽象类 |
-|          `TestDemoConfiguration`           | 配置`bean`，[配置文件扫描和属性赋值机制](#配置文件扫描和属性赋值机制) | 普通类 |
-|                   `Demo`                   |                 `bean`对象                 | 普通类 |
+|                        类                         |                    说明                    | 类型  |
+|:------------------------------------------------:|:----------------------------------------:|:---:|
+| `org.fhm.substrate.config.AbstractConfiguration` |            [配置对象注入](#配置对象注入)             | 抽象类 |
+|           `AbstractDemoConfiguration`            |     所有继承此类配置`bean`，其属性值都集中在此类配置的文件中      | 抽象类 |
+|             `TestDemoConfiguration`              | 配置`bean`，[配置文件扫描和属性赋值机制](#配置文件扫描和属性赋值机制) | 普通类 |
+|                      `Demo`                      |                 `bean`对象                 | 普通类 |
 
 #### ***注解***
 
@@ -114,7 +114,7 @@
 
 #### ***配置对象注入***
 
-* 配置`bean`都需要继承类`org.fhm.ioc.config.AbstractConfiguration`，并调用其构造方法，设置自定义配置文件名称。
+* 配置`bean`都需要继承类`org.fhm.substrate.config.AbstractConfiguration`，并调用其构造方法，设置自定义配置文件名称。
 * 配置`bean`需要被注解`@Configuration`标记，以被`IOC`扫描，其注解值为配置文件属性名前缀。
 
 #### ***配置文件扫描和属性赋值机制***
@@ -137,8 +137,8 @@
 #### ***导入相关字节码***
 
 ```java
-   import org.fhm.ioc.service.LoggerHandler;
-   import org.fhm.ioc.standard.ILogger;
+   import org.fhm.substrate.service.LoggerHandler;
+   import org.fhm.substrate.standard.ILogger;
 ```
 
 #### ***声明日记对象***
@@ -166,7 +166,7 @@
 #### ***自定义日志框架***
 
 1. 创建自定义日志类，实现`ILogger`接口，并重写方法。
-2. 修改[LoggerHandler.java](src%2Fmain%2Fjava%2Forg%2Ffhm%2Fioc%2Fservice%2FLoggerHandler.java)中`initializeLoggerHandler`方法，将创建自定义日志对象的`Function`(参数为类对象，返回自定义日志对象)赋值给`create`变量
+2. 修改[LoggerHandler.java](src%2Fmain%2Fjava%2Forg%2Ffhm%2Fsubstrate%2Fservice%2FLoggerHandler.java)中`initializeLoggerHandler`方法，将创建自定义日志对象的`Function`(参数为类对象，返回自定义日志对象)赋值给`create`变量
 
 ## `IOC`仓库规划
 
@@ -296,12 +296,13 @@
 
 ### 注意：
 
-* 目前只支持扫描`jar`包
+* 目前只支持扫描`jar`包。
+* 由于被扫描对象无法在编译期间直接使用，因此需要配合***`IOC`仓库规划***中描述的`IStarter`接口实现方法`manageNotify`使用。
 
 ### 示例：
 
 ```shell
-  java -jar $程序名称 -Dfhm.ioc.registry.bean.dir.path=$bean_path -Dfhm.ioc.registry.package.name=$package_name
+  java -jar $程序名称 -Dfhm.substrate.registry.bean.dir.path=$bean_path -Dfhm.substrate.registry.package.name=$package_name
 ```
 
 ### 说明：
@@ -314,29 +315,32 @@
 
 ### ***使用须知***
 
-* `IOC`会注入扫描到的被`@Component`、`@Configuration`或者自定义注入注解标记的类。
+* `IOC`会注入扫描到的被自定义注入注解标记的类。
 
 ## 其他VM参数说明
 
 ### 示例：
 
+#### 启动命令配置入参
 ```shell
-  java -jar $程序名称 -Dfhm.ioc.vm.options.file.path=.
+  java -jar $程序名称 -Dfhm.substrate.vm.options.file.path=.
 ```
 
+#### 启动命令配置入参
+
 ```shell
-  java -jar $程序名称 -Dfhm.ioc.config.file.path=$config_path
+  java -jar $程序名称 -Dfhm.substrate.config.file.path=$config_path
 ```
 
 ### 说明：
 
 #### ***VM参数说明***
 
-* `fhm.ioc.vm.options.file.path`：
-  1. 设置`ioc.vmoptions`文件所在目录。
-  2. 用户创建`ioc.vmoptions`文件，写入`fhm.ioc`的相关`VM`参数，`IOC`会读取。
-  3. `ioc.vmoptions`文件优先级高于命令方式设置。
+* `fhm.substrate.vm.options.file.path`：
+  1. 设置`substrate.vmoptions`文件所在目录。
+  2. 用户创建`substrate.vmoptions`文件，写入`fhm.substrate`的相关`VM`参数，`IOC`会读取。
+  3. `substrate.vmoptions`文件优先级高于命令方式设置。
   4. `.`表示目录设置为和用户程序同级。
 
-* `fhm.ioc.config.file.path`：
+* `fhm.substrate.config.file.path`：
   1. 设置注入的配置`bean`的配置文件所在目录，**需要绝对路径**。
