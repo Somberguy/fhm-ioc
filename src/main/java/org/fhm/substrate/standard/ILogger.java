@@ -1,10 +1,8 @@
 package org.fhm.substrate.standard;
 
 /**
- * @Classname LoggerHandler
- * @Description TODO
- * @Date 2023/12/19-11:34 AM
- * @Author tanbo
+ * @since 2023/12/19-11:34 AM
+ * @author Somberguy
  */
 public interface ILogger {
 

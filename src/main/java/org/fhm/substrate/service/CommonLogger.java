@@ -4,6 +4,10 @@ import org.fhm.substrate.standard.ILogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * @since 2023/10/24-11:26 AM
+ * @author Somberguy
+ */
 public class CommonLogger implements ILogger {
 
     private final Logger log;

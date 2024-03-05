@@ -6,10 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @Classname Value
- * @Description TODO Configuration annotation
- * @Date 2023/10/14 11:11
- * @Author by 月光叶
+ * @since 2023/10/14 11:11
+ * @author Somberguy
  */
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)

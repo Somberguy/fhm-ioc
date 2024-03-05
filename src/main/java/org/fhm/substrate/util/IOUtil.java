@@ -3,10 +3,8 @@ package org.fhm.substrate.util;
 import java.io.*;
 
 /**
- * @Classname IOUtil
- * @Description TODO IO deal util
- * @Date 2023/10/14 16:27
- * @Author by 月光叶
+ * @since 2023/10/14 16:27
+ * @author Somberguy
  */
 public class IOUtil {
 

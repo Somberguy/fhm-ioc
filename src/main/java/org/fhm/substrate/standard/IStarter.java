@@ -4,16 +4,13 @@ import java.lang.annotation.Annotation;
 import java.util.List;
 
 /**
- * @Classname IStarter
- * @Description TODO
- * @Date 2023/10/25 18:11
- * @Author by 月光叶
+ * @since 2023/10/25 18:11
+ * @author Somberguy
  */
 public interface IStarter {
 
     /**
      * used before bean production is complete
-     *
      * @return annotation tagging classes that need to be managed by the IOC
      */
     List<Class<? extends Annotation>> newManageMembers();
@@ -28,8 +25,8 @@ public interface IStarter {
 
     /**
      * enable method
-     *
      * @param args enable parameters
+     * @throws Exception raise an exception for Substrate's processing.
      */
     void start(String[] args) throws Exception;
 

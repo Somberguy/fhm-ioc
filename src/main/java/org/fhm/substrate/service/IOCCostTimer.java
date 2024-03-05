@@ -3,10 +3,8 @@ package org.fhm.substrate.service;
 import org.fhm.substrate.standard.ILogger;
 
 /**
- * @Classname IOCCostTimer
- * @Description TODO
- * @Date 2023/12/12 20:28
- * @Author by 月光叶
+ * @since 2023/12/12 20:28
+ * @author Somberguy
  */
 public class IOCCostTimer {
 

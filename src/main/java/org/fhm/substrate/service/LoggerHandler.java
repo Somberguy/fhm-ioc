@@ -1,10 +1,8 @@
 package org.fhm.substrate.service;
 
 /**
- * @Classname LoggerHandler
- * @Description TODO
- * @Date 2024/2/28-4:08 PM
- * @Author tanbo
+ * @since 2024/2/28-4:08 PM
+ * @author Somberguy
  */
 public class LoggerHandler extends AbstractLoggerHandler{
 

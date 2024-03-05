@@ -20,10 +20,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Stream;
 
 /**
- * @Classname AbstractConfiguration
- * @Description TODO Unified planning abstract configuration class
- * @Date 2023/10/14 10:24
- * @Author by 月光叶
+ * @since 2023/10/14 10:24
+ * @author Somberguy
  */
 public abstract class AbstractConfiguration implements IActuator {
 

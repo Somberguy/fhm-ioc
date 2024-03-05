@@ -6,10 +6,8 @@ import org.fhm.substrate.exception.NormalException;
 import org.fhm.substrate.exception.ResourceScannerException;
 
 /**
- * @Classname ClazzUtil
- * @Description TODO Exception deal util
- * @Date 2023/10/14 16:27
- * @Author by 月光叶
+ * @since 2023/10/14 16:27
+ * @author Somberguy
  */
 public class IOCExceptionUtil {
 

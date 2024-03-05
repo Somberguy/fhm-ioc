@@ -6,10 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @Classname DemoTestComponent
- * @Description TODO
- * @Date 2024/2/20-5:13 PM
- * @Author tanbo
+ * @since 2024/2/20-5:13 PM
+ * @author Somberguy
  */
 @Component // Specify a custom annotation
 @Target(ElementType.TYPE)

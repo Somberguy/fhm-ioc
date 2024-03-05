@@ -174,7 +174,30 @@ public class DemoStarter implements IStarter {
 
 #### ***生命周期***
 
-![lifeCycleFlowDiagram.png](lifeCycleFlowDiagram.png)
+```mermaid
+flowchart LR
+ A(开始)
+ B(文件扫描)
+ C(获取需求beans)
+ D(获取配置文件数据)
+ E(装载bean对象)
+ F(关联beans)
+ G(配置bean赋值)
+ H(bean初始化)
+ Y(bean启动)
+ J(IOC仓库规划)
+ K(用户程序)
+ C --> B
+ A --> B
+ D --> B
+ B --> E
+ E --> F
+ F --> G
+ G --> H
+ H --> Y
+ Y --> J
+ J --> K
+```
 
 #### ***扫描包匹配规则***
 

@@ -8,10 +8,8 @@ import java.util.Objects;
 import java.util.function.Function;
 
 /**
- * @Classname LoggerHandler
- * @Description TODO
- * @Date 2023/12/19-11:39 AM
- * @Author tanbo
+ * @since 2023/12/19-11:39 AM
+ * @author Somberguy
  */
 public abstract class AbstractLoggerHandler {
 

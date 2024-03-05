@@ -17,10 +17,8 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * @Classname AutoSetupExecutor
- * @Description TODO
- * @Date 2023/10/26 22:33
- * @Author by 月光叶
+ * @since 2023/10/26 22:33
+ * @author Somberguy
  */
 public class AutoSetupExecutor {
 

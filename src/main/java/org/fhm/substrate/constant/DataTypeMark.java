@@ -4,10 +4,8 @@ import java.util.Locale;
 import java.util.function.Function;
 
 /**
- * @Classname DataTypeMark
- * @Description TODO
- * @Date 2024/1/8-11:12 AM
- * @Author tanbo
+ * @since 2024/1/8-11:12 AM
+ * @author Somberguy
  */
 public enum DataTypeMark {
 

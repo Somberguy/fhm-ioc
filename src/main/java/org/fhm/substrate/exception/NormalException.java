@@ -4,10 +4,8 @@ import org.fhm.substrate.service.LoggerHandler;
 import org.fhm.substrate.standard.ILogger;
 
 /**
- * @Classname FHMException
- * @Description TODO FOR HUMAN Exception
- * @Date 2023/10/14 10:24
- * @Author by 月光叶
+ * @since 2023/10/14 10:24
+ * @author Somberguy
  */
 public class NormalException extends RuntimeException {
 

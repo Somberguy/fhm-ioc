@@ -9,10 +9,8 @@ import org.fhm.substrate.service.LoggerHandler;
 import org.fhm.substrate.standard.ILogger;
 
 /**
- * @Classname Demo
- * @Description TODO
- * @Date 2024/2/20-2:53 PM
- * @Author tanbo
+ * @since 2024/2/20-2:53 PM
+ * @author Somberguy
  */
 @DemoComponent("Demo")
 public class Demo implements IDemoTest {

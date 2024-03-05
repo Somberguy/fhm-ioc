@@ -12,10 +12,8 @@ import java.security.CodeSource;
 import java.util.Objects;
 
 /**
- * @Classname VMParametersManage
- * @Description TODO
- * @Date 2024/1/30-11:41 AM
- * @Author tanbo
+ * @since 2024/1/30-11:41 AM
+ * @author Somberguy
  */
 public class VMParametersManage {
 

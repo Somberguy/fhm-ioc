@@ -17,10 +17,8 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * @Classname AbstractBootstrap
- * @Description TODO Abstract startup class
- * @Date 2023/10/14 10:02
- * @Author by 月光叶
+ * @since 2023/10/14 10:02
+ * @author Somberguy
  */
 public class Bootstrap {
 

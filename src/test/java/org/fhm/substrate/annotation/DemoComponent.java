@@ -6,10 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @Classname DemoComponent
- * @Description TODO Customize the mark annotation of inject into IOC
- * @Date 2024/2/20-2:48 PM
- * @Author tanbo
+ * @since 2024/2/20-2:48 PM
+ * @author Somberguy
  */
 @Component // Specify a custom annotation
 @Target(ElementType.TYPE)

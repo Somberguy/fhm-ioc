@@ -4,10 +4,8 @@ import org.fhm.substrate.annotation.Configuration;
 import org.fhm.substrate.annotation.Value;
 
 /**
- * @Classname TestDemoConfiguration
- * @Description TODO
- * @Date 2024/2/20-3:42 PM
- * @Author tanbo
+ * @since 2024/2/20-3:42 PM
+ * @author Somberguy
  */
 @Configuration("test.demo")
 public class TestDemoConfiguration extends AbstractDemoConfiguration {

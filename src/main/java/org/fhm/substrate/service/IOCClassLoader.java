@@ -7,10 +7,8 @@ import java.net.URLClassLoader;
 import java.util.*;
 
 /**
- * @Classname ASMClassLoader
- * @Description TODO ASM class loader
- * @Date 2023/10/12 10:56
- * @Author by 月光叶
+ * @since 2023/10/12 10:56
+ * @author Somberguy
  */
 public class IOCClassLoader {
 

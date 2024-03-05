@@ -14,10 +14,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @Classname DemoStarter
- * @Description TODO
- * @Date 2024/2/16 21:57
- * @Created by 月光叶
+ * @since 2024/2/16 21:57
+ * @author Somberguy
  */
 @Component // Inject into the IOC
 public class DemoStarter implements IStarter {

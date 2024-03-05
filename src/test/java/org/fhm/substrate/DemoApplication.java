@@ -5,10 +5,8 @@ import org.fhm.substrate.manager.Bootstrap;
 import org.fhm.substrate.service.DemoStarter;
 
 /**
- * @Classname DemoApplication
- * @Description TODO
- * @Date 2024/2/16 21:56
- * @Author by 月光叶
+ * @since 2024/2/16 21:56
+ * @author Somberguy
  */
 @ScanPackageConfig("org.**") // scan package name
 public class DemoApplication {

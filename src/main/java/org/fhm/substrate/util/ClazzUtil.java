@@ -6,10 +6,8 @@ import org.fhm.substrate.standard.ILogger;
 import java.lang.reflect.Field;
 
 /**
- * @Classname ClazzUtil
- * @Description TODO
- * @Date 2023/11/9-11:10 AM
- * @Author tanbo
+ * @since 2023/11/9-11:10 AM
+ * @author Somberguy
  */
 public class ClazzUtil {
 

@@ -5,10 +5,8 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 /**
- * @Classname VMParameters
- * @Description TODO
- * @Date 2024/1/8-11:12 AM
- * @Author tanbo
+ * @since 2024/1/8-11:12 AM
+ * @author Somberguy
  */
 public enum VMParameters {
 

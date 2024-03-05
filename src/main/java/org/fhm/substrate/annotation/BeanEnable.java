@@ -6,10 +6,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * @Classname BeanEnable
- * @Description TODO
- * @Date 2023/11/29-5:10 PM
- * @Author tanbo
+ * @since 2023/11/29-5:10 PM
+ * @author Somberguy
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

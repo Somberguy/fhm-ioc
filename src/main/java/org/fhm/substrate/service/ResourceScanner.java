@@ -34,10 +34,8 @@ import java.util.regex.Pattern;
 import static org.objectweb.asm.Opcodes.*;
 
 /**
- * @Classname ClassFileScanner
- * @Description TODO
- * @Date 2023/10/22 14:49
- * @Author by 月光叶
+ * @since 2023/10/22 14:49
+ * @author Somberguy
  */
 public class ResourceScanner {
 

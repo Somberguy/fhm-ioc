@@ -1,10 +1,8 @@
 package org.fhm.substrate.exception;
 
 /**
- * @Classname ConfigurationException
- * @Description TODO
- * @Date 2023/10/28 11:40
- * @Author by 月光叶
+ * @since 2023/10/28 11:40
+ * @author Somberguy
  */
 public class ConfigurationException extends NormalException {
 

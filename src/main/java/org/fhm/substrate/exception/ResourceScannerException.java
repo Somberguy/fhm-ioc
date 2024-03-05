@@ -1,10 +1,8 @@
 package org.fhm.substrate.exception;
 
 /**
- * @Classname ResourceScannerException
- * @Description TODO
- * @Date 2023/10/28 11:01
- * @Author by 月光叶
+ * @since 2023/10/28 11:01
+ * @author Somberguy
  */
 public class ResourceScannerException extends NormalException {
 

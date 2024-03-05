@@ -20,10 +20,8 @@ import java.util.stream.Collectors;
 
 
 /**
- * @Classname AbstractFactory
- * @Description TODO
- * @Date 2023/10/24-11:26 AM
- * @Author tanbo
+ * @since 2023/10/24-11:26 AM
+ * @author Somberguy
  */
 public class BeanOptimizer {
 
