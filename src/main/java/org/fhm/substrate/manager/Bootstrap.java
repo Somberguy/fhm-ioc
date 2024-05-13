@@ -1,6 +1,6 @@
 package org.fhm.substrate.manager;
 
-import org.fhm.substrate.ability.IActuator;
+import org.fhm.substrate.ability.IInitializeConfigurationObject;
 import org.fhm.substrate.config.AbstractConfiguration;
 import org.fhm.substrate.service.*;
 import org.fhm.substrate.standard.ILogger;
@@ -17,8 +17,9 @@ import java.util.List;
 import java.util.Objects;
 
 /**
+ * <b>JSubstrate</b>'s bootstrap object.
  * @since 2023/10/14 10:02
- * @author Somberguy
+ * @author 谭波
  */
 public class Bootstrap {
 
@@ -26,6 +27,8 @@ public class Bootstrap {
     public static final Charset charset = StandardCharsets.UTF_8;
 
     private static final String BANNER_FILE_NAME = "banner.txt";
+
+    private static final BeanOptimizer beanOptimizer = BeanOptimizer.getInstance();
 
     static {
         LoggerHandler.getInstance().initializeLoggerHandler();
@@ -35,6 +38,11 @@ public class Bootstrap {
 
     private static List<Class<? extends Annotation>> newManageAnnotations;
 
+    /**
+     * Open <b>JSubstrate</b>.
+     * @param args The entrance parameters of java.
+     * @param starterClazz Customized an implementation of <b>IStarter</b>.
+     */
     @SuppressWarnings("unused")
     public static void open(String[] args, Class<? extends IStarter> starterClazz) {
         IOCCostTimer.getInstance().start();
@@ -45,12 +53,15 @@ public class Bootstrap {
         collectConfigAndClassResource(starterClazz);
         logger.info("start auto setup bean");
         autoSetupObj();
-        logger.info("start initial configuration");
-        initialConfiguration();
-        logger.info("start optimize bean");
-        executeBeanOptimizer(args, starterClazz);
+        logger.info("start initialize configuration");
+        initializeConfiguration();
+        logger.info("start optimizing the beans");
+        enableBeanOptimizer(args, starterClazz);
     }
 
+    /**
+     * Print banner.
+     */
     private static void printBanner() {
         InputStream stream = ClassLoader.getSystemResourceAsStream(BANNER_FILE_NAME);
         if (Objects.isNull(stream)) {
@@ -76,13 +87,16 @@ public class Bootstrap {
         }
     }
 
-
+    /**
+     * Scan files and collect resources according to the configuration requirements of <b>JSubstrate</b>
+     * @param starterClazz Customized an implementation of <b>IStarter</b>.
+     */
     private static void collectConfigAndClassResource(
-            Class<? extends IStarter> clazz
+            Class<? extends IStarter> starterClazz
     ) {
         ResourceScanner scanner = ResourceScanner.getInstance();
         logger.info("start initialize resource scanner");
-        newManageAnnotations = scanner.initialize(clazz);
+        newManageAnnotations = scanner.initialize(starterClazz);
         logger.info("start filter out the required CP");
         scanner.filterClassPath();
         logger.info("start fixed-point scanning");
@@ -93,6 +107,9 @@ public class Bootstrap {
         scanner.clearCacheAndCreateBeans();
     }
 
+    /**
+     * Automatically assemble dependent objects for beans.
+     */
     private static void autoSetupObj() {
         AutoSetupExecutor executor = AutoSetupExecutor.getInstance();
         logger.info("initial auto setup container");
@@ -105,11 +122,14 @@ public class Bootstrap {
         executor.beanDistribute();
     }
 
-    private static void initialConfiguration() {
+    /**
+     * Initialize configuration object.
+     */
+    private static void initializeConfiguration() {
         AbstractConfiguration.configObj.forEach((k, obj) -> {
-            if (obj instanceof IActuator) {
-                IActuator actuator = (IActuator) obj;
-                actuator.action(obj);
+            if (obj instanceof IInitializeConfigurationObject) {
+                IInitializeConfigurationObject actuator = (IInitializeConfigurationObject) obj;
+                actuator.initializeConfigurationObject(obj);
             }
         });
         AbstractConfiguration.resource.values().forEach(is -> {
@@ -123,8 +143,12 @@ public class Bootstrap {
         });
     }
 
-    private static void executeBeanOptimizer(String[] args, Class<? extends IStarter> starterClazz) {
-        BeanOptimizer beanOptimizer = BeanOptimizer.getInstance();
+    /**
+     * Enable bean optimizer.
+     * @param args The entrance parameters of java.
+     * @param starterClazz Customized an implementation of <b>IStarter</b>.
+     */
+    private static void enableBeanOptimizer(String[] args, Class<? extends IStarter> starterClazz) {
         logger.info("clear not necessary implement and cache");
         beanOptimizer.clearNotNecessaryObj();
         logger.info("start bean initial");
@@ -139,12 +163,19 @@ public class Bootstrap {
         beanOptimizer.start(args, newManageAnnotations, starterClazz);
     }
 
+    /**
+     * Print <b>JSubstrate</b>'s run details
+     */
     private static void printMachineCurrentStatus() {
         Runtime runtime = Runtime.getRuntime();
         logger.info("current the number of available processors : {}", runtime.availableProcessors());
         logger.info("current maximum heap memory: {}MB", runtime.maxMemory() / 1024 / 1024);
         long costMemory = (runtime.totalMemory() - runtime.freeMemory()) / 1024;
         logger.info("current cost memory: {}MB {}KB", costMemory / 1024, costMemory % 1024);
+    }
+
+    public static <T> T getBean(Class<T> clazz){
+        return beanOptimizer.getBean(clazz);
     }
 
 }

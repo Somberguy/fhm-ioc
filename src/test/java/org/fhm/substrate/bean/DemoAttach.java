@@ -6,7 +6,7 @@ import org.fhm.substrate.standard.ILogger;
 
 /**
  * @since 2024/2/20-4:22 PM
- * @author Somberguy
+ * @author 谭波
  */
 @DemoTestComponent("DemoAttach")
 public class DemoAttach implements IDemoTest {

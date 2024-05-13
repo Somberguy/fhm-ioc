@@ -4,8 +4,10 @@ import org.fhm.substrate.annotation.Component;
 import org.fhm.substrate.annotation.DemoComponent;
 import org.fhm.substrate.annotation.DemoTestComponent;
 import org.fhm.substrate.annotation.Setup;
+import org.fhm.substrate.bean.Demo;
 import org.fhm.substrate.bean.DemoAttach;
 import org.fhm.substrate.bean.IDemoTest;
+import org.fhm.substrate.standard.ILogger;
 import org.fhm.substrate.standard.IStarter;
 
 import java.lang.annotation.Annotation;
@@ -15,7 +17,7 @@ import java.util.Map;
 
 /**
  * @since 2024/2/16 21:57
- * @author Somberguy
+ * @author 谭波
  */
 @Component // Inject into the IOC
 public class DemoStarter implements IStarter {
@@ -60,6 +62,10 @@ public class DemoStarter implements IStarter {
     @Override
     public void close() throws Exception {
         // Runs before the IOC ends
+    }
+
+    public void test() {
+        LoggerHandler.getLogger(DemoStarter.class).info("demo starter test");
     }
 
 }

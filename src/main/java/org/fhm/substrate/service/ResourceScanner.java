@@ -35,7 +35,7 @@ import static org.objectweb.asm.Opcodes.*;
 
 /**
  * @since 2023/10/22 14:49
- * @author Somberguy
+ * @author 谭波
  */
 public class ResourceScanner {
 

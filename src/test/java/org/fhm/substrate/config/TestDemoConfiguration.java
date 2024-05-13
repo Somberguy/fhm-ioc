@@ -5,7 +5,7 @@ import org.fhm.substrate.annotation.Value;
 
 /**
  * @since 2024/2/20-3:42 PM
- * @author Somberguy
+ * @author 谭波
  */
 @Configuration("test.demo")
 public class TestDemoConfiguration extends AbstractDemoConfiguration {

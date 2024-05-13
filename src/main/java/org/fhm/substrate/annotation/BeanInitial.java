@@ -6,8 +6,9 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
+ * The annotation <b>BeanInitial</b> is used to mark Initial-Method of bean.
  * @since 2023/11/29-5:10 PM
- * @author Somberguy
+ * @author 谭波
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)

@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * @since 2023/10/24-11:26 AM
- * @author Somberguy
+ * @author 谭波
  */
 public class CommonLogger implements ILogger {
 

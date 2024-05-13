@@ -13,7 +13,7 @@ import java.util.Objects;
 
 /**
  * @since 2024/1/30-11:41 AM
- * @author Somberguy
+ * @author 谭波
  */
 public class VMParametersManage {
 

@@ -6,12 +6,12 @@ import org.fhm.substrate.service.DemoStarter;
 
 /**
  * @since 2024/2/16 21:56
- * @author Somberguy
+ * @author 谭波
  */
 @ScanPackageConfig("org.**") // scan package name
 public class DemoApplication {
     public static void main(String[] args) {
         Bootstrap.open(args, DemoStarter.class);
+        Bootstrap.getBean(DemoStarter.class).test();
     }
-
 }

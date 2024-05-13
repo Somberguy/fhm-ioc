@@ -5,7 +5,7 @@ import java.util.List;
 
 /**
  * @since 2023/10/25 18:11
- * @author Somberguy
+ * @author 谭波
  */
 public interface IStarter {
 

@@ -9,7 +9,7 @@ import java.util.function.Function;
 
 /**
  * @since 2023/12/19-11:39 AM
- * @author Somberguy
+ * @author 谭波
  */
 public abstract class AbstractLoggerHandler {
 
@@ -20,9 +20,7 @@ public abstract class AbstractLoggerHandler {
         ILogger handler;
         String clazzName = clazz.getName();
         if (Objects.isNull((handler = loggerHandlerContainer.get(clazzName)))) {
-            synchronized(AbstractLoggerHandler.class){
-                return loggerHandlerContainer.computeIfAbsent(clazzName, k -> create.apply(clazz));
-            }
+            return loggerHandlerContainer.computeIfAbsent(clazzName, k -> create.apply(clazz));
         }
         return handler;
     }

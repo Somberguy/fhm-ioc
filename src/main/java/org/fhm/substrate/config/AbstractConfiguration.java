@@ -1,6 +1,6 @@
 package org.fhm.substrate.config;
 
-import org.fhm.substrate.ability.IActuator;
+import org.fhm.substrate.ability.IInitializeConfigurationObject;
 import org.fhm.substrate.annotation.Configuration;
 import org.fhm.substrate.annotation.Value;
 import org.fhm.substrate.constant.Common;
@@ -21,9 +21,9 @@ import java.util.stream.Stream;
 
 /**
  * @since 2023/10/14 10:24
- * @author Somberguy
+ * @author 谭波
  */
-public abstract class AbstractConfiguration implements IActuator {
+public abstract class AbstractConfiguration implements IInitializeConfigurationObject {
 
     /**
      * Default configuration container
@@ -162,7 +162,7 @@ public abstract class AbstractConfiguration implements IActuator {
     }
 
     @Override
-    public void action(Object object) {
+    public void initializeConfigurationObject(Object object) {
         if (Objects.isNull(object)) {
             throw IOCExceptionUtil.generateConfigurationException("the length of params is warning");
         }

@@ -10,7 +10,7 @@ import org.fhm.substrate.standard.ILogger;
 
 /**
  * @since 2024/2/20-2:53 PM
- * @author Somberguy
+ * @author 谭波
  */
 @DemoComponent("Demo")
 public class Demo implements IDemoTest {

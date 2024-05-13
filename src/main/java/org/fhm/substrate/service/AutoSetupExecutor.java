@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 
 /**
  * @since 2023/10/26 22:33
- * @author Somberguy
+ * @author 谭波
  */
 public class AutoSetupExecutor {
 

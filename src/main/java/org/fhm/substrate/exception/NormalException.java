@@ -5,7 +5,7 @@ import org.fhm.substrate.standard.ILogger;
 
 /**
  * @since 2023/10/14 10:24
- * @author Somberguy
+ * @author 谭波
  */
 public class NormalException extends RuntimeException {
 

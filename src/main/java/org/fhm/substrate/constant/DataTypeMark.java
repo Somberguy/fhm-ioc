@@ -5,7 +5,7 @@ import java.util.function.Function;
 
 /**
  * @since 2024/1/8-11:12 AM
- * @author Somberguy
+ * @author 谭波
  */
 public enum DataTypeMark {
 

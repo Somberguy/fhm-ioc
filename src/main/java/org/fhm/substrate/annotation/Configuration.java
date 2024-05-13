@@ -7,13 +7,17 @@ import java.lang.annotation.Target;
 
 
 /**
+ * The annotation <b>Configuration</b> is used to mark a configuration object that needs to be injected into the <b>IOC</b>.
  * @since 2023/10/14 23:03
- * @author Somberguy
+ * @author 谭波
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Configuration {
 
+    /**
+     * @return Configuration object name.
+     */
     String value();
 
 }

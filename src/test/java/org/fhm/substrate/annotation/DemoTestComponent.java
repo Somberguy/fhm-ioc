@@ -7,7 +7,7 @@ import java.lang.annotation.Target;
 
 /**
  * @since 2024/2/20-5:13 PM
- * @author Somberguy
+ * @author 谭波
  */
 @Component // Specify a custom annotation
 @Target(ElementType.TYPE)

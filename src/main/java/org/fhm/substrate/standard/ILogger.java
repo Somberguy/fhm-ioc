@@ -2,7 +2,7 @@ package org.fhm.substrate.standard;
 
 /**
  * @since 2023/12/19-11:34 AM
- * @author Somberguy
+ * @author 谭波
  */
 public interface ILogger {
 

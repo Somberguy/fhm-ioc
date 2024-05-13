@@ -2,7 +2,7 @@ package org.fhm.substrate.exception;
 
 /**
  * @since 2023/10/28 12:23
- * @author Somberguy
+ * @author 谭波
  */
 public class AutoSetupException extends NormalException {
 

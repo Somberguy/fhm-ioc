@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 /**
  * @since 2023/10/24-11:26 AM
- * @author Somberguy
+ * @author 谭波
  */
 public class BeanOptimizer {
 
@@ -223,10 +223,22 @@ public class BeanOptimizer {
         beans.put(key, o);
     }
 
-
     private static final class Instance {
         private static final BeanOptimizer instance = new BeanOptimizer();
     }
 
+    /**
+     * Obtain the bean object of the specified type in the IOC container
+     * @param clazz the class of the bean object to be obtained
+     * @return the bean object of the specified type in the IOC container
+     * @param <T> the type of the bean object to be obtained
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getBean(Class<T> clazz){
+        Object o = beans.get(clazz.getName());
+        if (Objects.isNull(o))
+            throw IOCExceptionUtil.generateNormalException("the bean object of the specified type is not found in the IOC container");
+        return (T) o;
+    }
 
 }
