@@ -28,8 +28,6 @@ public class Bootstrap {
 
     private static final String BANNER_FILE_NAME = "banner.txt";
 
-    private static final BeanOptimizer beanOptimizer = BeanOptimizer.getInstance();
-
     static {
         LoggerHandler.getInstance().initializeLoggerHandler();
     }
@@ -149,6 +147,7 @@ public class Bootstrap {
      * @param starterClazz Customized an implementation of <b>IStarter</b>.
      */
     private static void enableBeanOptimizer(String[] args, Class<? extends IStarter> starterClazz) {
+        BeanOptimizer beanOptimizer = BeanOptimizer.getInstance();
         logger.info("clear not necessary implement and cache");
         beanOptimizer.clearNotNecessaryObj();
         logger.info("start bean initial");
@@ -175,7 +174,7 @@ public class Bootstrap {
     }
 
     public static <T> T getBean(Class<T> clazz){
-        return beanOptimizer.getBean(clazz);
+        return BeanOptimizer.getInstance().getBean(clazz);
     }
 
 }
